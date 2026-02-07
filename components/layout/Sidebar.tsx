@@ -17,15 +17,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, stats }) =>
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800">
+    <aside className="w-80 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 transition-all duration-300">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-900/20">
-            R
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-900/20 shrink-0">
+            P
           </div>
           <div>
             <h1 className="text-white font-bold text-lg leading-tight">Explorer</h1>
-            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">RAG Dashboard</p>
+            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold whitespace-nowrap">Pre-RAG Dashboard</p>
           </div>
         </div>
 
@@ -34,16 +34,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, stats }) =>
             <button
               key={item.id}
               onClick={() => onViewChange(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+              className={`w-full flex items-center justify-start gap-3 px-4 py-3 rounded-lg transition-all duration-200 group text-left ${
                 activeView === item.id 
                   ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
                   : 'hover:bg-slate-800 hover:text-white'
               }`}
             >
-              <span className={`${activeView === item.id ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}>
+              <span className={`shrink-0 ${activeView === item.id ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}>
                 {item.icon}
               </span>
-              <span className="font-medium">{item.label}</span>
+              <span className="font-medium whitespace-nowrap">{item.label}</span>
             </button>
           ))}
         </nav>

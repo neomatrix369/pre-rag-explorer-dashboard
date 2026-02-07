@@ -110,6 +110,19 @@ const App: React.FC = () => {
     }
   };
 
+  const handleClearFiles = async () => {
+    if (confirm("Are you sure you want to remove all uploaded files? This cannot be undone.")) {
+      try {
+        // We must delete them one by one or clear the store. 
+        // For safety/simplicity in this context, we iterate the current state IDs.
+        await Promise.all(state.files.map(f => deleteFile(f.id)));
+        setState(prev => ({ ...prev, files: [] }));
+      } catch (err) {
+        console.error("Failed to clear all files", err);
+      }
+    }
+  };
+
   const handleProcess = async (selectedFileIds: string[], selectedMethods: ChunkingMethod[], params: Record<ChunkingMethod, ChunkParams>) => {
     setLoading(true);
     setState(prev => ({ ...prev, globalError: undefined }));
@@ -286,6 +299,7 @@ const App: React.FC = () => {
               files={state.files} 
               onFilesAdded={handleFilesAdded} 
               onRemoveFile={handleRemoveFile} 
+              onClearAll={handleClearFiles}
               loading={loading}
             />
           )}

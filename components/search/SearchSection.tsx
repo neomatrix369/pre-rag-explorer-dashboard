@@ -13,6 +13,107 @@ interface SearchSectionProps {
   loading: boolean;
 }
 
+const ResultRow: React.FC<{ result: SearchResult, rank: number, scoreColor: string }> = ({ result, rank, scoreColor }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const getRetrievalBadgeStyle = (method: string) => {
+    switch(method) {
+      case 'dense': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'sparse': return 'bg-orange-100 text-orange-700 border-orange-200';
+      case 'hybrid': return 'bg-teal-100 text-teal-700 border-teal-200';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+  };
+
+  return (
+    <div 
+      className={`bg-white border rounded-xl overflow-hidden transition-all duration-200 cursor-pointer hover:border-blue-300 hover:shadow-sm ${expanded ? 'border-blue-200 shadow-md ring-1 ring-blue-50' : 'border-slate-200'}`}
+      onClick={() => setExpanded(!expanded)}
+    >
+      {/* Compact Row */}
+      <div className="flex items-center p-3 gap-4">
+        <span className="w-6 text-xs font-bold text-slate-400 text-center">#{rank}</span>
+        
+        {/* Visual Score Bar */}
+        <div className="w-24 shrink-0 flex items-center gap-2">
+          <div className="h-1.5 flex-1 bg-slate-100 rounded-full overflow-hidden">
+             <div className={`h-full ${scoreColor}`} style={{ width: `${result.score * 100}%` }} />
+          </div>
+          <span className="text-xs font-bold text-slate-700">{(result.score * 100).toFixed(0)}</span>
+        </div>
+
+        {/* Retrieval Method Badge (Collapsed) */}
+        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border shrink-0 ${getRetrievalBadgeStyle(result.retrievalMethod)}`}>
+            {result.retrievalMethod}
+        </span>
+        
+        {/* Model Badge (Collapsed) */}
+        {result.embeddingModel && (
+          <span className="hidden sm:inline-block px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded border border-slate-200 shrink-0 truncate max-w-[120px]" title={result.embeddingModel}>
+            {result.embeddingModel.split('/').pop()}
+          </span>
+        )}
+
+        {/* Truncated Text */}
+        <p className={`text-sm text-slate-700 font-serif italic truncate flex-1 ${expanded ? 'hidden' : 'block'}`}>
+          "{result.chunk.text}"
+        </p>
+        
+        {/* Metadata badges (Collapsed) - Source removed as requested */}
+        <div className={`flex items-center gap-2 ${expanded ? 'hidden' : 'flex'}`}>
+           <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] font-bold text-slate-500 uppercase">
+             {CHUNKING_METHOD_LABELS[result.chunk.chunkMethod].split(' ')[0]}
+           </span>
+        </div>
+      </div>
+
+      {/* Expanded Details */}
+      {expanded && (
+        <div className="px-4 pb-4 pt-0 animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="border-t border-slate-50 my-2" />
+          <p className="text-slate-800 text-sm leading-relaxed font-serif mb-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+            "{result.chunk.text}"
+          </p>
+          
+          <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+             <div className="flex items-center gap-2">
+               <span className="font-bold text-slate-400 uppercase tracking-wider">Retrieval Method:</span>
+               <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${getRetrievalBadgeStyle(result.retrievalMethod)}`}>
+                 {result.retrievalMethod} Match
+               </span>
+             </div>
+             
+             {result.embeddingModel && (
+               <div className="flex items-center gap-2">
+                 <span className="font-bold text-slate-400 uppercase tracking-wider">Model:</span>
+                 <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold border border-slate-200">
+                   {result.embeddingModel}
+                 </span>
+               </div>
+             )}
+
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-400 uppercase tracking-wider">Collection:</span>
+              <span className="font-semibold text-slate-700">{result.collectionName}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-400 uppercase tracking-wider">Source:</span>
+              <span>{result.chunk.sourceFileName}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-400 uppercase tracking-wider">Chunking Method:</span>
+              <span>{CHUNKING_METHOD_LABELS[result.chunk.chunkMethod]}</span>
+            </div>
+            <div className="ml-auto">
+               <CopyButton text={result.chunk.text} label="Copy Chunk" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: appLoading }) => {
   const [query, setQuery] = useState('');
   const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
@@ -203,7 +304,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Retrieval Explorer</h2>
+        <h2 className="text-3xl font-bold text-slate-900 mb-2">Pre-RAG Search Explorer</h2>
         <p className="text-slate-500">Query your vector store and analyze how different retrieval methods perform on your indexed content.</p>
       </header>
 
@@ -231,7 +332,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
                     />
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-slate-800 truncate">{col.name}</p>
-                      <p className="text-[10px] text-slate-400">{col.chunkCount} chunks</p>
+                      <p className="text-xs text-slate-400">{col.chunkCount} chunks</p>
                     </div>
                   </label>
                 ))}
@@ -244,7 +345,12 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                     <label className="text-xs font-semibold text-slate-700">Retrieval Algorithms</label>
+                     <label className="text-xs font-semibold text-slate-700">Retrieval Methods</label>
+                     <div className="flex gap-2">
+                        <button onClick={handleSelectAllRetrieval} className="text-[10px] font-bold text-blue-600 uppercase hover:text-blue-800 transition-colors">All</button>
+                        <span className="text-slate-300">|</span>
+                        <button onClick={handleClearAllRetrieval} className="text-[10px] font-bold text-slate-400 uppercase hover:text-slate-600 transition-colors">Clear</button>
+                     </div>
                   </div>
                   <div className="space-y-2">
                     {['dense', 'sparse', 'hybrid'].map((m) => (
@@ -435,110 +541,6 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-const ResultRow: React.FC<{ result: SearchResult, rank: number, scoreColor: string }> = ({ result, rank, scoreColor }) => {
-  const [expanded, setExpanded] = useState(false);
-
-  const getRetrievalBadgeStyle = (method: string) => {
-    switch(method) {
-      case 'dense': return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'sparse': return 'bg-orange-100 text-orange-700 border-orange-200';
-      case 'hybrid': return 'bg-teal-100 text-teal-700 border-teal-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
-    }
-  };
-
-  return (
-    <div 
-      className={`bg-white border rounded-xl overflow-hidden transition-all duration-200 cursor-pointer hover:border-blue-300 hover:shadow-sm ${expanded ? 'border-blue-200 shadow-md ring-1 ring-blue-50' : 'border-slate-200'}`}
-      onClick={() => setExpanded(!expanded)}
-    >
-      {/* Compact Row */}
-      <div className="flex items-center p-3 gap-4">
-        <span className="w-6 text-xs font-bold text-slate-400 text-center">#{rank}</span>
-        
-        {/* Visual Score Bar */}
-        <div className="w-24 shrink-0 flex items-center gap-2">
-          <div className="h-1.5 flex-1 bg-slate-100 rounded-full overflow-hidden">
-             <div className={`h-full ${scoreColor}`} style={{ width: `${result.score * 100}%` }} />
-          </div>
-          <span className="text-xs font-bold text-slate-700">{(result.score * 100).toFixed(0)}</span>
-        </div>
-
-        {/* Retrieval Method Badge (Collapsed) */}
-        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border shrink-0 ${getRetrievalBadgeStyle(result.retrievalMethod)}`}>
-            {result.retrievalMethod}
-        </span>
-        
-        {/* Model Badge (Collapsed) */}
-        {result.embeddingModel && (
-          <span className="hidden sm:inline-block px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded border border-slate-200 shrink-0 truncate max-w-[120px]" title={result.embeddingModel}>
-            {result.embeddingModel.split('/').pop()}
-          </span>
-        )}
-
-        {/* Truncated Text */}
-        <p className={`text-sm text-slate-700 font-serif italic truncate flex-1 ${expanded ? 'hidden' : 'block'}`}>
-          "{result.chunk.text}"
-        </p>
-        
-        {/* Metadata badges (Collapsed) */}
-        <div className={`flex items-center gap-2 ${expanded ? 'hidden' : 'flex'}`}>
-           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight truncate max-w-[100px]" title={result.chunk.sourceFileName}>
-             {result.chunk.sourceFileName}
-           </span>
-           <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] font-bold text-slate-500 uppercase">
-             {CHUNKING_METHOD_LABELS[result.chunk.chunkMethod].split(' ')[0]}
-           </span>
-        </div>
-      </div>
-
-      {/* Expanded Details */}
-      {expanded && (
-        <div className="px-4 pb-4 pt-0 animate-in fade-in slide-in-from-top-1 duration-200">
-          <div className="border-t border-slate-50 my-2" />
-          <p className="text-slate-800 text-sm leading-relaxed font-serif mb-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
-            "{result.chunk.text}"
-          </p>
-          
-          <div className="flex flex-wrap gap-4 text-xs text-slate-500">
-             <div className="flex items-center gap-2">
-               <span className="font-bold text-slate-400 uppercase tracking-wider">Retrieval:</span>
-               <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${getRetrievalBadgeStyle(result.retrievalMethod)}`}>
-                 {result.retrievalMethod} Match
-               </span>
-             </div>
-             
-             {result.embeddingModel && (
-               <div className="flex items-center gap-2">
-                 <span className="font-bold text-slate-400 uppercase tracking-wider">Model:</span>
-                 <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold border border-slate-200">
-                   {result.embeddingModel}
-                 </span>
-               </div>
-             )}
-
-            <div className="flex items-center gap-2">
-              <Icons.Database />
-              <span className="font-semibold text-slate-700">{result.collectionName}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-400 uppercase tracking-wider">Source:</span>
-              <span>{result.chunk.sourceFileName}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-400 uppercase tracking-wider">Method:</span>
-              <span>{CHUNKING_METHOD_LABELS[result.chunk.chunkMethod]}</span>
-            </div>
-            <div className="ml-auto">
-               <CopyButton text={result.chunk.text} label="Copy Chunk" />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

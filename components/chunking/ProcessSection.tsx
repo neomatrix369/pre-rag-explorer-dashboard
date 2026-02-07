@@ -81,7 +81,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ files, onProcess, loadi
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
         <h2 className="text-3xl font-bold text-slate-900 mb-2">Chunk & Vectorize</h2>
-        <p className="text-slate-500">Transform your raw text into searchable vectors. Choose your strategy wisely—chunking affects context retrieval.</p>
+        <p className="text-slate-500">Transform your raw text into searchable vectors. Choose your Chunking Method wisely—it affects context retrieval.</p>
       </header>
 
       {processingStatus.length > 0 ? (

@@ -20,12 +20,12 @@ const GuidanceBalloon: React.FC<GuidanceBalloonProps> = ({
   const [isVisible, setIsVisible] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Logic to determine the current RAG stage
+  // Logic to determine the current Pre-RAG stage
   const getStage = () => {
     if (filesCount === 0) return { 
       step: 1, 
       title: 'Load Data', 
-      text: 'Your RAG pipeline needs fuel. Start by uploading some documents.', 
+      text: 'Your Pre-RAG pipeline needs fuel. Start by uploading some documents.', 
       action: 'Upload Files', 
       view: 'upload',
       color: 'blue'
