@@ -143,11 +143,11 @@ const App: React.FC = () => {
         for (const method of selectedMethods) {
           const taskId = `${fileId}_${method}`;
           
-          const updateStatus = (status: ProcessingStatus['status'], progress: number, error?: ErrorInfo) => {
+          const updateStatus = (status: ProcessingStatus['status'], progress: number, error?: ErrorInfo, sampleChunks?: string[]) => {
             setState(prev => ({
               ...prev,
               processingStatus: prev.processingStatus.map(s => 
-                s.taskId === taskId ? { ...s, status, progress, error } : s
+                s.taskId === taskId ? { ...s, status, progress, error, sampleChunks: sampleChunks || s.sampleChunks } : s
               )
             }));
           };
@@ -156,13 +156,14 @@ const App: React.FC = () => {
             // 1. Chunking
             updateStatus('chunking', 20);
             const chunkResult = await chunkText(file.content, method, params[method]);
+            const samples = chunkResult.chunks.slice(0, 3);
             
             // 2. Vectorization
-            updateStatus('vectorizing', 50);
+            updateStatus('vectorizing', 50, undefined, samples);
             const vectors = await generateEmbeddings(chunkResult.chunks);
 
             // 3. Create Collection
-            updateStatus('vectorizing', 80);
+            updateStatus('vectorizing', 80, undefined, samples);
             const collection: VectorCollection = {
               id: `col_${Math.random().toString(36).substr(2, 9)}`,
               name: `${file.name}_${method}_${Date.now()}`,
@@ -188,7 +189,7 @@ const App: React.FC = () => {
             newCollections.push(collection);
             chunkCounts[method] = (chunkCounts[method] || 0) + chunkResult.chunks.length;
             
-            updateStatus('finished', 100);
+            updateStatus('finished', 100, undefined, samples);
           } catch (itemErr: any) {
             console.error(`Error processing ${taskId}:`, itemErr);
             const errorMessage = itemErr.message || '';

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { UploadedFile, ChunkingMethod, ChunkParams, ProcessingStatus } from '../../types';
 import { CHUNKING_METHOD_LABELS, Icons } from '../../constants';
 import ErrorDisplay from '../layout/ErrorDisplay';
+import CopyButton from '../common/CopyButton';
 
 interface ProcessSectionProps {
   files: UploadedFile[];
@@ -91,13 +92,13 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ files, onProcess, loadi
                <span className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded uppercase">Batch Complete</span>
             )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {processingStatus.map((task) => (
-              <div key={task.taskId} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm relative overflow-hidden flex flex-col">
+              <div key={task.taskId} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm overflow-hidden flex flex-col transition-all">
                 <div className="flex items-center justify-between mb-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-slate-900 truncate">{task.fileName}</p>
-                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">{CHUNKING_METHOD_LABELS[task.method]}</p>
+                    <p className="text-sm font-bold text-slate-900 truncate">{task.fileName}</p>
+                    <p className="text-xs text-slate-500 font-medium uppercase tracking-tighter">{CHUNKING_METHOD_LABELS[task.method]}</p>
                   </div>
                   <div className="shrink-0 flex items-center gap-2">
                     {task.status === 'chunking' && <span className="text-[10px] text-blue-600 font-bold animate-pulse uppercase">Chunking...</span>}
@@ -108,7 +109,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ files, onProcess, loadi
                   </div>
                 </div>
                 
-                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden mb-3">
+                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden mb-4">
                   <div 
                     className={`h-full transition-all duration-500 ${
                       task.status === 'finished' ? 'bg-green-500' : 
@@ -118,8 +119,24 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ files, onProcess, loadi
                   />
                 </div>
 
+                {task.sampleChunks && task.sampleChunks.length > 0 && (
+                  <div className="mt-2 bg-slate-50 border border-slate-100 rounded-lg p-3">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Chunk Samples</p>
+                    <div className="space-y-2">
+                      {task.sampleChunks.map((chunk, idx) => (
+                        <div key={idx} className="bg-white p-2 rounded border border-slate-200 text-xs text-slate-600 font-mono relative group">
+                          <p className="line-clamp-2 leading-relaxed">"{chunk}"</p>
+                          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <CopyButton text={chunk} iconOnly />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {task.error && (
-                  <div className="mt-auto">
+                  <div className="mt-4">
                     <ErrorDisplay error={task.error} inline />
                   </div>
                 )}

@@ -8,11 +8,11 @@ export const GEMINI_MODEL = 'Xenova/all-MiniLM-L6-v2';
 export const EMBEDDING_DIMENSIONS = 384; 
 
 export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
-  [ChunkingMethod.FIXED]: 'Fixed-size Chunking',
-  [ChunkingMethod.RECURSIVE]: 'Recursive Character',
-  [ChunkingMethod.TOKEN]: 'Token-Based Chunking',
-  [ChunkingMethod.SENTENCE]: 'Sentence-Based',
-  [ChunkingMethod.SEMANTIC]: 'Semantic Chunking'
+  [ChunkingMethod.FIXED]: 'fixed (Fixed-size)',
+  [ChunkingMethod.RECURSIVE]: 'recursive (Recursive Character)',
+  [ChunkingMethod.TOKEN]: 'token (Token-Based)',
+  [ChunkingMethod.SENTENCE]: 'sentence (Sentence-Based)',
+  [ChunkingMethod.SEMANTIC]: 'semantic (Semantic Grouping)'
 };
 
 export const Icons = {

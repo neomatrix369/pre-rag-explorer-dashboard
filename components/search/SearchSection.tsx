@@ -1,135 +1,17 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { VectorCollection, SearchResult, ChunkingMethod, ChunkParams } from '../../types';
 import { generateQueryEmbedding } from '../../services/embeddingService';
 import { cosineSimilarity, computeBM25 } from '../../utils/similarity';
 import { Icons, CHUNKING_METHOD_LABELS } from '../../constants';
 import CopyButton from '../common/CopyButton';
-import { SAMPLE_PERSONAS } from '../../data/sampleQuestions';
+import { SAMPLE_PERSONAS, Persona, Question } from '../../data/sampleQuestions';
+import Papa from 'papaparse';
 
 interface SearchSectionProps {
   collections: VectorCollection[];
   loading: boolean;
 }
-
-// --- Helper Components ---
-
-const SearchResultItem = ({ res, index, collection, getScoreColor, renderParams }: any) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const scoreColorClass = getScoreColor(res.score);
-  const scorePercent = (res.score * 100).toFixed(0);
-
-  return (
-    <div className={`
-      bg-white border rounded-xl overflow-hidden transition-all duration-200 group
-      ${isExpanded ? 'border-blue-400 shadow-md ring-1 ring-blue-100' : 'border-slate-200 hover:border-blue-300 hover:shadow-sm'}
-    `}>
-      {/* Collapsed Header - Clickable */}
-      <div 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center p-3 cursor-pointer hover:bg-slate-50 transition-colors select-none"
-      >
-        {/* Score Indicator */}
-        <div className={`
-          shrink-0 w-12 h-12 flex flex-col items-center justify-center rounded-lg border 
-          ${scoreColorClass}
-        `}>
-          <span className="text-sm font-black">{scorePercent}%</span>
-        </div>
-
-        {/* Primary Info Row */}
-        <div className="flex-1 min-w-0 px-4">
-          <div className="flex items-center gap-2 mb-1.5">
-             <span className={`px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border ${
-                res.retrievalMethod === 'dense' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                res.retrievalMethod === 'sparse' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                'bg-teal-50 text-teal-600 border-teal-100'
-             }`}>
-                {res.retrievalMethod}
-             </span>
-             <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">|</span>
-             <div className="flex items-center gap-1.5 min-w-0">
-               <span className="text-[10px] font-bold text-slate-600 truncate max-w-[150px]" title={collection?.name}>
-                  {collection?.name}
-               </span>
-               {collection && (
-                 <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-bold uppercase tracking-tight">
-                   {CHUNKING_METHOD_LABELS[res.chunk.chunkMethod].split(' ')[0]}
-                 </span>
-               )}
-             </div>
-          </div>
-          <p className="text-sm text-slate-700 font-medium truncate opacity-90">
-            {res.chunk.text}
-          </p>
-        </div>
-
-        {/* Chevron */}
-        <div className={`shrink-0 text-slate-300 group-hover:text-blue-500 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Expanded Content Body */}
-      {isExpanded && (
-        <div className="border-t border-slate-100 bg-slate-50/50 p-4 animate-in slide-in-from-top-1 duration-200">
-          
-          {/* 1. Full Text Content */}
-          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-4">
-             <div className="flex justify-between items-start gap-4 mb-2">
-               <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                 <Icons.Database /> Chunk Content
-               </h4>
-               <CopyButton text={res.chunk.text} className="text-slate-300 hover:text-blue-500" />
-             </div>
-             <p className="text-sm text-slate-800 leading-relaxed font-serif whitespace-pre-wrap">
-               {res.chunk.text}
-             </p>
-          </div>
-
-          {/* 2. Input Parameters / Traceability */}
-          <div>
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 pl-1">Input Configuration & Metadata</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              
-              {/* Chunking Params */}
-              <div className="flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-200">
-                 <div className="shrink-0 mt-0.5 text-blue-400">
-                   <Icons.Cog />
-                 </div>
-                 <div className="w-full">
-                   <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Chunking Strategy</p>
-                   <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-bold text-slate-800">{CHUNKING_METHOD_LABELS[res.chunk.chunkMethod]}</span>
-                   </div>
-                   {collection && renderParams(collection.params)}
-                 </div>
-              </div>
-
-              {/* Source Details */}
-               <div className="flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-200">
-                 <div className="shrink-0 mt-0.5 text-indigo-400">
-                   <Icons.Upload />
-                 </div>
-                 <div>
-                   <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Source Origin</p>
-                   <p className="text-xs font-bold text-slate-800 break-all">{res.chunk.sourceFileName}</p>
-                   <div className="flex gap-2 mt-1">
-                      <span className="text-[10px] text-slate-400">Chunk Index: <span className="font-mono text-slate-600">#{res.chunk.index}</span></span>
-                      <span className="text-[10px] text-slate-400">Collection: <span className="font-mono text-slate-600">{collection?.name}</span></span>
-                   </div>
-                 </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: appLoading }) => {
   const [query, setQuery] = useState('');
@@ -150,9 +32,12 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchTime, setSearchTime] = useState<number>(0);
+  
+  // Question Sets
+  const [personas, setPersonas] = useState<Persona[]>(SAMPLE_PERSONAS);
   const [selectedPersonaId, setSelectedPersonaId] = useState<string>('');
-
-  const activePersona = SAMPLE_PERSONAS.find(p => p.id === selectedPersonaId);
+  const activePersona = personas.find(p => p.id === selectedPersonaId);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Persistence Effects
   useEffect(() => {
@@ -166,6 +51,9 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
   // Bulk Actions
   const handleSelectAllCollections = () => setSelectedCollections(collections.map(c => c.id));
   const handleClearAllCollections = () => setSelectedCollections([]);
+  
+  const handleSelectAllRetrieval = () => setRetrievalMethods(['dense', 'sparse', 'hybrid']);
+  const handleClearAllRetrieval = () => setRetrievalMethods([]);
 
   const handleSearch = async () => {
     if (!query) return;
@@ -200,7 +88,6 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
 
         if (retrievalMethods.includes('sparse')) {
           const scores = computeBM25(query, docTexts);
-          // Normalize BM25 roughly for display (highly heuristic)
           const max = Math.max(...scores, 1);
           scores.forEach((s, idx) => {
             allResults.push({
@@ -232,7 +119,6 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
         }
       }
 
-      // Sort and take Top K for each method
       const finalResults = allResults
         .sort((a, b) => b.score - a.score)
         .slice(0, topK * retrievalMethods.length);
@@ -247,26 +133,74 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 0.8) return 'text-green-600 bg-green-50 border-green-200';
-    if (score >= 0.6) return 'text-blue-600 bg-blue-50 border-blue-200';
-    if (score >= 0.4) return 'text-amber-600 bg-amber-50 border-amber-200';
-    return 'text-slate-600 bg-slate-50 border-slate-200';
+  const handleQuestionsUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (file.name.endsWith('.json')) {
+        try {
+          const json = JSON.parse(text);
+          if (Array.isArray(json)) {
+             // Basic structure check - assume array of {category, question} or just raw questions
+             // Transform into a new Persona
+             const newQuestions: Question[] = json.map((q: any) => ({
+                text: q.question || q.text || String(q),
+                focus: q.category || q.focus || 'Custom'
+             }));
+             const newPersona: Persona = {
+               id: `custom-${Date.now()}`,
+               role: `Custom: ${file.name}`,
+               description: "User uploaded questions",
+               questions: newQuestions
+             };
+             setPersonas(prev => [...prev, newPersona]);
+             setSelectedPersonaId(newPersona.id);
+          }
+        } catch (err) {
+          alert("Invalid JSON format");
+        }
+      } else if (file.name.endsWith('.csv')) {
+        Papa.parse(text, {
+           header: true,
+           complete: (results: any) => {
+              const newQuestions: Question[] = results.data
+                 .filter((r: any) => r.question || r.text)
+                 .map((r: any) => ({
+                    text: r.question || r.text,
+                    focus: r.category || r.focus || 'Custom'
+                 }));
+              if (newQuestions.length > 0) {
+                const newPersona: Persona = {
+                    id: `custom-${Date.now()}`,
+                    role: `Custom: ${file.name}`,
+                    description: "User uploaded questions",
+                    questions: newQuestions
+                  };
+                  setPersonas(prev => [...prev, newPersona]);
+                  setSelectedPersonaId(newPersona.id);
+              }
+           }
+        });
+      }
+    };
+    reader.readAsText(file);
   };
 
-  // Helper to render badges for params
-  const renderParams = (params: ChunkParams) => {
-    const entries = Object.entries(params).filter(([_, v]) => v !== undefined);
-    if (entries.length === 0) return null;
-    return (
-      <div className="flex flex-wrap gap-1.5 mt-1">
-        {entries.map(([k, v]) => (
-          <span key={k} className="px-1.5 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[9px] font-bold uppercase tracking-tight">
-             {k.replace(/([A-Z])/g, ' $1')}: <span className="text-slate-900">{v}</span>
-          </span>
-        ))}
-      </div>
-    );
+  // Group results by method
+  const groupedResults = results.reduce((acc, res) => {
+    if (!acc[res.retrievalMethod]) acc[res.retrievalMethod] = [];
+    acc[res.retrievalMethod].push(res);
+    return acc;
+  }, {} as Record<string, SearchResult[]>);
+
+  const getScoreColor = (score: number) => {
+    if (score >= 0.8) return 'bg-green-500';
+    if (score >= 0.6) return 'bg-blue-500';
+    if (score >= 0.4) return 'bg-amber-500';
+    return 'bg-slate-400';
   };
 
   return (
@@ -325,11 +259,13 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
                           className="w-4 h-4 text-indigo-600 rounded"
                         />
                         <div>
-                          <span className="text-xs font-bold capitalize text-slate-700 block">{m} Search</span>
-                          <span className="text-[10px] text-slate-400 block leading-tight">
-                            {m === 'dense' && 'Vector similarity (semantics)'}
-                            {m === 'sparse' && 'Keyword matching (BM25)'}
-                            {m === 'hybrid' && 'Combined score approach'}
+                          <span className="text-xs font-bold capitalize text-slate-700 block">
+                            {m} 
+                            <span className="font-normal text-slate-500 ml-1">
+                              {m === 'dense' && '(Vector Similarity)'}
+                              {m === 'sparse' && '(Keyword BM25)'}
+                              {m === 'hybrid' && '(Dense + Sparse)'}
+                            </span>
                           </span>
                         </div>
                       </label>
@@ -361,7 +297,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
         {/* Main Search Area */}
         <div className="lg:col-span-3 space-y-6">
           
-          {/* Persona Selection */}
+          {/* Persona/Question Selection */}
           <div className="bg-gradient-to-r from-slate-50 to-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-4">
               <div>
@@ -370,16 +306,32 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
                   Sample Questions
                 </h3>
               </div>
-              <select 
-                value={selectedPersonaId}
-                onChange={(e) => setSelectedPersonaId(e.target.value)}
-                className="w-full md:w-auto px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none cursor-pointer hover:border-slate-300 transition-colors uppercase tracking-wide"
-              >
-                <option value="">-- Select Persona --</option>
-                {SAMPLE_PERSONAS.map(p => (
-                  <option key={p.id} value={p.id}>{p.role}</option>
-                ))}
-              </select>
+              <div className="flex gap-2 w-full md:w-auto">
+                <select 
+                  value={selectedPersonaId}
+                  onChange={(e) => setSelectedPersonaId(e.target.value)}
+                  className="flex-1 md:flex-none px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none cursor-pointer hover:border-slate-300 transition-colors uppercase tracking-wide"
+                >
+                  <option value="">-- Select Question Set --</option>
+                  {personas.map(p => (
+                    <option key={p.id} value={p.id}>{p.role}</option>
+                  ))}
+                </select>
+                <button 
+                   onClick={() => fileInputRef.current?.click()}
+                   className="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 hover:text-slate-800 transition-colors"
+                   title="Upload JSON/CSV Questions"
+                >
+                   <Icons.Upload />
+                </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept=".json,.csv" 
+                  onChange={handleQuestionsUpload} 
+                />
+              </div>
             </div>
             
             {activePersona && (
@@ -427,9 +379,9 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
           </div>
 
           {/* Search Results Display */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             {results.length > 0 && (
-              <div className="flex items-center justify-between px-2 py-3 bg-slate-100 rounded-xl mb-4 border border-slate-200">
+              <div className="flex items-center justify-between px-2 py-3 bg-slate-100 rounded-xl border border-slate-200 sticky top-0 z-10 shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="px-3 py-1 bg-white rounded-lg border border-slate-200 shadow-sm">
                     <span className="text-[10px] uppercase font-black text-slate-400 block">Results</span>
@@ -452,40 +404,115 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
               </div>
             )}
 
-            {results.length > 0 ? (
-              <div className="space-y-3">
-                {results.map((res, i) => (
-                  <SearchResultItem 
-                    key={`${res.collectionId}-${res.chunk.id}-${i}`}
-                    res={res} 
-                    index={i} 
-                    collection={collections.find(c => c.id === res.collectionId)}
-                    getScoreColor={getScoreColor}
-                    renderParams={renderParams}
-                  />
-                ))}
+            {Object.entries(groupedResults).map(([method, methodResults]: [string, SearchResult[]]) => (
+              <div key={method} className="space-y-2">
+                 <div className="flex items-center gap-3 pb-2 border-b border-slate-100">
+                    <span className={`px-2 py-1 text-xs font-bold rounded uppercase tracking-wider border ${
+                        method === 'dense' ? 'bg-purple-50 text-purple-600 border-purple-100' :
+                        method === 'sparse' ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                        'bg-teal-50 text-teal-600 border-teal-100'
+                      }`}>
+                      {method} Match
+                    </span>
+                    <span className="text-xs text-slate-400 font-medium">{methodResults.length} results</span>
+                 </div>
+                 
+                 {methodResults.map((res, i) => (
+                   <ResultRow key={`${res.collectionId}-${res.chunk.id}-${i}`} result={res} rank={i+1} scoreColor={getScoreColor(res.score)} />
+                 ))}
               </div>
-            ) : query && !searching ? (
+            ))}
+
+            {results.length === 0 && !searching && query && (
               <div className="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
                 <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
                   <Icons.Search />
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">No matches found</h3>
                 <p className="text-slate-500 max-w-md mx-auto mt-1">
-                  Try adjusting your search query, lowering the similarity threshold (if applicable), or selecting more collections.
+                  Try adjusting your search query, lowering the similarity threshold, or selecting more collections.
                 </p>
               </div>
-            ) : !searching && (
+            )}
+
+            {results.length === 0 && !searching && !query && (
               <div className="text-center py-20 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm text-slate-300">
                   <Icons.Search />
                 </div>
-                <p className="text-slate-400 font-medium">Enter a query and select collections to start exploring your RAG pipeline performance.</p>
+                <p className="text-slate-400 font-medium">Enter a query above to start exploring.</p>
               </div>
             )}
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const ResultRow: React.FC<{ result: SearchResult, rank: number, scoreColor: string }> = ({ result, rank, scoreColor }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div 
+      className={`bg-white border rounded-xl overflow-hidden transition-all duration-200 cursor-pointer hover:border-blue-300 hover:shadow-sm ${expanded ? 'border-blue-200 shadow-md ring-1 ring-blue-50' : 'border-slate-200'}`}
+      onClick={() => setExpanded(!expanded)}
+    >
+      {/* Compact Row */}
+      <div className="flex items-center p-3 gap-4">
+        <span className="w-6 text-xs font-bold text-slate-400 text-center">#{rank}</span>
+        
+        {/* Visual Score Bar */}
+        <div className="w-24 shrink-0 flex items-center gap-2">
+          <div className="h-1.5 flex-1 bg-slate-100 rounded-full overflow-hidden">
+             <div className={`h-full ${scoreColor}`} style={{ width: `${result.score * 100}%` }} />
+          </div>
+          <span className="text-xs font-bold text-slate-700">{(result.score * 100).toFixed(0)}</span>
+        </div>
+
+        {/* Truncated Text */}
+        <p className={`text-sm text-slate-700 font-serif italic truncate flex-1 ${expanded ? 'hidden' : 'block'}`}>
+          "{result.chunk.text}"
+        </p>
+        
+        {/* Metadata badges (Collapsed) */}
+        <div className={`flex items-center gap-2 ${expanded ? 'hidden' : 'flex'}`}>
+           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight truncate max-w-[100px]" title={result.chunk.sourceFileName}>
+             {result.chunk.sourceFileName}
+           </span>
+           <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] font-bold text-slate-500 uppercase">
+             {CHUNKING_METHOD_LABELS[result.chunk.chunkMethod].split(' ')[0]}
+           </span>
+        </div>
+      </div>
+
+      {/* Expanded Details */}
+      {expanded && (
+        <div className="px-4 pb-4 pt-0 animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="border-t border-slate-50 my-2" />
+          <p className="text-slate-800 text-sm leading-relaxed font-serif mb-4 p-3 bg-slate-50 rounded-lg border border-slate-100">
+            "{result.chunk.text}"
+          </p>
+          
+          <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+            <div className="flex items-center gap-2">
+              <Icons.Database />
+              <span className="font-semibold text-slate-700">{result.collectionName}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-400 uppercase tracking-wider">Source:</span>
+              <span>{result.chunk.sourceFileName}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-slate-400 uppercase tracking-wider">Method:</span>
+              <span>{CHUNKING_METHOD_LABELS[result.chunk.chunkMethod]}</span>
+            </div>
+            <div className="ml-auto">
+               <CopyButton text={result.chunk.text} label="Copy Chunk" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -80,6 +80,7 @@ export interface ProcessingStatus {
   status: 'waiting' | 'chunking' | 'vectorizing' | 'finished' | 'error';
   progress: number;
   error?: ErrorInfo;
+  sampleChunks?: string[];
 }
 
 export interface AppState {
