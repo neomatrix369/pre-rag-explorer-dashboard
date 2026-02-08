@@ -129,6 +129,8 @@ components/
 
 ## Usage Workflow
 
+> **100% Browser-Based**: The entire workflow below runs entirely in your browser. The ML embedding model is downloaded and cached locally on first load, all document parsing, chunking, embedding generation, and search happens client-side, and all data is stored in browser storage (IndexedDB and localStorage). No data ever leaves your machine. Stored items can be individually or bulk deleted via the Collections Manager.
+
 1. **Upload Documents**
    - Drag and drop or select files (text, CSV, PDF, markdown)
    - Files are parsed and stored in browser
