@@ -19,12 +19,12 @@ A comprehensive Pre-RAG prototype dashboard for document parsing, multi-method c
 
 | Upload Documents | Process & Chunk |
 |:---:|:---:|
-| ![Upload](docs/images/01-upload.png) | ![Process](docs/images/02-process.png) |
+| ![Upload](docs/images/01-upload.jpg) | ![Process](docs/images/02-process.jpg) |
 | *Drag-and-drop file upload with multi-format support* | *5 chunking strategies with configurable parameters* |
 
 | Search & Explore | Collections Manager |
 |:---:|:---:|
-| ![Search](docs/images/03-search.png) | ![Collections](docs/images/04-collections.png) |
+| ![Search](docs/images/03-search.jpg) | ![Collections](docs/images/04-collections.jpg) |
 | *Hybrid search with dense, sparse & combined retrieval* | *Manage vector collections and experiment history* |
 
 ---
