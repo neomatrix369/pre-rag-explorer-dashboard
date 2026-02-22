@@ -50,6 +50,10 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ files, onProcess, loadi
     setSelectedMethods(prev => prev.includes(method) ? prev.filter(x => x !== method) : [...prev, method]);
   };
 
+  const updateParam = (method: ChunkingMethod, key: keyof ChunkParams, value: number) => {
+    setParams(prev => ({ ...prev, [method]: { ...prev[method], [key]: value } }));
+  };
+
   // Bulk Actions
   const handleSelectAllFiles = () => setSelectedFiles(files.map(f => f.id));
   const handleClearAllFiles = () => setSelectedFiles([]);
@@ -225,9 +229,9 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ files, onProcess, loadi
               {(Object.values(ChunkingMethod) as ChunkingMethod[]).map(method => (
                 <div key={method} className={`p-4 rounded-xl border transition-all ${selectedMethods.includes(method) ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100'}`}>
                   <label className="flex items-center gap-3 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedMethods.includes(method)} 
+                    <input
+                      type="checkbox"
+                      checked={selectedMethods.includes(method)}
                       onChange={() => toggleMethod(method)}
                       className="w-4 h-4 text-indigo-600 rounded"
                     />
@@ -242,6 +246,81 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({ files, onProcess, loadi
                       </p>
                     </div>
                   </label>
+                  {selectedMethods.includes(method) && method !== ChunkingMethod.SEMANTIC && (
+                    <div className="mt-3 pt-3 border-t border-indigo-100 pl-7 space-y-3" onClick={e => e.stopPropagation()}>
+                      {(method === ChunkingMethod.FIXED || method === ChunkingMethod.RECURSIVE) && (
+                        <div>
+                          <div className="flex justify-between text-xs text-slate-600 mb-1">
+                            <span className="font-medium">Chunk Size</span>
+                            <span className="font-bold text-indigo-600">{params[method].chunkSize} chars</span>
+                          </div>
+                          <input
+                            type="range" min={100} max={4000} step={100}
+                            value={params[method].chunkSize ?? 1000}
+                            onChange={e => updateParam(method, 'chunkSize', Number(e.target.value))}
+                            className="w-full h-1.5 accent-indigo-500"
+                          />
+                        </div>
+                      )}
+                      {method === ChunkingMethod.TOKEN && (
+                        <div>
+                          <div className="flex justify-between text-xs text-slate-600 mb-1">
+                            <span className="font-medium">Token Count</span>
+                            <span className="font-bold text-indigo-600">{params[method].tokenCount} tokens</span>
+                          </div>
+                          <input
+                            type="range" min={32} max={1024} step={32}
+                            value={params[method].tokenCount ?? 256}
+                            onChange={e => updateParam(method, 'tokenCount', Number(e.target.value))}
+                            className="w-full h-1.5 accent-indigo-500"
+                          />
+                        </div>
+                      )}
+                      {method === ChunkingMethod.SENTENCE && (
+                        <div>
+                          <div className="flex justify-between text-xs text-slate-600 mb-1">
+                            <span className="font-medium">Sentences per Chunk</span>
+                            <span className="font-bold text-indigo-600">{params[method].sentenceCount}</span>
+                          </div>
+                          <input
+                            type="range" min={1} max={20} step={1}
+                            value={params[method].sentenceCount ?? 5}
+                            onChange={e => updateParam(method, 'sentenceCount', Number(e.target.value))}
+                            className="w-full h-1.5 accent-indigo-500"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex justify-between text-xs text-slate-600 mb-1">
+                          <span className="font-medium">
+                            Overlap
+                            <span className="ml-1 text-slate-400 font-normal">
+                              {method === ChunkingMethod.SENTENCE ? '(sentences)' : method === ChunkingMethod.TOKEN ? '(tokens)' : '(chars)'}
+                            </span>
+                          </span>
+                          <span className="font-bold text-indigo-600">{params[method].overlap}</span>
+                        </div>
+                        <input
+                          type="range"
+                          min={0}
+                          max={
+                            method === ChunkingMethod.SENTENCE
+                              ? Math.max(0, (params[method].sentenceCount ?? 5) - 1)
+                              : method === ChunkingMethod.TOKEN
+                              ? Math.max(0, (params[method].tokenCount ?? 256) - 1)
+                              : Math.max(0, (params[method].chunkSize ?? 1000) - 100)
+                          }
+                          step={method === ChunkingMethod.SENTENCE ? 1 : method === ChunkingMethod.TOKEN ? 8 : 50}
+                          value={params[method].overlap ?? 0}
+                          onChange={e => updateParam(method, 'overlap', Number(e.target.value))}
+                          className="w-full h-1.5 accent-indigo-500"
+                        />
+                        <p className="text-[10px] text-slate-400 mt-1 italic">
+                          Higher overlap preserves more context across chunk boundaries.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
