@@ -134,27 +134,29 @@ const GuidanceBalloon: React.FC<GuidanceBalloonProps> = ({
             {/* Journey Tracker Dots */}
             <div className="flex items-center gap-2 py-1">
               {steps.map((s, idx) => {
-                const isPast = (idx + 1) < stage.step;
-                const isCurrent = (idx + 1) === stage.step;
+                const stepNum = idx + 1;
+                const isPast = stepNum < stage.step;
+                const isCompleted = isPast || (stepNum === 3 && stage.step === 3 && activeView === 'search');
+                const isCurrent = stepNum === stage.step && !isCompleted;
                 return (
                   <React.Fragment key={s.id}>
                     <div className={`
                       w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border
-                      ${isPast ? 'bg-green-500 border-green-400 text-white' : ''}
+                      ${isCompleted ? 'bg-green-500 border-green-400 text-white' : ''}
                       ${isCurrent ? 'bg-white border-white text-slate-900 shadow-sm' : ''}
-                      ${(!isPast && !isCurrent) ? 'bg-slate-800 border-slate-700 text-slate-500' : ''}
+                      ${(!isCompleted && !isCurrent) ? 'bg-slate-800 border-slate-700 text-slate-500' : ''}
                     `}>
-                      {isPast ? '✓' : s.icon}
+                      {isCompleted ? '✓' : s.icon}
                     </div>
                     {idx < steps.length - 1 && (
-                      <div className={`h-[1px] w-4 ${isPast ? 'bg-green-500' : 'bg-slate-800'}`} />
+                      <div className={`h-[1px] w-4 ${isCompleted ? 'bg-green-500' : 'bg-slate-800'}`} />
                     )}
                   </React.Fragment>
                 );
               })}
             </div>
 
-            {stage.action && (
+            {stage.action && activeView !== stage.view && (
               <button 
                 onClick={() => onNavigate(stage.view!)}
                 className={`
