@@ -1,13 +1,28 @@
-
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { AppState, UploadedFile, VectorCollection, ChunkingMethod, ChunkParams, SearchResult, Experiment, ProcessingStatus, ErrorInfo } from './types';
+import {
+  AppState,
+  UploadedFile,
+  VectorCollection,
+  ChunkingMethod,
+  ChunkParams,
+  SearchResult,
+  Experiment,
+  ProcessingStatus,
+  ErrorInfo,
+} from './types';
 import { Icons, CHUNKING_METHOD_LABELS, GEMINI_MODEL } from './constants';
 import { parseFile } from './services/fileParser';
 import { chunkText } from './services/chunkingService';
 import { generateEmbeddings, generateQueryEmbedding } from './services/embeddingService';
-import { 
-  saveCollection, getAllCollections, deleteCollection, clearAllCollections,
-  saveFile, getAllFiles, deleteFile, clearAllFiles
+import {
+  saveCollection,
+  getAllCollections,
+  deleteCollection,
+  clearAllCollections,
+  saveFile,
+  getAllFiles,
+  deleteFile,
+  clearAllFiles,
 } from './services/vectorStore';
 import { cosineSimilarity, computeBM25 } from './utils/similarity';
 
@@ -27,7 +42,7 @@ const App: React.FC = () => {
     experiments: [],
     activeView: 'upload',
     processingStatus: [],
-    globalError: undefined
+    globalError: undefined,
   });
 
   const [loading, setLoading] = useState(false);
@@ -38,20 +53,20 @@ const App: React.FC = () => {
     const loadData = async () => {
       try {
         const collections = await getAllCollections();
-        const files = await getAllFiles(); 
+        const files = await getAllFiles();
         const savedExperiments = JSON.parse(localStorage.getItem('rag_experiments') || '[]');
-        
-        setState(prev => ({ 
-          ...prev, 
-          collections, 
-          files, 
-          experiments: savedExperiments 
+
+        setState((prev) => ({
+          ...prev,
+          collections,
+          files,
+          experiments: savedExperiments,
         }));
       } catch (err) {
-        console.error("Failed to load initial data", err);
-        setState(prev => ({
+        console.error('Failed to load initial data', err);
+        setState((prev) => ({
           ...prev,
-          globalError: { message: "Failed to restore data from storage.", technical: String(err) }
+          globalError: { message: 'Failed to restore data from storage.', technical: String(err) },
         }));
       } finally {
         setDataLoaded(true);
@@ -70,31 +85,34 @@ const App: React.FC = () => {
 
   const handleFilesAdded = async (newFiles: File[]) => {
     setLoading(true);
-    setState(prev => ({ ...prev, globalError: undefined }));
+    setState((prev) => ({ ...prev, globalError: undefined }));
     try {
-      const parsedFiles: UploadedFile[] = await Promise.all(newFiles.map(async (file) => {
-        const content = await parseFile(file);
-        return {
-          id: Math.random().toString(36).substr(2, 9),
-          name: file.name,
-          type: file.name.split('.').pop() as any,
-          size: file.size,
-          content,
-          uploadedAt: new Date().toISOString()
-        };
-      }));
+      const parsedFiles: UploadedFile[] = await Promise.all(
+        newFiles.map(async (file) => {
+          const content = await parseFile(file);
+          return {
+            id: Math.random().toString(36).substr(2, 9),
+            name: file.name,
+            type: file.name.split('.').pop() as any,
+            size: file.size,
+            content,
+            uploadedAt: new Date().toISOString(),
+          };
+        })
+      );
 
       // Persist files to IndexedDB
-      await Promise.all(parsedFiles.map(f => saveFile(f)));
+      await Promise.all(parsedFiles.map((f) => saveFile(f)));
 
-      setState(prev => ({ ...prev, files: [...prev.files, ...parsedFiles] }));
+      setState((prev) => ({ ...prev, files: [...prev.files, ...parsedFiles] }));
     } catch (err: any) {
-      setState(prev => ({ 
-        ...prev, 
-        globalError: { 
-          message: "Could not parse one or more files. Check if they are valid PDF/CSV/Text formats.",
-          technical: err.stack || err.message || JSON.stringify(err)
-        } 
+      setState((prev) => ({
+        ...prev,
+        globalError: {
+          message:
+            'Could not parse one or more files. Check if they are valid PDF/CSV/Text formats.',
+          technical: err.stack || err.message || JSON.stringify(err),
+        },
       }));
     } finally {
       setLoading(false);
@@ -104,43 +122,47 @@ const App: React.FC = () => {
   const handleRemoveFile = async (id: string) => {
     try {
       await deleteFile(id); // Remove from IndexedDB
-      setState(prev => ({ ...prev, files: prev.files.filter(f => f.id !== id) }));
+      setState((prev) => ({ ...prev, files: prev.files.filter((f) => f.id !== id) }));
     } catch (err) {
-      console.error("Failed to delete file from DB", err);
+      console.error('Failed to delete file from DB', err);
     }
   };
 
   const handleClearFiles = async () => {
-    if (confirm("Are you sure you want to remove all uploaded files? This cannot be undone.")) {
+    if (confirm('Are you sure you want to remove all uploaded files? This cannot be undone.')) {
       try {
         await clearAllFiles();
-        setState(prev => ({ ...prev, files: [] }));
+        setState((prev) => ({ ...prev, files: [] }));
       } catch (err) {
-        console.error("Failed to clear all files", err);
+        console.error('Failed to clear all files', err);
       }
     }
   };
 
-  const handleProcess = async (selectedFileIds: string[], selectedMethods: ChunkingMethod[], params: Record<ChunkingMethod, ChunkParams>) => {
+  const handleProcess = async (
+    selectedFileIds: string[],
+    selectedMethods: ChunkingMethod[],
+    params: Record<ChunkingMethod, ChunkParams>
+  ) => {
     setLoading(true);
-    setState(prev => ({ ...prev, globalError: undefined }));
-    
+    setState((prev) => ({ ...prev, globalError: undefined }));
+
     // Initialize processing status queue
     const initialStatus: ProcessingStatus[] = [];
-    selectedFileIds.forEach(fileId => {
-      const file = state.files.find(f => f.id === fileId);
+    selectedFileIds.forEach((fileId) => {
+      const file = state.files.find((f) => f.id === fileId);
       if (!file) return;
-      selectedMethods.forEach(method => {
+      selectedMethods.forEach((method) => {
         initialStatus.push({
           taskId: `${fileId}_${method}`,
           fileName: file.name,
           method,
           status: 'waiting',
-          progress: 0
+          progress: 0,
         });
       });
     });
-    setState(prev => ({ ...prev, processingStatus: initialStatus }));
+    setState((prev) => ({ ...prev, processingStatus: initialStatus }));
 
     const startTime = Date.now();
     const newCollections: VectorCollection[] = [];
@@ -148,18 +170,25 @@ const App: React.FC = () => {
 
     try {
       for (const fileId of selectedFileIds) {
-        const file = state.files.find(f => f.id === fileId);
+        const file = state.files.find((f) => f.id === fileId);
         if (!file) continue;
 
         for (const method of selectedMethods) {
           const taskId = `${fileId}_${method}`;
-          
-          const updateStatus = (status: ProcessingStatus['status'], progress: number, error?: ErrorInfo, sampleChunks?: string[]) => {
-            setState(prev => ({
+
+          const updateStatus = (
+            status: ProcessingStatus['status'],
+            progress: number,
+            error?: ErrorInfo,
+            sampleChunks?: string[]
+          ) => {
+            setState((prev) => ({
               ...prev,
-              processingStatus: prev.processingStatus.map(s => 
-                s.taskId === taskId ? { ...s, status, progress, error, sampleChunks: sampleChunks || s.sampleChunks } : s
-              )
+              processingStatus: prev.processingStatus.map((s) =>
+                s.taskId === taskId
+                  ? { ...s, status, progress, error, sampleChunks: sampleChunks || s.sampleChunks }
+                  : s
+              ),
             }));
           };
 
@@ -168,7 +197,7 @@ const App: React.FC = () => {
             updateStatus('chunking', 20);
             const chunkResult = await chunkText(file.content, method, params[method]);
             const samples = chunkResult.chunks.slice(0, 3);
-            
+
             // 2. Vectorization
             updateStatus('vectorizing', 50, undefined, samples);
             const vectors = await generateEmbeddings(chunkResult.chunks);
@@ -191,31 +220,31 @@ const App: React.FC = () => {
                 sourceFileId: file.id,
                 sourceFileName: file.name,
                 chunkMethod: method,
-                metadata: {}
+                metadata: {},
               })),
               vectors,
-              embeddingModel: GEMINI_MODEL
+              embeddingModel: GEMINI_MODEL,
             };
 
             await saveCollection(collection);
             newCollections.push(collection);
             chunkCounts[method] = (chunkCounts[method] || 0) + chunkResult.chunks.length;
-            
+
             updateStatus('finished', 100, undefined, samples);
           } catch (itemErr: any) {
             console.error(`Error processing ${taskId}:`, itemErr);
             const errorMessage = itemErr.message || '';
-            let humanMessage = "An error occurred while vectorizing this document.";
+            let humanMessage = 'An error occurred while vectorizing this document.';
 
             if (errorMessage.includes('onnx')) {
-              humanMessage = "Failed to load local model. Check your internet connection.";
+              humanMessage = 'Failed to load local model. Check your internet connection.';
             } else if (errorMessage.includes('GPU')) {
-              humanMessage = "Your browser GPU might be restricted. Try Chrome or Firefox.";
+              humanMessage = 'Your browser GPU might be restricted. Try Chrome or Firefox.';
             }
-              
+
             updateStatus('error', 0, {
               message: humanMessage,
-              technical: `${itemErr.name}: ${itemErr.message}\n${itemErr.stack || ''}`
+              technical: `${itemErr.name}: ${itemErr.message}\n${itemErr.stack || ''}`,
             });
           }
         }
@@ -224,26 +253,28 @@ const App: React.FC = () => {
       const experiment: Experiment = {
         id: `exp_${Date.now()}`,
         timestamp: new Date().toISOString(),
-        filesProcessed: selectedFileIds.map(id => state.files.find(f => f.id === id)?.name || id),
+        filesProcessed: selectedFileIds.map(
+          (id) => state.files.find((f) => f.id === id)?.name || id
+        ),
         chunkMethods: selectedMethods,
         params,
         chunkCounts,
-        processingTimeMs: Date.now() - startTime
+        processingTimeMs: Date.now() - startTime,
       };
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         collections: [...prev.collections, ...newCollections],
         experiments: [experiment, ...prev.experiments],
       }));
     } catch (err: any) {
       console.error(err);
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         globalError: {
-          message: "A critical failure occurred during the processing batch.",
-          technical: err.stack || err.message || JSON.stringify(err)
-        }
+          message: 'A critical failure occurred during the processing batch.',
+          technical: err.stack || err.message || JSON.stringify(err),
+        },
       }));
     } finally {
       setLoading(false);
@@ -253,58 +284,64 @@ const App: React.FC = () => {
   const handleDeleteCollection = async (id: string) => {
     try {
       await deleteCollection(id);
-      setState(prev => ({ ...prev, collections: prev.collections.filter(c => c.id !== id) }));
+      setState((prev) => ({ ...prev, collections: prev.collections.filter((c) => c.id !== id) }));
     } catch (err) {
-      console.error("Failed to delete collection", err);
+      console.error('Failed to delete collection', err);
     }
   };
 
   const handleClearAll = async () => {
-    if (confirm("Clear all collections? This cannot be undone.")) {
+    if (confirm('Clear all collections? This cannot be undone.')) {
       try {
         await clearAllCollections();
-        setState(prev => ({ ...prev, collections: [] }));
+        setState((prev) => ({ ...prev, collections: [] }));
       } catch (err) {
-        console.error("Failed to clear collections", err);
+        console.error('Failed to clear collections', err);
       }
     }
   };
 
-  const onViewChange = (view: any) => setState(prev => ({ ...prev, activeView: view, processingStatus: [], globalError: undefined }));
+  const onViewChange = (view: any) =>
+    setState((prev) => ({
+      ...prev,
+      activeView: view,
+      processingStatus: [],
+      globalError: undefined,
+    }));
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar 
-        activeView={state.activeView} 
-        onViewChange={onViewChange} 
+      <Sidebar
+        activeView={state.activeView}
+        onViewChange={onViewChange}
         stats={{
           files: state.files.length,
-          collections: state.collections.length
+          collections: state.collections.length,
         }}
       />
-      
+
       <main className="flex-1 overflow-y-auto bg-slate-50 p-6 md:p-10 custom-scrollbar">
         <div className="max-w-6xl mx-auto pb-24">
           {state.globalError && (
-            <ErrorDisplay 
-              error={state.globalError} 
-              onClear={() => setState(prev => ({ ...prev, globalError: undefined }))} 
+            <ErrorDisplay
+              error={state.globalError}
+              onClear={() => setState((prev) => ({ ...prev, globalError: undefined }))}
             />
           )}
 
           {state.activeView === 'upload' && (
-            <FileUpload 
-              files={state.files} 
-              onFilesAdded={handleFilesAdded} 
-              onRemoveFile={handleRemoveFile} 
+            <FileUpload
+              files={state.files}
+              onFilesAdded={handleFilesAdded}
+              onRemoveFile={handleRemoveFile}
               onClearAll={handleClearFiles}
               loading={loading}
             />
           )}
 
           {state.activeView === 'process' && (
-            <ProcessSection 
-              files={state.files} 
+            <ProcessSection
+              files={state.files}
               onProcess={handleProcess}
               loading={loading}
               processingStatus={state.processingStatus}
@@ -312,15 +349,12 @@ const App: React.FC = () => {
           )}
 
           {state.activeView === 'search' && (
-            <SearchSection 
-              collections={state.collections} 
-              loading={loading}
-            />
+            <SearchSection collections={state.collections} loading={loading} />
           )}
 
           {state.activeView === 'collections' && (
-            <CollectionsManager 
-              collections={state.collections} 
+            <CollectionsManager
+              collections={state.collections}
               experiments={state.experiments}
               onDelete={handleDeleteCollection}
               onClearAll={handleClearAll}
@@ -329,7 +363,7 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      <GuidanceBalloon 
+      <GuidanceBalloon
         filesCount={state.files.length}
         collectionsCount={state.collections.length}
         activeView={state.activeView}

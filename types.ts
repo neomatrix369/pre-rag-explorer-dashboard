@@ -1,4 +1,3 @@
-
 export type FileType = 'text' | 'csv' | 'pdf' | 'markdown';
 
 export interface UploadedFile {
@@ -16,7 +15,7 @@ export enum ChunkingMethod {
   RECURSIVE = 'recursive',
   TOKEN = 'token',
   SENTENCE = 'sentence',
-  SEMANTIC = 'semantic'
+  SEMANTIC = 'semantic',
 }
 
 export interface ChunkParams {

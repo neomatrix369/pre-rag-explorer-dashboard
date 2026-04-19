@@ -1,4 +1,3 @@
-
 import { UploadedFile, FileType } from '../types';
 
 declare const pdfjsLib: any;
@@ -7,7 +6,7 @@ declare const marked: any;
 
 export async function parseFile(file: File): Promise<string> {
   const extension = file.name.split('.').pop()?.toLowerCase();
-  
+
   if (extension === 'pdf') {
     return await parsePDF(file);
   } else if (extension === 'csv') {
@@ -29,9 +28,9 @@ async function parseText(file: File): Promise<string> {
 
 async function parseMarkdown(file: File): Promise<string> {
   const text = await parseText(file);
-  // We keep the markdown but could strip it if we wanted pure text. 
+  // We keep the markdown but could strip it if we wanted pure text.
   // RAG often works better on clean text but some structures like tables are helpful.
-  return text; 
+  return text;
 }
 
 async function parseCSV(file: File): Promise<string> {
@@ -41,14 +40,15 @@ async function parseCSV(file: File): Promise<string> {
         const rows = results.data.map((row: any) => Object.values(row).join(' '));
         resolve(rows.join('\n'));
       },
-      header: true
+      header: true,
     });
   });
 }
 
 async function parsePDF(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   let fullText = '';
   for (let i = 1; i <= pdf.numPages; i++) {

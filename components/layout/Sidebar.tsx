@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Icons } from '../../constants';
 
@@ -25,7 +24,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, stats }) =>
           </div>
           <div>
             <h1 className="text-white font-bold text-lg leading-tight">Explorer</h1>
-            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold whitespace-nowrap">Pre-RAG Dashboard</p>
+            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold whitespace-nowrap">
+              Pre-RAG Dashboard
+            </p>
           </div>
         </div>
 
@@ -35,12 +36,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, stats }) =>
               key={item.id}
               onClick={() => onViewChange(item.id)}
               className={`w-full flex items-center justify-start gap-3 px-4 py-3 rounded-lg transition-all duration-200 group text-left ${
-                activeView === item.id 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
+                activeView === item.id
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
                   : 'hover:bg-slate-800 hover:text-white'
               }`}
             >
-              <span className={`shrink-0 ${activeView === item.id ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}>
+              <span
+                className={`shrink-0 ${activeView === item.id ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}
+              >
                 {item.icon}
               </span>
               <span className="font-medium whitespace-nowrap">{item.label}</span>
@@ -58,15 +61,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, stats }) =>
           <span className="text-slate-500">Collections</span>
           <span className="font-bold text-white">{stats.collections}</span>
         </div>
-        
+
         <div className="pt-4">
           <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-blue-500 transition-all duration-500" 
+            <div
+              className="h-full bg-blue-500 transition-all duration-500"
               style={{ width: `${Math.min(100, (stats.collections / 10) * 100)}%` }}
             />
           </div>
-          <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-tight">Capacity Usage Estimate</p>
+          <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-tight">
+            Capacity Usage Estimate
+          </p>
         </div>
       </div>
     </aside>
