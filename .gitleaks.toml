@@ -1,0 +1,24 @@
+# Gitleaks configuration
+# Excludes build artifacts and node_modules from secret scanning
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist for false positives"
+
+# Paths to exclude from scanning
+paths = [
+  '''dist/''',
+  '''node_modules/''',
+  '''coverage/''',
+  '''package-lock.json''',
+  '''.git/'''
+]
+
+# Regexes to ignore (false positives in build artifacts)
+regexes = [
+  '''this\.vocab''',           # Transformers.js build artifacts
+  '''unk_token''',              # Tokenizer configs
+  '''_ivjs'''                   # Vite build hashes
+]
