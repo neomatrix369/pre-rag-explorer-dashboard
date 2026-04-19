@@ -1,0 +1,29 @@
+{
+  "name": "project",
+  "dependencies": {
+    "tessl/npm-google--genai": {
+      "version": "1.30.0"
+    },
+    "tessl/npm-vitejs--plugin-react": {
+      "version": "5.1.0"
+    },
+    "tessl/npm-xenova--transformers": {
+      "version": "2.17.0"
+    },
+    "tessl/npm-papaparse": {
+      "version": "5.5.0"
+    },
+    "tessl/npm-react-dom": {
+      "version": "19.2.0"
+    },
+    "tessl/npm-react": {
+      "version": "19.2.0"
+    },
+    "tessl/npm-typescript": {
+      "version": "5.9.1"
+    },
+    "tessl/npm-vite": {
+      "version": "7.3.0"
+    }
+  }
+}

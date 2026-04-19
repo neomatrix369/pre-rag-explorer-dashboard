@@ -11,6 +11,20 @@ node_modules
 dist
 dist-ssr
 *.local
+*.local.*
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials.json
+
+# Coverage & Testing
+coverage
+.nyc_output
+test-results
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +37,11 @@ dist-ssr
 *.sln
 *.sw?
 .next/
+
+# Claude Code local files
+.claude/
+
+# AI tool configs (personal)
+.cursor/
+.gemini/
+.mcp.json

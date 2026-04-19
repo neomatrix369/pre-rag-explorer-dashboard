@@ -1,4 +1,3 @@
-
 import { VectorCollection, UploadedFile } from '../types';
 
 const DB_NAME = 'RAGExplorerDB';
@@ -9,7 +8,7 @@ export async function initDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     // Bump version to 2 to trigger upgrade for new 'files' store
     const request = indexedDB.open(DB_NAME, 2);
-    
+
     request.onupgradeneeded = (event) => {
       const db = request.result;
       if (!db.objectStoreNames.contains(COLLECTION_STORE)) {

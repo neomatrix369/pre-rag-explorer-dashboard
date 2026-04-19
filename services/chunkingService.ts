@@ -1,4 +1,3 @@
-
 import { ChunkingMethod, ChunkParams, Chunk } from '../types';
 
 interface ChunkResult {
@@ -12,7 +11,7 @@ export async function chunkText(
   params: ChunkParams = {}
 ): Promise<ChunkResult> {
   let chunks: string[] = [];
-  
+
   switch (method) {
     case ChunkingMethod.FIXED:
       chunks = fixedSizeChunk(text, params.chunkSize || 1000, params.overlap || 200);
@@ -38,7 +37,7 @@ export async function chunkText(
 
   return {
     chunks,
-    stats: { count: chunks.length, avgSize, avgTokens }
+    stats: { count: chunks.length, avgSize, avgTokens },
   };
 }
 
@@ -47,14 +46,14 @@ function fixedSizeChunk(text: string, size: number, overlap: number): string[] {
   let i = 0;
   while (i < text.length) {
     chunks.push(text.slice(i, i + size));
-    i += (size - overlap);
+    i += size - overlap;
     if (i >= text.length || size <= overlap) break;
   }
   return chunks;
 }
 
 function recursiveCharacterChunk(text: string, size: number, overlap: number): string[] {
-  const separators = ["\n\n", "\n", ". ", " ", ""];
+  const separators = ['\n\n', '\n', '. ', ' ', ''];
   const finalChunks: string[] = [];
 
   function split(content: string, depth: number): string[] {
@@ -64,7 +63,7 @@ function recursiveCharacterChunk(text: string, size: number, overlap: number): s
     const separator = separators[depth];
     const parts = content.split(separator);
     const result: string[] = [];
-    let current = "";
+    let current = '';
 
     for (const part of parts) {
       if ((current + separator + part).length <= size) {
@@ -76,9 +75,9 @@ function recursiveCharacterChunk(text: string, size: number, overlap: number): s
       }
     }
     if (current) result.push(current);
-    
+
     // Further split any overly large pieces
-    return result.flatMap(r => r.length > size ? split(r, depth + 1) : [r]);
+    return result.flatMap((r) => (r.length > size ? split(r, depth + 1) : [r]));
   }
 
   return split(text, 0);
@@ -94,8 +93,13 @@ function tokenBasedChunk(text: string, tokenCount: number, overlap: number): str
 function sentenceBasedChunk(text: string, count: number, overlap: number): string[] {
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
   const chunks: string[] = [];
-  for (let i = 0; i < sentences.length; i += (count - overlap)) {
-    chunks.push(sentences.slice(i, i + count).join(' ').trim());
+  for (let i = 0; i < sentences.length; i += count - overlap) {
+    chunks.push(
+      sentences
+        .slice(i, i + count)
+        .join(' ')
+        .trim()
+    );
     if (i + count >= sentences.length) break;
   }
   return chunks;
@@ -103,5 +107,5 @@ function sentenceBasedChunk(text: string, count: number, overlap: number): strin
 
 function semanticMockChunk(text: string): string[] {
   // Simple paragraph based chunking as a proxy for semantic units in this prototype
-  return text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+  return text.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
 }

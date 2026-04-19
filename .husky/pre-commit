@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run gitleaks to detect secrets (if available)
+if command -v gitleaks > /dev/null 2>&1; then
+  gitleaks detect --source . --verbose --no-git
+else
+  echo "⚠️  gitleaks not found - skipping secret detection"
+  echo "   Install: brew install gitleaks (macOS) or see https://github.com/gitleaks/gitleaks"
+fi
+
+# Run lint-staged
+npx lint-staged
