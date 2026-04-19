@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+*.local.*
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +24,11 @@ dist-ssr
 *.sln
 *.sw?
 .next/
+
+# Claude Code local files
+.claude/
+
+# AI tool configs (personal)
+.cursor/
+.gemini/
+.mcp.json
