@@ -19,11 +19,11 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
     "@google/genai": "^1.40.0",
-    "@xenova/transformers": "2.16.0",
-    "papaparse": "^5.5.3"
+    "@xenova/transformers": "^2.17.2",
+    "papaparse": "^5.5.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
@@ -45,5 +45,8 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "vitest": "^1.0.4"
+  },
+  "overrides": {
+    "protobufjs": "^7.5.5"
   }
 }

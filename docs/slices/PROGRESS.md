@@ -148,6 +148,9 @@ vectorStore.ts: 40%+ (focus: CRUD operations, not IndexedDB internals)
 | 2026-04-19 | 1 | Coverage 12% baseline | Only 1 service tested; incremental approach |
 | 2026-04-19 | 1 | ESLint warnings mode | Defer cleanup to dedicated slice |
 | 2026-04-19 | 1 | Gitleaks optional | Not npm-installable; graceful skip |
+| 2026-04-19 | 1 | protobufjs override to 7.5.5 | Fix critical vuln in transformers dependency chain |
+| 2026-04-19 | 1 | Audit production deps only | Dev vulns don't ship; breaking changes not justified |
+| 2026-04-19 | 1 | Upgrade transformers 2.16→2.17.2 | Latest patch, maintains API compatibility |
 
 ---
 
