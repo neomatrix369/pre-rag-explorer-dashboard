@@ -21,14 +21,29 @@ CI security audit failing with 18 vulnerabilities (5 moderate, 9 high, 4 critica
 
 ## Solution Applied
 
-### 1. Upgraded Transformers
+### 1. Upgraded Production Dependencies
 ```bash
 npm install @xenova/transformers@^2.17.2 --legacy-peer-deps
 ```
 **Before**: 2.16.0  
 **After**: 2.17.2
 
-### 2. Added npm Overrides
+### 2. Upgraded Dev Dependencies (Major Versions)
+```bash
+npm install --save-dev \
+  vitest@^4.1.4 \
+  @vitest/coverage-v8@^4.1.4 \
+  @typescript-eslint/eslint-plugin@^8.58.2 \
+  @typescript-eslint/parser@^8.58.2
+```
+**vitest**: 1.6.1 → 4.1.4 (3 major versions)  
+**@typescript-eslint**: 6.21.0 → 8.58.2 (2 major versions)
+
+Fixed vulnerabilities:
+- esbuild dev server vulnerability (moderate)
+- minimatch ReDoS vulnerabilities (3 high)
+
+### 3. Added npm Overrides
 Force safe protobufjs version across all dependencies:
 ```json
 "overrides": {
@@ -36,35 +51,29 @@ Force safe protobufjs version across all dependencies:
 }
 ```
 
-### 3. Updated CI Audit Strategy
-Changed from auditing all deps to production-only:
-```yaml
-# Before
-npm audit --audit-level=high
-
-# After  
-npm audit --omit=dev --audit-level=high
-```
+### 4. Removed Workaround
+Vitest 4.x fixed plugin type issues, removed unnecessary `@ts-expect-error` directive
 
 ## Verification
 
-**Production audit**:
+**Full security audit (ALL dependencies)**:
 ```bash
-✅ npm audit --omit=dev --audit-level=high
+✅ npm audit --audit-level=high
 found 0 vulnerabilities
 ```
 
-**Tests still passing**:
+**All quality gates passing**:
 ```bash
-✅ npm run test (3/3)
-✅ npm run build (2.78s)
+✅ npm run lint (79 warnings, 0 errors)
+✅ npm run typecheck (0 errors)
+✅ npm run test (3/3 passing)
+✅ npm run build (2.75s)
 ```
 
-**Remaining vulns (dev-only, acceptable)**:
-- 10 vulnerabilities in dev dependencies
-- 4 moderate (esbuild in vite/vitest)
-- 6 high (minimatch in @typescript-eslint)
-- No critical
+**No remaining vulnerabilities**:
+- 0 vulnerabilities across all dependencies (production + dev)
+- Major version upgrades completed successfully
+- No breaking changes to application code
 
 ## Impact
 
@@ -81,18 +90,21 @@ found 0 vulnerabilities
 
 ## Decision Rationale
 
-**Why not fix dev dependencies?**
-- Would require `npm audit fix --force`
-- Breaking changes: vitest 1.x → 4.x, major API changes
-- Dev tools don't ship to production
-- Risk/effort tradeoff not justified for Slice 1
-- Can address in dedicated "Upgrade Dev Tools" slice if needed
+**Why upgrade dev dependencies to latest major versions?**
+- Comprehensive security is better than partial (dev machines are attack vectors)
+- Breaking changes were minimal (vitest 4.x is largely compatible)
+- Major version jumps (3 for vitest, 2 for typescript-eslint) succeeded without code changes
+- Vitest 4.x fixed the plugin type issue (removed workaround)
+- Risk: LOW - all tests passed immediately after upgrade
 
 **Why overrides instead of resolutions?**
 - `overrides` is npm's official mechanism (npm 8.3+)
 - `resolutions` is Yarn-specific
 - More explicit than peer dependency ranges
 
-## Next Steps
+## Lessons Learned
 
-Future slices can address dev dependency vulnerabilities if needed, but they're low priority since they don't affect production security.
+1. **Don't assume major version upgrades will break** - Test first
+2. **Dev security matters** - Supply chain attacks target dev dependencies
+3. **Upgrade paths can be smooth** - vitest 1→4 and typescript-eslint 6→8 were seamless
+4. **Comprehensive > Partial** - 0 vulnerabilities across all deps is better than production-only
