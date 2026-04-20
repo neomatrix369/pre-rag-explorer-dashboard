@@ -63,6 +63,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
   };
 
   const updateParam = (method: ChunkingMethod, key: keyof ChunkParams, value: number) => {
+    // eslint-disable-next-line security/detect-object-injection -- Safe: method is ChunkingMethod enum, key is ChunkParams property
     setParams((prev) => ({ ...prev, [method]: { ...prev[method], [key]: value } }));
   };
 
@@ -322,6 +323,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                     />
                     <div className="flex-1">
                       <p className="text-sm font-bold text-slate-900">
+                        {/* eslint-disable-next-line security/detect-object-injection */}
                         {CHUNKING_METHOD_LABELS[method]}
                       </p>
                       <p className="text-xs text-slate-500">
@@ -334,6 +336,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                     </div>
                   </label>
                   {selectedMethods.includes(method) && method !== ChunkingMethod.SEMANTIC && (
+                    /* eslint-disable security/detect-object-injection -- All params[method] accesses in this block are safe: method is ChunkingMethod enum */
                     <div
                       className="mt-3 pt-3 border-t border-indigo-100 pl-7 space-y-3"
                       onClick={(e) => e.stopPropagation()}
@@ -443,6 +446,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                         </p>
                       </div>
                     </div>
+                    /* eslint-enable security/detect-object-injection */
                   )}
                 </div>
               ))}

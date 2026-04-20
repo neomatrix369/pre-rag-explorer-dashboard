@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppState,
   UploadedFile,
   VectorCollection,
   ChunkingMethod,
   ChunkParams,
-  SearchResult,
   Experiment,
   ProcessingStatus,
   ErrorInfo,
+  FileType,
 } from './types';
-import { Icons, CHUNKING_METHOD_LABELS, GEMINI_MODEL } from './constants';
+import { GEMINI_MODEL } from './constants';
 import { parseFile } from './services/fileParser';
 import { chunkText } from './services/chunkingService';
-import { generateEmbeddings, generateQueryEmbedding } from './services/embeddingService';
+import { generateEmbeddings } from './services/embeddingService';
 import {
   saveCollection,
   getAllCollections,
@@ -24,7 +24,7 @@ import {
   deleteFile,
   clearAllFiles,
 } from './services/vectorStore';
-import { cosineSimilarity, computeBM25 } from './utils/similarity';
+// Similarity utilities are imported in SearchSection where they're used
 
 // Component Imports
 import Sidebar from './components/layout/Sidebar';
@@ -90,10 +90,20 @@ const App: React.FC = () => {
       const parsedFiles: UploadedFile[] = await Promise.all(
         newFiles.map(async (file) => {
           const content = await parseFile(file);
+          const extension = file.name.split('.').pop()?.toLowerCase() || 'text';
+          const fileType: FileType =
+            extension === 'pdf'
+              ? 'pdf'
+              : extension === 'csv'
+                ? 'csv'
+                : extension === 'md'
+                  ? 'markdown'
+                  : 'text';
+
           return {
             id: Math.random().toString(36).substr(2, 9),
             name: file.name,
-            type: file.name.split('.').pop() as any,
+            type: fileType,
             size: file.size,
             content,
             uploadedAt: new Date().toISOString(),
@@ -105,13 +115,15 @@ const App: React.FC = () => {
       await Promise.all(parsedFiles.map((f) => saveFile(f)));
 
       setState((prev) => ({ ...prev, files: [...prev.files, ...parsedFiles] }));
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const technicalInfo = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
+
       setState((prev) => ({
         ...prev,
         globalError: {
           message:
             'Could not parse one or more files. Check if they are valid PDF/CSV/Text formats.',
-          technical: err.stack || err.message || JSON.stringify(err),
+          technical: technicalInfo,
         },
       }));
     } finally {
@@ -195,6 +207,7 @@ const App: React.FC = () => {
           try {
             // 1. Chunking
             updateStatus('chunking', 20);
+            // eslint-disable-next-line security/detect-object-injection -- Safe: method is ChunkingMethod enum
             const chunkResult = await chunkText(file.content, method, params[method]);
             const samples = chunkResult.chunks.slice(0, 3);
 
@@ -211,6 +224,7 @@ const App: React.FC = () => {
               sourceFileId: file.id,
               sourceFileName: file.name,
               chunkCount: chunkResult.chunks.length,
+              // eslint-disable-next-line security/detect-object-injection -- Safe: method is ChunkingMethod enum
               params: params[method] || {},
               createdAt: new Date().toISOString(),
               chunks: chunkResult.chunks.map((text, idx) => ({
@@ -228,12 +242,13 @@ const App: React.FC = () => {
 
             await saveCollection(collection);
             newCollections.push(collection);
+            // eslint-disable-next-line security/detect-object-injection -- Safe: method is ChunkingMethod enum
             chunkCounts[method] = (chunkCounts[method] || 0) + chunkResult.chunks.length;
 
             updateStatus('finished', 100, undefined, samples);
-          } catch (itemErr: any) {
+          } catch (itemErr: unknown) {
             console.error(`Error processing ${taskId}:`, itemErr);
-            const errorMessage = itemErr.message || '';
+            const errorMessage = itemErr instanceof Error ? itemErr.message : String(itemErr);
             let humanMessage = 'An error occurred while vectorizing this document.';
 
             if (errorMessage.includes('onnx')) {
@@ -242,9 +257,14 @@ const App: React.FC = () => {
               humanMessage = 'Your browser GPU might be restricted. Try Chrome or Firefox.';
             }
 
+            const technicalDetails =
+              itemErr instanceof Error
+                ? `${itemErr.name}: ${itemErr.message}\n${itemErr.stack || ''}`
+                : String(itemErr);
+
             updateStatus('error', 0, {
               message: humanMessage,
-              technical: `${itemErr.name}: ${itemErr.message}\n${itemErr.stack || ''}`,
+              technical: technicalDetails,
             });
           }
         }
@@ -267,13 +287,15 @@ const App: React.FC = () => {
         collections: [...prev.collections, ...newCollections],
         experiments: [experiment, ...prev.experiments],
       }));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
+      const technicalInfo = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
+
       setState((prev) => ({
         ...prev,
         globalError: {
           message: 'A critical failure occurred during the processing batch.',
-          technical: err.stack || err.message || JSON.stringify(err),
+          technical: technicalInfo,
         },
       }));
     } finally {
@@ -301,7 +323,7 @@ const App: React.FC = () => {
     }
   };
 
-  const onViewChange = (view: any) =>
+  const onViewChange = (view: AppState['activeView']) =>
     setState((prev) => ({
       ...prev,
       activeView: view,

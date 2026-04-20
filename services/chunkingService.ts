@@ -1,4 +1,4 @@
-import { ChunkingMethod, ChunkParams, Chunk } from '../types';
+import { ChunkingMethod, ChunkParams } from '../types';
 
 interface ChunkResult {
   chunks: string[];
@@ -52,14 +52,14 @@ function fixedSizeChunk(text: string, size: number, overlap: number): string[] {
   return chunks;
 }
 
-function recursiveCharacterChunk(text: string, size: number, overlap: number): string[] {
+function recursiveCharacterChunk(text: string, size: number, _overlap: number): string[] {
   const separators = ['\n\n', '\n', '. ', ' ', ''];
-  const finalChunks: string[] = [];
 
   function split(content: string, depth: number): string[] {
     if (content.length <= size || depth >= separators.length) {
       return [content];
     }
+    // eslint-disable-next-line security/detect-object-injection -- Safe: depth is numeric index
     const separator = separators[depth];
     const parts = content.split(separator);
     const result: string[] = [];

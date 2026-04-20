@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { VectorCollection, SearchResult, ChunkingMethod, ChunkParams } from '../../types';
+import { VectorCollection, SearchResult, ChunkingMethod } from '../../types';
 import { generateQueryEmbedding } from '../../services/embeddingService';
 import { cosineSimilarity, computeBM25 } from '../../utils/similarity';
 import { Icons, CHUNKING_METHOD_LABELS, GEMINI_MODEL } from '../../constants';
@@ -166,7 +166,7 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
     >();
 
     // Document Analysis
-    const docStats: Record<string, DocStat> = {};
+    const docStats = new Map<string, DocStat>();
 
     results.forEach((r) => {
       // 1. Config Aggregation
@@ -187,13 +187,14 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
 
       // 2. Doc Aggregation
       const doc = r.chunk.sourceFileName;
-      if (!docStats[doc] || r.score > docStats[doc].bestScore) {
-        docStats[doc] = {
+      const existingStat = docStats.get(doc);
+      if (!existingStat || r.score > existingStat.bestScore) {
+        docStats.set(doc, {
           bestScore: r.score,
           bestMethod: r.retrievalMethod,
           bestChunking: r.chunk.chunkMethod,
           bestModel: r.embeddingModel || 'Unknown',
-        };
+        });
       }
     });
 
@@ -379,7 +380,7 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {Object.entries(docStats).map(([docName, stats]: [string, DocStat]) => (
+                {Array.from(docStats.entries()).map(([docName, stats]: [string, DocStat]) => (
                   <tr key={docName} className="hover:bg-slate-50 transition-colors">
                     <td
                       className="px-6 py-4 text-sm font-bold text-slate-700 truncate max-w-[200px]"
@@ -429,7 +430,7 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
 
 // --- Main Search Section Component ---
 
-const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: appLoading }) => {
+const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _appLoading }) => {
   const [query, setQuery] = useState('');
   const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
 
@@ -504,6 +505,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
           const scores = col.vectors.map((vec) => cosineSimilarity(queryEmbedding, vec));
           scores.forEach((score, idx) => {
             allResults.push({
+              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
               chunk: col.chunks[idx],
               score,
               retrievalMethod: 'dense',
@@ -519,6 +521,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
           const max = Math.max(...scores, 1);
           scores.forEach((s, idx) => {
             allResults.push({
+              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
               chunk: col.chunks[idx],
               score: s / max,
               retrievalMethod: 'sparse',
@@ -535,9 +538,11 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
           const maxSparse = Math.max(...sparseScores, 1);
 
           denseScores.forEach((ds, idx) => {
+            // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
             const ss = sparseScores[idx] / maxSparse;
             const hybridScore = ds * 0.7 + ss * 0.3;
             allResults.push({
+              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
               chunk: col.chunks[idx],
               score: hybridScore,
               retrievalMethod: 'hybrid',
@@ -574,10 +579,13 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
         try {
           const json = JSON.parse(text);
           if (Array.isArray(json)) {
-            const newQuestions: Question[] = json.map((q: any) => ({
-              text: q.question || q.text || String(q),
-              focus: q.category || q.focus || 'Custom',
-            }));
+            const newQuestions: Question[] = json.map((q: unknown) => {
+              const item = q as Record<string, unknown>;
+              return {
+                text: String(item.question || item.text || q),
+                focus: String(item.category || item.focus || 'Custom'),
+              };
+            });
             const newPersona: Persona = {
               id: `custom-${Date.now()}`,
               role: `Custom: ${file.name}`,
@@ -587,16 +595,16 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
             setPersonas((prev) => [...prev, newPersona]);
             setSelectedPersonaId(newPersona.id);
           }
-        } catch (err) {
+        } catch {
           alert('Invalid JSON format');
         }
       } else if (file.name.endsWith('.csv')) {
-        Papa.parse(text, {
+        Papa.parse<Record<string, string>>(text, {
           header: true,
-          complete: (results: any) => {
+          complete: (results) => {
             const newQuestions: Question[] = results.data
-              .filter((r: any) => r.question || r.text)
-              .map((r: any) => ({
+              .filter((r) => r.question || r.text)
+              .map((r) => ({
                 text: r.question || r.text,
                 focus: r.category || r.focus || 'Custom',
               }));
@@ -716,19 +724,17 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
                     </div>
                   </div>
                   <div className="space-y-2">
-                    {['dense', 'sparse', 'hybrid'].map((m) => (
+                    {(['dense', 'sparse', 'hybrid'] as const).map((m) => (
                       <label
                         key={m}
-                        className={`flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer ${retrievalMethods.includes(m as any) ? 'bg-indigo-50 border-indigo-100' : 'border-transparent hover:bg-slate-50'}`}
+                        className={`flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer ${retrievalMethods.includes(m) ? 'bg-indigo-50 border-indigo-100' : 'border-transparent hover:bg-slate-50'}`}
                       >
                         <input
                           type="checkbox"
-                          checked={retrievalMethods.includes(m as any)}
+                          checked={retrievalMethods.includes(m)}
                           onChange={() =>
                             setRetrievalMethods((prev) =>
-                              prev.includes(m as any)
-                                ? prev.filter((x) => x !== m)
-                                : [...prev, m as any]
+                              prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]
                             )
                           }
                           className="w-4 h-4 text-indigo-600 rounded"
