@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { VectorCollection, SearchResult, ChunkingMethod, ChunkParams } from '../../types';
+import { VectorCollection, SearchResult, ChunkingMethod } from '../../types';
 import { generateQueryEmbedding } from '../../services/embeddingService';
 import { cosineSimilarity, computeBM25 } from '../../utils/similarity';
 import { Icons, CHUNKING_METHOD_LABELS, GEMINI_MODEL } from '../../constants';
@@ -429,7 +429,7 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
 
 // --- Main Search Section Component ---
 
-const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: appLoading }) => {
+const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _appLoading }) => {
   const [query, setQuery] = useState('');
   const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
 
@@ -587,7 +587,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: app
             setPersonas((prev) => [...prev, newPersona]);
             setSelectedPersonaId(newPersona.id);
           }
-        } catch (err) {
+        } catch (_err) {
           alert('Invalid JSON format');
         }
       } else if (file.name.endsWith('.csv')) {

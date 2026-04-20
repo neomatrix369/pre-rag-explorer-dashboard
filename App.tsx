@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppState,
   UploadedFile,
   VectorCollection,
   ChunkingMethod,
   ChunkParams,
-  SearchResult,
   Experiment,
   ProcessingStatus,
   ErrorInfo,
 } from './types';
-import { Icons, CHUNKING_METHOD_LABELS, GEMINI_MODEL } from './constants';
+import { GEMINI_MODEL } from './constants';
 import { parseFile } from './services/fileParser';
 import { chunkText } from './services/chunkingService';
-import { generateEmbeddings, generateQueryEmbedding } from './services/embeddingService';
+import { generateEmbeddings } from './services/embeddingService';
 import {
   saveCollection,
   getAllCollections,
@@ -24,7 +23,7 @@ import {
   deleteFile,
   clearAllFiles,
 } from './services/vectorStore';
-import { cosineSimilarity, computeBM25 } from './utils/similarity';
+// Similarity utilities are imported in SearchSection where they're used
 
 // Component Imports
 import Sidebar from './components/layout/Sidebar';

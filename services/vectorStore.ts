@@ -9,7 +9,7 @@ export async function initDB(): Promise<IDBDatabase> {
     // Bump version to 2 to trigger upgrade for new 'files' store
     const request = indexedDB.open(DB_NAME, 2);
 
-    request.onupgradeneeded = (event) => {
+    request.onupgradeneeded = (_event) => {
       const db = request.result;
       if (!db.objectStoreNames.contains(COLLECTION_STORE)) {
         db.createObjectStore(COLLECTION_STORE, { keyPath: 'id' });

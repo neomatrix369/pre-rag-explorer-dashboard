@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Icons } from '../../constants';
 
 interface GuidanceBalloonProps {
   filesCount: number;
@@ -17,7 +16,6 @@ const GuidanceBalloon: React.FC<GuidanceBalloonProps> = ({
   onNavigate,
 }) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   // Logic to determine the current Pre-RAG stage
   const getStage = () => {
@@ -60,15 +58,9 @@ const GuidanceBalloon: React.FC<GuidanceBalloonProps> = ({
 
   const stage = getStage();
 
-  // Pulse when the step changes
+  // Show balloon when the step changes
   useEffect(() => {
     setIsVisible(true);
-    const timer = setTimeout(() => setIsExpanded(true), 1000);
-    const collapseTimer = setTimeout(() => setIsExpanded(false), 8000);
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(collapseTimer);
-    };
   }, [stage.step, activeView]);
 
   if (!isVisible)

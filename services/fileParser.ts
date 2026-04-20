@@ -1,8 +1,5 @@
-import { UploadedFile, FileType } from '../types';
-
 declare const pdfjsLib: any;
 declare const Papa: any;
-declare const marked: any;
 
 export async function parseFile(file: File): Promise<string> {
   const extension = file.name.split('.').pop()?.toLowerCase();
