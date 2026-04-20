@@ -6,18 +6,27 @@ env.allowLocalModels = false;
 env.useBrowserCache = true;
 
 /**
+ * Feature extraction pipeline output type.
+ * The pipeline returns an object with a 'data' property containing Float32Array.
+ */
+type FeatureExtractionPipeline = (
+  text: string,
+  options: { pooling: string; normalize: boolean }
+) => Promise<{ data: Float32Array }>;
+
+/**
  * Singleton class to manage the Transformers.js pipeline.
  * This ensures we only download/load the model once.
  */
 class EmbeddingPipeline {
   static task: PipelineType = 'feature-extraction';
   static model = GEMINI_MODEL;
-  static instance: any = null;
+  static instance: FeatureExtractionPipeline | null = null;
 
-  static async getInstance() {
+  static async getInstance(): Promise<FeatureExtractionPipeline> {
     if (this.instance === null) {
       // Feature extraction pipeline with specific model
-      this.instance = await pipeline(this.task, this.model);
+      this.instance = (await pipeline(this.task, this.model)) as FeatureExtractionPipeline;
     }
     return this.instance;
   }
@@ -48,9 +57,10 @@ export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
 
       // output.data is a Float32Array, we convert to standard array
       results.push(Array.from(output.data as Float32Array));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Local embedding generation failed', err);
-      throw new Error(`Failed to generate local embedding: ${err.message}`);
+      const message = err instanceof Error ? err.message : String(err);
+      throw new Error(`Failed to generate local embedding: ${message}`);
     }
   }
 
@@ -69,8 +79,9 @@ export async function generateQueryEmbedding(query: string): Promise<number[]> {
     const extractor = await EmbeddingPipeline.getInstance();
     const output = await extractor(query, { pooling: 'mean', normalize: true });
     return Array.from(output.data as Float32Array);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Query embedding failed', err);
-    throw new Error(`Failed to generate local query embedding: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to generate local query embedding: ${message}`);
   }
 }

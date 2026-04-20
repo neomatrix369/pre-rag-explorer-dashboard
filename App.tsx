@@ -8,6 +8,7 @@ import {
   Experiment,
   ProcessingStatus,
   ErrorInfo,
+  FileType,
 } from './types';
 import { GEMINI_MODEL } from './constants';
 import { parseFile } from './services/fileParser';
@@ -89,10 +90,20 @@ const App: React.FC = () => {
       const parsedFiles: UploadedFile[] = await Promise.all(
         newFiles.map(async (file) => {
           const content = await parseFile(file);
+          const extension = file.name.split('.').pop()?.toLowerCase() || 'text';
+          const fileType: FileType =
+            extension === 'pdf'
+              ? 'pdf'
+              : extension === 'csv'
+                ? 'csv'
+                : extension === 'md'
+                  ? 'markdown'
+                  : 'text';
+
           return {
             id: Math.random().toString(36).substr(2, 9),
             name: file.name,
-            type: file.name.split('.').pop() as any,
+            type: fileType,
             size: file.size,
             content,
             uploadedAt: new Date().toISOString(),
@@ -104,7 +115,8 @@ const App: React.FC = () => {
       await Promise.all(parsedFiles.map((f) => saveFile(f)));
 
       setState((prev) => ({ ...prev, files: [...prev.files, ...parsedFiles] }));
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
       setState((prev) => ({
         ...prev,
         globalError: {
@@ -230,9 +242,9 @@ const App: React.FC = () => {
             chunkCounts[method] = (chunkCounts[method] || 0) + chunkResult.chunks.length;
 
             updateStatus('finished', 100, undefined, samples);
-          } catch (itemErr: any) {
+          } catch (itemErr: unknown) {
             console.error(`Error processing ${taskId}:`, itemErr);
-            const errorMessage = itemErr.message || '';
+            const errorMessage = itemErr instanceof Error ? itemErr.message : String(itemErr);
             let humanMessage = 'An error occurred while vectorizing this document.';
 
             if (errorMessage.includes('onnx')) {
@@ -241,9 +253,14 @@ const App: React.FC = () => {
               humanMessage = 'Your browser GPU might be restricted. Try Chrome or Firefox.';
             }
 
+            const technicalDetails =
+              itemErr instanceof Error
+                ? `${itemErr.name}: ${itemErr.message}\n${itemErr.stack || ''}`
+                : String(itemErr);
+
             updateStatus('error', 0, {
               message: humanMessage,
-              technical: `${itemErr.name}: ${itemErr.message}\n${itemErr.stack || ''}`,
+              technical: technicalDetails,
             });
           }
         }
@@ -266,13 +283,15 @@ const App: React.FC = () => {
         collections: [...prev.collections, ...newCollections],
         experiments: [experiment, ...prev.experiments],
       }));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
+      const technicalInfo = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
+
       setState((prev) => ({
         ...prev,
         globalError: {
           message: 'A critical failure occurred during the processing batch.',
-          technical: err.stack || err.message || JSON.stringify(err),
+          technical: technicalInfo,
         },
       }));
     } finally {
@@ -300,7 +319,7 @@ const App: React.FC = () => {
     }
   };
 
-  const onViewChange = (view: any) =>
+  const onViewChange = (view: AppState['activeView']) =>
     setState((prev) => ({
       ...prev,
       activeView: view,

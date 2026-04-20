@@ -574,10 +574,13 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
         try {
           const json = JSON.parse(text);
           if (Array.isArray(json)) {
-            const newQuestions: Question[] = json.map((q: any) => ({
-              text: q.question || q.text || String(q),
-              focus: q.category || q.focus || 'Custom',
-            }));
+            const newQuestions: Question[] = json.map((q: unknown) => {
+              const item = q as Record<string, unknown>;
+              return {
+                text: String(item.question || item.text || q),
+                focus: String(item.category || item.focus || 'Custom'),
+              };
+            });
             const newPersona: Persona = {
               id: `custom-${Date.now()}`,
               role: `Custom: ${file.name}`,
@@ -591,12 +594,12 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
           alert('Invalid JSON format');
         }
       } else if (file.name.endsWith('.csv')) {
-        Papa.parse(text, {
+        Papa.parse<Record<string, string>>(text, {
           header: true,
-          complete: (results: any) => {
+          complete: (results) => {
             const newQuestions: Question[] = results.data
-              .filter((r: any) => r.question || r.text)
-              .map((r: any) => ({
+              .filter((r) => r.question || r.text)
+              .map((r) => ({
                 text: r.question || r.text,
                 focus: r.category || r.focus || 'Custom',
               }));
@@ -716,19 +719,17 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
                     </div>
                   </div>
                   <div className="space-y-2">
-                    {['dense', 'sparse', 'hybrid'].map((m) => (
+                    {(['dense', 'sparse', 'hybrid'] as const).map((m) => (
                       <label
                         key={m}
-                        className={`flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer ${retrievalMethods.includes(m as any) ? 'bg-indigo-50 border-indigo-100' : 'border-transparent hover:bg-slate-50'}`}
+                        className={`flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer ${retrievalMethods.includes(m) ? 'bg-indigo-50 border-indigo-100' : 'border-transparent hover:bg-slate-50'}`}
                       >
                         <input
                           type="checkbox"
-                          checked={retrievalMethods.includes(m as any)}
+                          checked={retrievalMethods.includes(m)}
                           onChange={() =>
                             setRetrievalMethods((prev) =>
-                              prev.includes(m as any)
-                                ? prev.filter((x) => x !== m)
-                                : [...prev, m as any]
+                              prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]
                             )
                           }
                           className="w-4 h-4 text-indigo-600 rounded"

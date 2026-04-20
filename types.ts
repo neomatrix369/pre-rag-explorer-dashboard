@@ -33,7 +33,7 @@ export interface Chunk {
   sourceFileId: string;
   sourceFileName: string;
   chunkMethod: ChunkingMethod;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export interface VectorCollection {

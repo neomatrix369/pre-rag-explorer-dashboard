@@ -1,6 +1,3 @@
-declare const pdfjsLib: any;
-declare const Papa: any;
-
 export async function parseFile(file: File): Promise<string> {
   const extension = file.name.split('.').pop()?.toLowerCase();
 
@@ -33,8 +30,8 @@ async function parseMarkdown(file: File): Promise<string> {
 async function parseCSV(file: File): Promise<string> {
   return new Promise((resolve) => {
     Papa.parse(file, {
-      complete: (results: any) => {
-        const rows = results.data.map((row: any) => Object.values(row).join(' '));
+      complete: (results) => {
+        const rows = results.data.map((row) => Object.values(row).join(' '));
         resolve(rows.join('\n'));
       },
       header: true,
@@ -51,7 +48,7 @@ async function parsePDF(file: File): Promise<string> {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
-    const pageText = textContent.items.map((item: any) => item.str).join(' ');
+    const pageText = textContent.items.map((item) => item.str).join(' ');
     fullText += pageText + '\n';
   }
   return fullText;
