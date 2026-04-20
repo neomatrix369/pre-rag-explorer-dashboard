@@ -166,7 +166,7 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
     >();
 
     // Document Analysis
-    const docStats: Record<string, DocStat> = {};
+    const docStats = new Map<string, DocStat>();
 
     results.forEach((r) => {
       // 1. Config Aggregation
@@ -187,13 +187,14 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
 
       // 2. Doc Aggregation
       const doc = r.chunk.sourceFileName;
-      if (!docStats[doc] || r.score > docStats[doc].bestScore) {
-        docStats[doc] = {
+      const existingStat = docStats.get(doc);
+      if (!existingStat || r.score > existingStat.bestScore) {
+        docStats.set(doc, {
           bestScore: r.score,
           bestMethod: r.retrievalMethod,
           bestChunking: r.chunk.chunkMethod,
           bestModel: r.embeddingModel || 'Unknown',
-        };
+        });
       }
     });
 
@@ -379,7 +380,7 @@ const HyperparametersView: React.FC<{ results: SearchResult[] }> = ({ results })
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {Object.entries(docStats).map(([docName, stats]: [string, DocStat]) => (
+                {Array.from(docStats.entries()).map(([docName, stats]: [string, DocStat]) => (
                   <tr key={docName} className="hover:bg-slate-50 transition-colors">
                     <td
                       className="px-6 py-4 text-sm font-bold text-slate-700 truncate max-w-[200px]"
@@ -504,6 +505,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
           const scores = col.vectors.map((vec) => cosineSimilarity(queryEmbedding, vec));
           scores.forEach((score, idx) => {
             allResults.push({
+              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
               chunk: col.chunks[idx],
               score,
               retrievalMethod: 'dense',
@@ -519,6 +521,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
           const max = Math.max(...scores, 1);
           scores.forEach((s, idx) => {
             allResults.push({
+              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
               chunk: col.chunks[idx],
               score: s / max,
               retrievalMethod: 'sparse',
@@ -535,9 +538,11 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
           const maxSparse = Math.max(...sparseScores, 1);
 
           denseScores.forEach((ds, idx) => {
+            // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
             const ss = sparseScores[idx] / maxSparse;
             const hybridScore = ds * 0.7 + ss * 0.3;
             allResults.push({
+              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
               chunk: col.chunks[idx],
               score: hybridScore,
               retrievalMethod: 'hybrid',
@@ -590,7 +595,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
             setPersonas((prev) => [...prev, newPersona]);
             setSelectedPersonaId(newPersona.id);
           }
-        } catch (_err) {
+        } catch {
           alert('Invalid JSON format');
         }
       } else if (file.name.endsWith('.csv')) {

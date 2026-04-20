@@ -59,6 +59,7 @@ function recursiveCharacterChunk(text: string, size: number, _overlap: number): 
     if (content.length <= size || depth >= separators.length) {
       return [content];
     }
+    // eslint-disable-next-line security/detect-object-injection -- Safe: depth is numeric index
     const separator = separators[depth];
     const parts = content.split(separator);
     const result: string[] = [];

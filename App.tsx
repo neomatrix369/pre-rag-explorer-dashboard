@@ -116,13 +116,14 @@ const App: React.FC = () => {
 
       setState((prev) => ({ ...prev, files: [...prev.files, ...parsedFiles] }));
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const technicalInfo = err instanceof Error ? err.stack || err.message : JSON.stringify(err);
+
       setState((prev) => ({
         ...prev,
         globalError: {
           message:
             'Could not parse one or more files. Check if they are valid PDF/CSV/Text formats.',
-          technical: err.stack || err.message || JSON.stringify(err),
+          technical: technicalInfo,
         },
       }));
     } finally {
@@ -206,6 +207,7 @@ const App: React.FC = () => {
           try {
             // 1. Chunking
             updateStatus('chunking', 20);
+            // eslint-disable-next-line security/detect-object-injection -- Safe: method is ChunkingMethod enum
             const chunkResult = await chunkText(file.content, method, params[method]);
             const samples = chunkResult.chunks.slice(0, 3);
 
@@ -222,6 +224,7 @@ const App: React.FC = () => {
               sourceFileId: file.id,
               sourceFileName: file.name,
               chunkCount: chunkResult.chunks.length,
+              // eslint-disable-next-line security/detect-object-injection -- Safe: method is ChunkingMethod enum
               params: params[method] || {},
               createdAt: new Date().toISOString(),
               chunks: chunkResult.chunks.map((text, idx) => ({
@@ -239,6 +242,7 @@ const App: React.FC = () => {
 
             await saveCollection(collection);
             newCollections.push(collection);
+            // eslint-disable-next-line security/detect-object-injection -- Safe: method is ChunkingMethod enum
             chunkCounts[method] = (chunkCounts[method] || 0) + chunkResult.chunks.length;
 
             updateStatus('finished', 100, undefined, samples);
