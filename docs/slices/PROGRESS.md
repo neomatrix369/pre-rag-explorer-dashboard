@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-**Last Updated**: 2026-04-21 23:45  
-**Current**: Slice 5+6 🔨 IN PROGRESS | Prev: Slice 3 🔍 PR #8
+**Last Updated**: 2026-04-22 00:02  
+**Current**: Slice 5+6 🔍 PR #10 | Prev: Slice 3 🔍 PR #8
 
 ---
 
@@ -13,7 +13,7 @@
 | 2 — Code Quality | ✔️ MERGED | feat/slice-02-eslint-cleanup | - | PR #7: 79 warnings resolved, strict mode |
 | 3 — Test Coverage | 🔍 PR REVIEW | feat/slice-03-test-coverage | 09eb8ff | PR #8: 37 tests, 71.42% coverage |
 | 4 — Cloudflare Deploy | 📋 PLANNED | - | - | Headers, secrets, deploy workflow |
-| 5+6 — Model Registry + bge-small | 🔨 IN PROGRESS | feat/slice-05-06-model-registry | - | Combined: Registry foundation + 2nd model + tooltips |
+| 5+6 — Model Registry + bge-small | 🔍 PR REVIEW | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry foundation + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | 📋 PLANNED | - | - | Stride-based overlap |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
@@ -157,9 +157,9 @@ Overall:             71.42% lines  (37 total tests)
 - [x] **PROMPT_READY** — Slice spec created (SLICE-05-06-MODEL-REGISTRY.md)
 - [x] **CODE_COMPLETE** — Registry + model selector + tooltips
 - [x] **TESTS_PASSING** — All verification passed (lint, typecheck, test)
-- [ ] **MANUAL_VERIFIED** — UI tested in browser
-- [ ] **COMMITTED** — Git commit created
-- [ ] **MERGED** — PR created
+- [ ] **MANUAL_VERIFIED** — UI tested in browser (pending)
+- [x] **COMMITTED** — Git commit 6ceeb1a created
+- [x] **PR_CREATED** — PR #10 created and ready for review
 
 ### Scope
 Combined Slices 5+6 to validate both registry creation AND extensibility:
