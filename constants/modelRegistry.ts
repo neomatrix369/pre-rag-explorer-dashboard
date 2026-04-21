@@ -10,8 +10,14 @@ export interface ModelConfig {
   id: string;
   /** Display name (e.g., 'all-MiniLM-L6-v2') */
   name: string;
+  /** Model family (e.g., 'MiniLM', 'BGE') */
+  family: string;
   /** Embedding dimensions (e.g., 384) */
   dimensions: number;
+  /** Approximate browser model size in MB */
+  sizeMB: number;
+  /** Supports multiple languages */
+  multilingual: boolean;
   /** HuggingFace model ID for Transformers.js (e.g., 'Xenova/all-MiniLM-L6-v2') */
   huggingFaceId: string;
   /** Human-readable description */
@@ -31,7 +37,10 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
   'all-minilm-l6-v2': {
     id: 'all-minilm-l6-v2',
     name: 'all-MiniLM-L6-v2',
+    family: 'MiniLM',
     dimensions: 384,
+    sizeMB: 23,
+    multilingual: false,
     huggingFaceId: 'Xenova/all-MiniLM-L6-v2',
     description: 'Fast, general-purpose sentence embeddings (384 dimensions)',
     defaultParams: {
@@ -39,7 +48,20 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
       normalize: true,
     },
   },
-  // Slice 6 will add: 'bge-small-en-v1.5'
+  'bge-small-en-v1.5': {
+    id: 'bge-small-en-v1.5',
+    name: 'BGE Small EN v1.5',
+    family: 'BGE',
+    dimensions: 384,
+    sizeMB: 33,
+    multilingual: false,
+    huggingFaceId: 'Xenova/bge-small-en-v1.5',
+    description: 'BAAI embedding model optimized for retrieval tasks',
+    defaultParams: {
+      pooling: 'mean',
+      normalize: true,
+    },
+  },
 };
 
 /**

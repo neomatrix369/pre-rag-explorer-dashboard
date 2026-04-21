@@ -1,53 +1,19 @@
 /* eslint-disable react-refresh/only-export-components */
 // This file exports both constants and Icon components, which is intentional
 import React from 'react';
-<<<<<<< feat/slice-05-06-model-registry
-import { ChunkingMethod, EmbeddingModelConfig } from './types';
 
-// ============================================================================
-// MODEL REGISTRY
-// ============================================================================
-
-export const MODEL_REGISTRY: Record<string, EmbeddingModelConfig> = {
-  'Xenova/all-MiniLM-L6-v2': {
-    id: 'Xenova/all-MiniLM-L6-v2',
-    name: 'MiniLM L6 v2',
-    family: 'MiniLM',
-    dimensions: 384,
-    sizeMB: 23,
-    multilingual: false,
-    description: 'Fast, lightweight sentence transformer for English',
-  },
-  'Xenova/bge-small-en-v1.5': {
-    id: 'Xenova/bge-small-en-v1.5',
-    name: 'BGE Small EN v1.5',
-    family: 'BGE',
-    dimensions: 384,
-    sizeMB: 33,
-    multilingual: false,
-    description: 'BAAI embedding model optimized for retrieval tasks',
-  },
-};
-
-// Default model (backward compatibility)
-export const DEFAULT_MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
-
-// Legacy constants (deprecated, use MODEL_REGISTRY)
-export const GEMINI_MODEL = DEFAULT_MODEL_ID;
-// eslint-disable-next-line security/detect-object-injection -- Safe: DEFAULT_MODEL_ID is a known constant
-export const EMBEDDING_DIMENSIONS = MODEL_REGISTRY[DEFAULT_MODEL_ID].dimensions;
-=======
 import { ChunkingMethod } from './types';
-import { getDefaultModel } from './utils/modelValidation';
 
-// Re-export model constants from registry
-// This maintains backward compatibility while using centralized MODEL_REGISTRY
+// Re-export model registry for backward compatibility
+export { MODEL_REGISTRY, DEFAULT_MODEL_ID, type ModelConfig } from './constants/modelRegistry';
+export { getDefaultModel } from './utils/modelValidation';
+
+// Legacy constants (deprecated - use MODEL_REGISTRY instead)
+import { getDefaultModel } from './utils/modelValidation';
 const defaultModel = getDefaultModel();
 export const GEMINI_MODEL = defaultModel.huggingFaceId;
 export const EMBEDDING_DIMENSIONS = defaultModel.dimensions;
->>>>>>> main
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.FIXED]: 'fixed (Fixed-size)',
   [ChunkingMethod.RECURSIVE]: 'recursive (Recursive Character)',
@@ -56,7 +22,6 @@ export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.SEMANTIC]: 'semantic (Semantic Grouping)',
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const Icons = {
   Upload: () => (
     <svg
