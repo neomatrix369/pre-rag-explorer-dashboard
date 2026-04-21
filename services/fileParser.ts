@@ -1,3 +1,5 @@
+import Papa from 'papaparse';
+
 export async function parseFile(file: File): Promise<string> {
   const extension = file.name.split('.').pop()?.toLowerCase();
 
