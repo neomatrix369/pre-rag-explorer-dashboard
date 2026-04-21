@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 // This file exports both constants and Icon components, which is intentional
 import React from 'react';
+<<<<<<< feat/slice-05-06-model-registry
 import { ChunkingMethod, EmbeddingModelConfig } from './types';
 
 // ============================================================================
@@ -35,7 +36,18 @@ export const DEFAULT_MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
 export const GEMINI_MODEL = DEFAULT_MODEL_ID;
 // eslint-disable-next-line security/detect-object-injection -- Safe: DEFAULT_MODEL_ID is a known constant
 export const EMBEDDING_DIMENSIONS = MODEL_REGISTRY[DEFAULT_MODEL_ID].dimensions;
+=======
+import { ChunkingMethod } from './types';
+import { getDefaultModel } from './utils/modelValidation';
 
+// Re-export model constants from registry
+// This maintains backward compatibility while using centralized MODEL_REGISTRY
+const defaultModel = getDefaultModel();
+export const GEMINI_MODEL = defaultModel.huggingFaceId;
+export const EMBEDDING_DIMENSIONS = defaultModel.dimensions;
+>>>>>>> main
+
+// eslint-disable-next-line react-refresh/only-export-components
 export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.FIXED]: 'fixed (Fixed-size)',
   [ChunkingMethod.RECURSIVE]: 'recursive (Recursive Character)',
@@ -44,6 +56,7 @@ export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.SEMANTIC]: 'semantic (Semantic Grouping)',
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const Icons = {
   Upload: () => (
     <svg
