@@ -491,68 +491,83 @@ const SearchSection: React.FC<SearchSectionProps> = ({ collections, loading: _ap
     const allResults: SearchResult[] = [];
 
     try {
-      const queryEmbedding = await generateQueryEmbedding(query);
-
-      for (const colId of selectedCollections) {
+      // Group collections by embedding model to minimize model loading
+      const collectionsByModel: Record<string, VectorCollection[]> = {};
+      selectedCollections.forEach((colId) => {
         const col = collections.find((c) => c.id === colId);
-        if (!col) continue;
-
-        const docTexts = col.chunks.map((c) => c.text);
-        const embeddingModel = col.embeddingModel || GEMINI_MODEL;
-
-        // Retrieval Methods
-        if (retrievalMethods.includes('dense')) {
-          const scores = col.vectors.map((vec) => cosineSimilarity(queryEmbedding, vec));
-          scores.forEach((score, idx) => {
-            allResults.push({
-              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
-              chunk: col.chunks[idx],
-              score,
-              retrievalMethod: 'dense',
-              collectionName: col.name,
-              collectionId: col.id,
-              embeddingModel,
-            });
-          });
+        if (!col) return;
+        const modelId = col.embeddingModel || GEMINI_MODEL;
+        // eslint-disable-next-line security/detect-object-injection -- Safe: modelId from collection.embeddingModel
+        if (!collectionsByModel[modelId]) {
+          // eslint-disable-next-line security/detect-object-injection -- Safe: modelId from collection.embeddingModel
+          collectionsByModel[modelId] = [];
         }
+        // eslint-disable-next-line security/detect-object-injection -- Safe: modelId from collection.embeddingModel
+        collectionsByModel[modelId].push(col);
+      });
 
-        if (retrievalMethods.includes('sparse')) {
-          const scores = computeBM25(query, docTexts);
-          const max = Math.max(...scores, 1);
-          scores.forEach((s, idx) => {
-            allResults.push({
-              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
-              chunk: col.chunks[idx],
-              score: s / max,
-              retrievalMethod: 'sparse',
-              collectionName: col.name,
-              collectionId: col.id,
-              embeddingModel,
+      // Generate query embedding once per unique model
+      for (const [modelId, cols] of Object.entries(collectionsByModel)) {
+        const queryEmbedding = await generateQueryEmbedding(query, modelId);
+
+        for (const col of cols) {
+          const docTexts = col.chunks.map((c) => c.text);
+          const embeddingModel = col.embeddingModel || GEMINI_MODEL;
+
+          // Retrieval Methods
+          if (retrievalMethods.includes('dense')) {
+            const scores = col.vectors.map((vec) => cosineSimilarity(queryEmbedding, vec));
+            scores.forEach((score, idx) => {
+              allResults.push({
+                // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
+                chunk: col.chunks[idx],
+                score,
+                retrievalMethod: 'dense',
+                collectionName: col.name,
+                collectionId: col.id,
+                embeddingModel,
+              });
             });
-          });
-        }
+          }
 
-        if (retrievalMethods.includes('hybrid')) {
-          const denseScores = col.vectors.map((vec) => cosineSimilarity(queryEmbedding, vec));
-          const sparseScores = computeBM25(query, docTexts);
-          const maxSparse = Math.max(...sparseScores, 1);
-
-          denseScores.forEach((ds, idx) => {
-            // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
-            const ss = sparseScores[idx] / maxSparse;
-            const hybridScore = ds * 0.7 + ss * 0.3;
-            allResults.push({
-              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
-              chunk: col.chunks[idx],
-              score: hybridScore,
-              retrievalMethod: 'hybrid',
-              collectionName: col.name,
-              collectionId: col.id,
-              embeddingModel,
+          if (retrievalMethods.includes('sparse')) {
+            const scores = computeBM25(query, docTexts);
+            const max = Math.max(...scores, 1);
+            scores.forEach((s, idx) => {
+              allResults.push({
+                // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
+                chunk: col.chunks[idx],
+                score: s / max,
+                retrievalMethod: 'sparse',
+                collectionName: col.name,
+                collectionId: col.id,
+                embeddingModel,
+              });
             });
-          });
-        }
-      }
+          }
+
+          if (retrievalMethods.includes('hybrid')) {
+            const denseScores = col.vectors.map((vec) => cosineSimilarity(queryEmbedding, vec));
+            const sparseScores = computeBM25(query, docTexts);
+            const maxSparse = Math.max(...sparseScores, 1);
+
+            denseScores.forEach((ds, idx) => {
+              // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
+              const ss = sparseScores[idx] / maxSparse;
+              const hybridScore = ds * 0.7 + ss * 0.3;
+              allResults.push({
+                // eslint-disable-next-line security/detect-object-injection -- Safe: numeric array index
+                chunk: col.chunks[idx],
+                score: hybridScore,
+                retrievalMethod: 'hybrid',
+                collectionName: col.name,
+                collectionId: col.id,
+                embeddingModel,
+              });
+            });
+          }
+        } // end for col
+      } // end for modelId
 
       const finalResults = allResults
         .sort((a, b) => b.score - a.score)

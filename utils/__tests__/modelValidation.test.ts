@@ -12,7 +12,10 @@ describe('validateModelConfig', () => {
   const validConfig: ModelConfig = {
     id: 'test-model',
     name: 'Test Model',
+    family: 'Test',
     dimensions: 768,
+    sizeMB: 50,
+    multilingual: false,
     huggingFaceId: 'Xenova/test-model',
     description: 'A test model',
     defaultParams: {
@@ -182,6 +185,8 @@ describe('getAllModelIds', () => {
 
   it('should return all keys from MODEL_REGISTRY', () => {
     const ids = getAllModelIds();
-    expect(ids.length).toBe(1); // Slice 5: single model
+    expect(ids.length).toBe(2); // Slice 6: added bge-small-en-v1.5
+    expect(ids).toContain('all-minilm-l6-v2');
+    expect(ids).toContain('bge-small-en-v1.5');
   });
 });

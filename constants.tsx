@@ -1,14 +1,19 @@
+/* eslint-disable react-refresh/only-export-components */
+// This file exports both constants and Icon components, which is intentional
 import React from 'react';
-import { ChunkingMethod } from './types';
-import { getDefaultModel } from './utils/modelValidation';
 
-// Re-export model constants from registry
-// This maintains backward compatibility while using centralized MODEL_REGISTRY
+import { ChunkingMethod } from './types';
+
+// Re-export model registry for backward compatibility
+export { MODEL_REGISTRY, DEFAULT_MODEL_ID, type ModelConfig } from './constants/modelRegistry';
+export { getDefaultModel } from './utils/modelValidation';
+
+// Legacy constants (deprecated - use MODEL_REGISTRY instead)
+import { getDefaultModel } from './utils/modelValidation';
 const defaultModel = getDefaultModel();
 export const GEMINI_MODEL = defaultModel.huggingFaceId;
 export const EMBEDDING_DIMENSIONS = defaultModel.dimensions;
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.FIXED]: 'fixed (Fixed-size)',
   [ChunkingMethod.RECURSIVE]: 'recursive (Recursive Character)',
@@ -17,7 +22,6 @@ export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.SEMANTIC]: 'semantic (Semantic Grouping)',
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const Icons = {
   Upload: () => (
     <svg

@@ -10,7 +10,6 @@ import {
   ErrorInfo,
   FileType,
 } from './types';
-import { GEMINI_MODEL } from './constants';
 import { parseFile } from './services/fileParser';
 import { chunkText } from './services/chunkingService';
 import { generateEmbeddings } from './services/embeddingService';
@@ -154,7 +153,8 @@ const App: React.FC = () => {
   const handleProcess = async (
     selectedFileIds: string[],
     selectedMethods: ChunkingMethod[],
-    params: Record<ChunkingMethod, ChunkParams>
+    params: Record<ChunkingMethod, ChunkParams>,
+    modelId: string
   ) => {
     setLoading(true);
     setState((prev) => ({ ...prev, globalError: undefined }));
@@ -213,7 +213,7 @@ const App: React.FC = () => {
 
             // 2. Vectorization
             updateStatus('vectorizing', 50, undefined, samples);
-            const vectors = await generateEmbeddings(chunkResult.chunks);
+            const vectors = await generateEmbeddings(chunkResult.chunks, modelId);
 
             // 3. Create Collection
             updateStatus('vectorizing', 80, undefined, samples);
@@ -237,7 +237,7 @@ const App: React.FC = () => {
                 metadata: {},
               })),
               vectors,
-              embeddingModel: GEMINI_MODEL,
+              embeddingModel: modelId,
             };
 
             await saveCollection(collection);

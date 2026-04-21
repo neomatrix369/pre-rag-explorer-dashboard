@@ -69,7 +69,7 @@ export interface VectorCollection {
   createdAt: string;
   chunks: Chunk[];
   vectors: number[][];
-  embeddingModel?: string;
+  embeddingModel: string; // HuggingFace model ID from MODEL_REGISTRY
 }
 
 export interface SearchResult {
