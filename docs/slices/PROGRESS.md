@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-**Last Updated**: 2026-04-21 22:31  
-**Current**: Slice 3 🔍 PR #8 | Next: Slice 4
+**Last Updated**: 2026-04-21 23:59  
+**Current**: Slice 5 ✅ Ready to Commit | Parked: Slice 4
 
 ---
 
@@ -11,9 +11,9 @@
 |-------|--------|--------|--------|-------|
 | 1 — Toolchain | ✔️ MERGED | toolchain-setup | 39ed5b9 | ESLint, Prettier, Vitest, Husky, CI |
 | 2 — Code Quality | ✔️ MERGED | feat/slice-02-eslint-cleanup | - | PR #7: 79 warnings resolved, strict mode |
-| 3 — Test Coverage | 🔍 PR REVIEW | feat/slice-03-test-coverage | 09eb8ff | PR #8: 37 tests, 71.42% coverage |
-| 4 — Cloudflare Deploy | 📋 PLANNED | - | - | Headers, secrets, deploy workflow |
-| 5 — Registry Foundation | 📋 PLANNED | - | - | MODEL_REGISTRY, validation patterns |
+| 3 — Test Coverage | ✔️ MERGED | feat/slice-03-test-coverage | 09eb8ff | PR #8: 37 tests, 71.42% coverage |
+| 4 — Cloudflare Deploy | 🔄 PARKED | - | - | No CF account (blocked) |
+| 5 — Registry Foundation | ✅ BUILT | feat/slice-05-registry-foundation | 76ec18f | MODEL_REGISTRY, validation, 29 tests |
 | 6 — Second Model (bge-small) | 📋 PLANNED | - | - | + Tooltips for params |
 | 7 — Sliding Window Chunking | 📋 PLANNED | - | - | Stride-based overlap |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
@@ -25,7 +25,7 @@
 | 14 — Scoring View + Golden Dataset | 📋 PLANNED | - | - | Evaluation metrics |
 | 15 — Export/Import | 📋 PLANNED | - | - | JSON snapshot sharing |
 
-**Legend**: 📋 PLANNED | ⏳ READY | 🔨 IN PROGRESS | ✅ BUILT | 🔍 PR REVIEW | ✔️ MERGED
+**Legend**: 📋 PLANNED | ⏳ READY | 🔨 IN PROGRESS | ✅ BUILT | 🔍 PR REVIEW | ✔️ MERGED | 🔄 PARKED
 
 ---
 
@@ -94,16 +94,16 @@
 
 ---
 
-## Slice 3: Test Coverage ✅
+## Slice 3: Test Coverage ✔️
 
-**Branch**: `feat/slice-03-test-coverage` | **Completed**: 2026-04-21
+**Branch**: `feat/slice-03-test-coverage` | **Commit**: `09eb8ff` | **Completed**: 2026-04-21
 
 ### Checkpoints
 - [x] **PROMPT_READY** — Slice spec defined
 - [x] **CODE_COMPLETE** — 3 test files created, 2 files modified
 - [x] **TESTS_PASSING** — 37/37 tests passing
 - [x] **COMMITTED** — Ready for commit
-- [ ] **MERGED** — Pending
+- [x] **MERGED** — PR #8 merged to main
 
 ### Verification Results
 ```bash
@@ -146,7 +146,86 @@ Overall:             71.42% lines  (37 total tests)
 - ✅ Test infrastructure expanded (mocking patterns established)
 - ✅ Coverage baseline raised to 71%
 - ✅ All core services tested (embedding, parsing, storage)
-- ⏳ Slice 4: Cloudflare Deploy
+- 🔄 Slice 4: Cloudflare Deploy (parked - no account)
+- 🔨 Slice 5: Registry Foundation (in progress)
+
+---
+
+## Slice 4: Cloudflare Deploy 🔄
+
+**Status**: PARKED | **Reason**: No Cloudflare account to verify deployment
+
+### Context
+- Cannot verify deployment workflow without CF account
+- Cannot test wrangler configuration
+- Cannot validate security headers are applied
+- Violates "verify after every change" principle
+
+### Resume Conditions
+1. Cloudflare account created and configured
+2. CF_API_TOKEN available for CI/CD
+3. Project name registered in CF Pages
+
+### Planned Files (when resumed)
+- `wrangler.toml` — Cloudflare Pages configuration
+- `public/_headers` — Security headers (CSP, HSTS, etc.)
+- `.dev.vars.example` — Secrets template
+- `.github/workflows/deploy.yml` — Deployment workflow
+
+---
+
+## Slice 5: Registry Foundation ✅
+
+**Branch**: `feat/slice-05-registry-foundation` | **Started**: 2026-04-21 | **Completed**: 2026-04-21
+
+### Checkpoints
+- [x] **PROMPT_READY** — Slice spec defined
+- [x] **CODE_COMPLETE** — Registry, validation, tests created
+- [x] **TESTS_PASSING** — 66 tests passing (37→66, +29 tests)
+- [x] **COMMITTED** — Commit 76ec18f
+- [ ] **MERGED** — Pending PR
+
+### Goal
+Create MODEL_REGISTRY foundation to support multiple embedding models (Slice 6+). Single model initially (all-MiniLM-L6-v2), but extensible structure.
+
+### Files to Create
+- `constants/modelRegistry.ts` — Registry with model metadata
+- `utils/modelValidation.ts` — Validation utilities
+- `constants/__tests__/modelRegistry.test.ts` — Registry tests
+- `utils/__tests__/modelValidation.test.ts` — Validation tests
+- `docs/slices/SLICE-05-REGISTRY-FOUNDATION.md` — Slice spec
+
+### Files to Modify
+- `types.ts` — Add ModelConfig, ModelId types
+- `constants.tsx` — Import from registry
+
+### Verification Results
+```bash
+✅ npm run lint (0 warnings, 0 errors)
+✅ npm run typecheck (0 errors)
+✅ npm run test (66/66 tests passing, up from 37)
+✅ npm run test:coverage (71.42% lines, maintained from Slice 3)
+✅ npm run build (2.80s, clean build)
+```
+
+### Files Created
+- `constants/modelRegistry.ts` — MODEL_REGISTRY with all-minilm-l6-v2 model
+- `utils/modelValidation.ts` — 5 validation utilities
+- `constants/__tests__/modelRegistry.test.ts` — 7 registry tests
+- `utils/__tests__/modelValidation.test.ts` — 22 validation tests
+- `docs/slices/SLICE-05-REGISTRY-FOUNDATION.md` — Slice specification
+
+### Files Modified
+- `types.ts` — Added ModelConfig, ModelId types
+- `constants.tsx` — Import from registry (backward compatible)
+
+### Exit Criteria (All Met)
+- [x] MODEL_REGISTRY with single model (all-minilm-l6-v2)
+- [x] ModelConfig type: id, name, dimensions, huggingFaceId, description, defaultParams
+- [x] Validation utilities: validateModelConfig, getModelById, getDefaultModel, isValidModelId, getAllModelIds
+- [x] All existing code uses registry (constants.tsx re-exports)
+- [x] 29 tests added (7 registry + 22 validation)
+- [x] All quality gates pass (lint, typecheck, test, coverage, build)
 
 ---
 
@@ -184,6 +263,10 @@ Overall:             71.42% lines  (37 total tests)
 | 2026-04-21 | 3 | Add Papa import to fileParser | Global Papa unavailable in test env; proper ES module import |
 | 2026-04-21 | 3 | Skip PDF tests | pdf.js complex to mock; TXT/CSV/MD tests sufficient for 40% target |
 | 2026-04-21 | 3 | Threshold at 40% (not 71%) | Conservative safety margin; allows code growth without breaking CI |
+| 2026-04-21 | 5 | Single registry file (constants/modelRegistry.ts) | Simple for 2-4 models; can split later if needed |
+| 2026-04-21 | 5 | Re-export from constants.tsx | Minimize changes to existing imports; backward compatible |
+| 2026-04-21 | 5 | ModelId as string type | Will become union type in Slice 6 ('all-minilm-l6-v2' \| 'bge-small-en-v1.5') |
+| 2026-04-21 | 5 | Object.prototype.hasOwnProperty.call() for isValidModelId | Avoids object injection security warning |
 
 ---
 
