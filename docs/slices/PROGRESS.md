@@ -13,7 +13,7 @@
 | 2 — Code Quality | ✔️ MERGED | feat/slice-02-eslint-cleanup | - | PR #7: 79 warnings resolved, strict mode |
 | 3 — Test Coverage | ✔️ MERGED | feat/slice-03-test-coverage | 09eb8ff | PR #8: 37 tests, 71.42% coverage |
 | 4 — Cloudflare Deploy | 🔄 PARKED | - | - | No CF account (blocked) |
-| 5 — Registry Foundation | ✅ BUILT | feat/slice-05-registry-foundation | - | MODEL_REGISTRY, validation, 29 tests |
+| 5 — Registry Foundation | ✅ BUILT | feat/slice-05-registry-foundation | 76ec18f | MODEL_REGISTRY, validation, 29 tests |
 | 6 — Second Model (bge-small) | 📋 PLANNED | - | - | + Tooltips for params |
 | 7 — Sliding Window Chunking | 📋 PLANNED | - | - | Stride-based overlap |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
@@ -182,8 +182,8 @@ Overall:             71.42% lines  (37 total tests)
 - [x] **PROMPT_READY** — Slice spec defined
 - [x] **CODE_COMPLETE** — Registry, validation, tests created
 - [x] **TESTS_PASSING** — 66 tests passing (37→66, +29 tests)
-- [ ] **COMMITTED** — Ready for commit
-- [ ] **MERGED** — Pending
+- [x] **COMMITTED** — Commit 76ec18f
+- [ ] **MERGED** — Pending PR
 
 ### Goal
 Create MODEL_REGISTRY foundation to support multiple embedding models (Slice 6+). Single model initially (all-MiniLM-L6-v2), but extensible structure.
