@@ -11,7 +11,7 @@
 |-------|--------|--------|--------|-------|
 | 1 — Toolchain | ✔️ MERGED | toolchain-setup | 39ed5b9 | ESLint, Prettier, Vitest, Husky, CI |
 | 2 — Code Quality | ✔️ MERGED | feat/slice-02-eslint-cleanup | - | PR #7: 79 warnings resolved, strict mode |
-| 3 — Test Coverage | ✅ BUILT | feat/slice-03-test-coverage | - | 37 tests, 71.42% coverage (target: 40%+) |
+| 3 — Test Coverage | ✅ BUILT | feat/slice-03-test-coverage | 09eb8ff | 37 tests, 71.42% coverage (target: 40%+) |
 | 4 — Cloudflare Deploy | 📋 PLANNED | - | - | Headers, secrets, deploy workflow |
 | 5 — Registry Foundation | 📋 PLANNED | - | - | MODEL_REGISTRY, validation patterns |
 | 6 — Second Model (bge-small) | 📋 PLANNED | - | - | + Tooltips for params |
