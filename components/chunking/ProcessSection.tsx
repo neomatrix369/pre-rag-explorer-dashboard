@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UploadedFile, ChunkingMethod, ChunkParams, ProcessingStatus } from '../../types';
-import { CHUNKING_METHOD_LABELS, Icons, GEMINI_MODEL } from '../../constants';
+import { CHUNKING_METHOD_LABELS, Icons, MODEL_REGISTRY, DEFAULT_MODEL_ID } from '../../constants';
 import ErrorDisplay from '../layout/ErrorDisplay';
 import CopyButton from '../common/CopyButton';
 
@@ -9,7 +9,8 @@ interface ProcessSectionProps {
   onProcess: (
     fileIds: string[],
     methods: ChunkingMethod[],
-    params: Record<ChunkingMethod, ChunkParams>
+    params: Record<ChunkingMethod, ChunkParams>,
+    modelId: string
   ) => void;
   loading: boolean;
   processingStatus: ProcessingStatus[];
@@ -22,6 +23,12 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
   processingStatus,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+
+  // Persisted State: Selected Model
+  const [selectedModel, setSelectedModel] = useState<string>(() => {
+    const saved = localStorage.getItem('rag_selected_model');
+    return saved || DEFAULT_MODEL_ID;
+  });
 
   // Persisted State: Methods
   const [selectedMethods, setSelectedMethods] = useState<ChunkingMethod[]>(() => {
@@ -44,6 +51,10 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
   });
 
   // Save preferences on change
+  useEffect(() => {
+    localStorage.setItem('rag_selected_model', selectedModel);
+  }, [selectedModel]);
+
   useEffect(() => {
     localStorage.setItem('rag_process_methods', JSON.stringify(selectedMethods));
   }, [selectedMethods]);
@@ -77,7 +88,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
   const handleStart = () => {
     if (selectedFiles.length === 0) return alert('Select at least one file.');
     if (selectedMethods.length === 0) return alert('Select at least one chunking method.');
-    onProcess(selectedFiles, selectedMethods, params);
+    onProcess(selectedFiles, selectedMethods, params, selectedModel);
   };
 
   if (files.length === 0) {
@@ -106,30 +117,45 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
         </p>
       </header>
 
-      {/* Embedding Model Information Block */}
-      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex items-start gap-4">
-        <div className="p-2.5 bg-white rounded-lg shadow-sm text-indigo-600 shrink-0">
-          <Icons.Database />
-        </div>
-        <div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-            <h4 className="text-sm font-bold text-indigo-900">Active Embedding Model:</h4>
-            <div className="flex items-center gap-2">
-              <code className="px-2 py-0.5 bg-white border border-indigo-200 rounded text-xs font-mono text-indigo-700 font-bold shadow-sm">
-                {GEMINI_MODEL}
-              </code>
+      {/* Embedding Model Selector */}
+      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+        <div className="flex items-start gap-4">
+          <div className="p-2.5 bg-white rounded-lg shadow-sm text-indigo-600 shrink-0">
+            <Icons.Database />
+          </div>
+          <div className="flex-1">
+            <h4 className="text-sm font-bold text-indigo-900 mb-2">Embedding Model</h4>
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shadow-sm"
+            >
+              {Object.values(MODEL_REGISTRY).map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name} — {model.dimensions}d, ~{model.sizeMB}MB ({model.family})
+                </option>
+              ))}
+            </select>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="px-2 py-0.5 bg-white border border-indigo-200 rounded text-xs font-mono text-indigo-700 font-bold shadow-sm">
+                {selectedModel}
+              </span>
+              {/* eslint-disable security/detect-object-injection -- Safe: selectedModel validated against MODEL_REGISTRY keys */}
               <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 text-[10px] font-bold rounded uppercase tracking-wider">
-                384 Dimensions
+                {MODEL_REGISTRY[selectedModel]?.dimensions || 384} Dimensions
+              </span>
+              <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                ~{MODEL_REGISTRY[selectedModel]?.sizeMB || 23}MB
               </span>
             </div>
+            <p className="mt-2 text-xs text-indigo-600/80 font-medium">
+              {MODEL_REGISTRY[selectedModel]?.description || 'Local browser-based embedding model'}
+            </p>
+            {/* eslint-enable security/detect-object-injection */}
+            <p className="text-xs text-indigo-500 italic mt-1">
+              All models run 100% locally in your browser using WebAssembly.
+            </p>
           </div>
-          <p className="text-xs text-indigo-600/80 font-medium leading-relaxed">
-            This model runs 100% locally in your browser using WebAssembly.
-            <span className="block mt-1 text-indigo-500 italic text-[11px]">
-              * Note: Support for remote models (OpenAI, Gemini, Cohere) will be available in future
-              updates.
-            </span>
-          </p>
         </div>
       </div>
 
@@ -344,7 +370,9 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                       {(method === ChunkingMethod.FIXED || method === ChunkingMethod.RECURSIVE) && (
                         <div>
                           <div className="flex justify-between text-xs text-slate-600 mb-1">
-                            <span className="font-medium">Chunk Size</span>
+                            <span className="font-medium" title="Number of characters per chunk">
+                              Chunk Size
+                            </span>
                             <span className="font-bold text-indigo-600">
                               {params[method].chunkSize} chars
                             </span>
@@ -359,13 +387,19 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                               updateParam(method, 'chunkSize', Number(e.target.value))
                             }
                             className="w-full h-1.5 accent-indigo-500"
+                            title="Number of characters per chunk"
                           />
                         </div>
                       )}
                       {method === ChunkingMethod.TOKEN && (
                         <div>
                           <div className="flex justify-between text-xs text-slate-600 mb-1">
-                            <span className="font-medium">Token Count</span>
+                            <span
+                              className="font-medium"
+                              title="Number of tokens per chunk (approximate)"
+                            >
+                              Token Count
+                            </span>
                             <span className="font-bold text-indigo-600">
                               {params[method].tokenCount} tokens
                             </span>
@@ -380,13 +414,19 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                               updateParam(method, 'tokenCount', Number(e.target.value))
                             }
                             className="w-full h-1.5 accent-indigo-500"
+                            title="Number of tokens per chunk (approximate)"
                           />
                         </div>
                       )}
                       {method === ChunkingMethod.SENTENCE && (
                         <div>
                           <div className="flex justify-between text-xs text-slate-600 mb-1">
-                            <span className="font-medium">Sentences per Chunk</span>
+                            <span
+                              className="font-medium"
+                              title="Number of sentences to group per chunk"
+                            >
+                              Sentences per Chunk
+                            </span>
                             <span className="font-bold text-indigo-600">
                               {params[method].sentenceCount}
                             </span>
@@ -401,12 +441,16 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                               updateParam(method, 'sentenceCount', Number(e.target.value))
                             }
                             className="w-full h-1.5 accent-indigo-500"
+                            title="Number of sentences to group per chunk"
                           />
                         </div>
                       )}
                       <div>
                         <div className="flex justify-between text-xs text-slate-600 mb-1">
-                          <span className="font-medium">
+                          <span
+                            className="font-medium"
+                            title="Overlap between consecutive chunks (preserves context across boundaries)"
+                          >
                             Overlap
                             <span className="ml-1 text-slate-400 font-normal">
                               {method === ChunkingMethod.SENTENCE
@@ -440,6 +484,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                           value={params[method].overlap ?? 0}
                           onChange={(e) => updateParam(method, 'overlap', Number(e.target.value))}
                           className="w-full h-1.5 accent-indigo-500"
+                          title="Overlap between consecutive chunks (preserves context across boundaries)"
                         />
                         <p className="text-[10px] text-slate-400 mt-1 italic">
                           Higher overlap preserves more context across chunk boundaries.

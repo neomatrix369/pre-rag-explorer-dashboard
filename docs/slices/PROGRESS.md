@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-**Last Updated**: 2026-04-21 22:31  
-**Current**: Slice 3 🔍 PR #8 | Next: Slice 4
+**Last Updated**: 2026-04-21 23:45  
+**Current**: Slice 5+6 🔨 IN PROGRESS | Prev: Slice 3 🔍 PR #8
 
 ---
 
@@ -13,8 +13,7 @@
 | 2 — Code Quality | ✔️ MERGED | feat/slice-02-eslint-cleanup | - | PR #7: 79 warnings resolved, strict mode |
 | 3 — Test Coverage | 🔍 PR REVIEW | feat/slice-03-test-coverage | 09eb8ff | PR #8: 37 tests, 71.42% coverage |
 | 4 — Cloudflare Deploy | 📋 PLANNED | - | - | Headers, secrets, deploy workflow |
-| 5 — Registry Foundation | 📋 PLANNED | - | - | MODEL_REGISTRY, validation patterns |
-| 6 — Second Model (bge-small) | 📋 PLANNED | - | - | + Tooltips for params |
+| 5+6 — Model Registry + bge-small | 🔨 IN PROGRESS | feat/slice-05-06-model-registry | - | Combined: Registry foundation + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | 📋 PLANNED | - | - | Stride-based overlap |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
@@ -147,6 +146,46 @@ Overall:             71.42% lines  (37 total tests)
 - ✅ Coverage baseline raised to 71%
 - ✅ All core services tested (embedding, parsing, storage)
 - ⏳ Slice 4: Cloudflare Deploy
+
+---
+
+## Slice 5+6: Model Registry + Second Model 🔨
+
+**Branch**: `feat/slice-05-06-model-registry` | **Started**: 2026-04-21
+
+### Checkpoints
+- [x] **PROMPT_READY** — Slice spec created (SLICE-05-06-MODEL-REGISTRY.md)
+- [x] **CODE_COMPLETE** — Registry + model selector + tooltips
+- [x] **TESTS_PASSING** — All verification passed (lint, typecheck, test)
+- [ ] **MANUAL_VERIFIED** — UI tested in browser
+- [ ] **COMMITTED** — Git commit created
+- [ ] **MERGED** — PR created
+
+### Scope
+Combined Slices 5+6 to validate both registry creation AND extensibility:
+- Create MODEL_REGISTRY in constants.tsx
+- Add 2 models: Xenova/all-MiniLM-L6-v2, Xenova/bge-small-en-v1.5
+- Update embeddingService to accept modelId parameter
+- Add model selector UI in ProcessSection
+- Add parameter tooltips
+
+### Why Combined?
+Registry and first additional model are tightly coupled — building together validates both creation AND extensibility in one vertical slice.
+
+### Verification Results
+```bash
+✅ npm run lint (0 warnings)
+✅ npm run typecheck (0 errors)
+✅ npm run test (37/37 passing)
+✅ npm run build (pending manual test)
+```
+
+### Implementation Summary
+- **MODEL_REGISTRY**: 2 models (all-MiniLM-L6-v2, bge-small-en-v1.5), both 384d
+- **embeddingService**: Model switching support, validation
+- **ProcessSection**: Dropdown selector + parameter tooltips
+- **SearchSection**: Multi-model search (groups by model)
+- **Files modified**: 6 (constants, types, embeddingService, ProcessSection, SearchSection, App)
 
 ---
 

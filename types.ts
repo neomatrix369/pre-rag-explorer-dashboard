@@ -1,5 +1,15 @@
 export type FileType = 'text' | 'csv' | 'pdf' | 'markdown';
 
+export interface EmbeddingModelConfig {
+  id: string; // HuggingFace model ID (e.g., 'Xenova/all-MiniLM-L6-v2')
+  name: string; // Display name (e.g., 'MiniLM L6 v2')
+  family: string; // Model family (e.g., 'MiniLM', 'BGE')
+  dimensions: number; // Embedding dimensions (e.g., 384)
+  sizeMB: number; // Approximate browser model size in MB
+  multilingual: boolean; // Supports multiple languages
+  description: string; // One-line description
+}
+
 export interface UploadedFile {
   id: string;
   name: string;
@@ -47,7 +57,7 @@ export interface VectorCollection {
   createdAt: string;
   chunks: Chunk[];
   vectors: number[][];
-  embeddingModel?: string;
+  embeddingModel: string; // HuggingFace model ID from MODEL_REGISTRY
 }
 
 export interface SearchResult {

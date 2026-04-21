@@ -1,10 +1,40 @@
+/* eslint-disable react-refresh/only-export-components */
+// This file exports both constants and Icon components, which is intentional
 import React from 'react';
-import { ChunkingMethod } from './types';
+import { ChunkingMethod, EmbeddingModelConfig } from './types';
 
-// Switched to Local In-Browser Model via Transformers.js
-// This runs Xenova/all-MiniLM-L6-v2 (a quantized BERT model) directly in the browser.
-export const GEMINI_MODEL = 'Xenova/all-MiniLM-L6-v2';
-export const EMBEDDING_DIMENSIONS = 384;
+// ============================================================================
+// MODEL REGISTRY
+// ============================================================================
+
+export const MODEL_REGISTRY: Record<string, EmbeddingModelConfig> = {
+  'Xenova/all-MiniLM-L6-v2': {
+    id: 'Xenova/all-MiniLM-L6-v2',
+    name: 'MiniLM L6 v2',
+    family: 'MiniLM',
+    dimensions: 384,
+    sizeMB: 23,
+    multilingual: false,
+    description: 'Fast, lightweight sentence transformer for English',
+  },
+  'Xenova/bge-small-en-v1.5': {
+    id: 'Xenova/bge-small-en-v1.5',
+    name: 'BGE Small EN v1.5',
+    family: 'BGE',
+    dimensions: 384,
+    sizeMB: 33,
+    multilingual: false,
+    description: 'BAAI embedding model optimized for retrieval tasks',
+  },
+};
+
+// Default model (backward compatibility)
+export const DEFAULT_MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
+
+// Legacy constants (deprecated, use MODEL_REGISTRY)
+export const GEMINI_MODEL = DEFAULT_MODEL_ID;
+// eslint-disable-next-line security/detect-object-injection -- Safe: DEFAULT_MODEL_ID is a known constant
+export const EMBEDDING_DIMENSIONS = MODEL_REGISTRY[DEFAULT_MODEL_ID].dimensions;
 
 export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.FIXED]: 'fixed (Fixed-size)',
