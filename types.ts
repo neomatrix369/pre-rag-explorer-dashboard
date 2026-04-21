@@ -1,5 +1,27 @@
 export type FileType = 'text' | 'csv' | 'pdf' | 'markdown';
 
+/**
+ * Model identifier type.
+ * Currently supports single model, will become union type in Slice 6.
+ */
+export type ModelId = string;
+
+/**
+ * Model configuration interface.
+ * Defines metadata and parameters for embedding models.
+ */
+export interface ModelConfig {
+  id: string;
+  name: string;
+  dimensions: number;
+  huggingFaceId: string;
+  description: string;
+  defaultParams?: {
+    pooling: 'mean' | 'cls';
+    normalize: boolean;
+  };
+}
+
 export interface UploadedFile {
   id: string;
   name: string;
