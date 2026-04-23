@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-**Last Updated**: 2026-04-23  
-**Current**: Slice 7 🔨 IN PROGRESS | Last: Slice 5+6 ✔️ MERGED (PR #10)
+**Last Updated**: 2026-04-24  
+**Current**: Slice 7 ✅ BUILT (ready for PR) | Last: Slice 5+6 ✔️ MERGED (PR #10)
 
 ---
 
@@ -15,7 +15,7 @@
 | 4 — Cloudflare Deploy | 🔄 PARKED | - | - | No CF account (blocked) |
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
-| 7 — Sliding Window Chunking | 🔨 IN PROGRESS | feat/slice-07-sliding-window | - | Stride-based overlap, windowSize + stride params |
+| 7 — Sliding Window Chunking | ✅ BUILT | feat/slice-07-sliding-window | 5b12f1c | 9 tests, stride validation, 75 total tests |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -269,18 +269,18 @@ Registry and first additional model are tightly coupled — building together va
 
 ---
 
-## Slice 7: Sliding Window Chunking 🔨
+## Slice 7: Sliding Window Chunking ✅
 
-**Branch**: `feat/slice-07-sliding-window` | **Started**: 2026-04-23
+**Branch**: `feat/slice-07-sliding-window` | **Commit**: `5b12f1c` | **Completed**: 2026-04-24
 
 ### Checkpoints
 - [x] **PROMPT_READY** — Slice spec created (SLICE-07-SLIDING-WINDOW.md)
 - [x] **CODE_COMPLETE** — Types, service, UI, tests implemented
 - [x] **TESTS_PASSING** — 75 tests passing (66→75, +9 tests)
 - [x] **COVERAGE_MAINTAINED** — 72.3% lines (above 71% baseline)
-- [ ] **MANUAL_VERIFIED** — Browser test pending
-- [ ] **COMMITTED** — Ready to commit
-- [ ] **MERGED** — Pending PR
+- [ ] **MANUAL_VERIFIED** — Browser test pending (requires dev server)
+- [x] **COMMITTED** — Commit 5b12f1c created
+- [ ] **MERGED** — Ready for PR
 
 ### Scope
 Added SLIDING_WINDOW chunking method with stride-based parameterization:
@@ -349,9 +349,9 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 - [x] All quality gates pass
 - [x] README.md updated
 - [x] PROGRESS.md updated
-- [ ] Manual browser test (pending)
-- [ ] Git commit
-- [ ] PR created
+- [ ] Manual browser test (requires `npm run dev`)
+- [x] Git commit (5b12f1c)
+- [ ] PR creation (ready)
 
 ---
 
