@@ -30,6 +30,9 @@ export async function chunkText(
       // For this prototype, we'll do a simplified version based on paragraph & structural breaks.
       chunks = semanticMockChunk(text);
       break;
+    case ChunkingMethod.SLIDING_WINDOW:
+      chunks = slidingWindowChunk(text, params.windowSize ?? 1000, params.stride ?? 500);
+      break;
   }
 
   const avgSize = chunks.length ? chunks.reduce((a, b) => a + b.length, 0) / chunks.length : 0;
@@ -108,4 +111,23 @@ function sentenceBasedChunk(text: string, count: number, overlap: number): strin
 function semanticMockChunk(text: string): string[] {
   // Simple paragraph based chunking as a proxy for semantic units in this prototype
   return text.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
+}
+
+function slidingWindowChunk(text: string, windowSize: number, stride: number): string[] {
+  // Validation
+  if (stride <= 0) {
+    throw new Error('Stride must be positive (stride > 0)');
+  }
+  if (stride > windowSize) {
+    console.warn('Stride > windowSize creates gaps between chunks');
+  }
+
+  const chunks: string[] = [];
+  let i = 0;
+  while (i < text.length) {
+    chunks.push(text.slice(i, i + windowSize));
+    i += stride;
+    if (i >= text.length) break;
+  }
+  return chunks;
 }
