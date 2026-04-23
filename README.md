@@ -46,12 +46,13 @@ The app will be available at `http://localhost:5173`
 
 ## Key Features
 
-- **5 Chunking Strategies**
+- **6 Chunking Strategies**
   - Fixed-size chunking
   - Recursive character splitting
   - Token-based chunking
   - Sentence-based chunking
   - Semantic grouping
+  - Sliding window (stride-based overlap)
 
 - **3 Retrieval Methods**
   - Dense retrieval (cosine similarity)

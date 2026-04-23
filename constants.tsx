@@ -20,6 +20,7 @@ export const CHUNKING_METHOD_LABELS: Record<ChunkingMethod, string> = {
   [ChunkingMethod.TOKEN]: 'token (Token-Based)',
   [ChunkingMethod.SENTENCE]: 'sentence (Sentence-Based)',
   [ChunkingMethod.SEMANTIC]: 'semantic (Semantic Grouping)',
+  [ChunkingMethod.SLIDING_WINDOW]: 'sliding_window (Sliding Window)',
 };
 
 export const Icons = {
