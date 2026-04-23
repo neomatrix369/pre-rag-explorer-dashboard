@@ -1,12 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-<<<<<<< feat/slice-05-06-model-registry
-**Last Updated**: 2026-04-22 00:02  
-**Current**: Slice 5+6 🔍 PR #10 | Prev: Slice 3 🔍 PR #8
-=======
-**Last Updated**: 2026-04-21 23:59  
-**Current**: Slice 5 ✅ Ready to Commit | Parked: Slice 4
->>>>>>> main
+**Last Updated**: 2026-04-23 00:00  
+**Current**: Slice 5+6 ✔️ MERGED (PR #10) | Next: Slice 7 📋 PLANNED
 
 ---
 
@@ -16,16 +11,10 @@
 |-------|--------|--------|--------|-------|
 | 1 — Toolchain | ✔️ MERGED | toolchain-setup | 39ed5b9 | ESLint, Prettier, Vitest, Husky, CI |
 | 2 — Code Quality | ✔️ MERGED | feat/slice-02-eslint-cleanup | - | PR #7: 79 warnings resolved, strict mode |
-<<<<<<< feat/slice-05-06-model-registry
-| 3 — Test Coverage | 🔍 PR REVIEW | feat/slice-03-test-coverage | 09eb8ff | PR #8: 37 tests, 71.42% coverage |
-| 4 — Cloudflare Deploy | 📋 PLANNED | - | - | Headers, secrets, deploy workflow |
-| 5+6 — Model Registry + bge-small | 🔍 PR REVIEW | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry foundation + 2nd model + tooltips |
-=======
 | 3 — Test Coverage | ✔️ MERGED | feat/slice-03-test-coverage | 09eb8ff | PR #8: 37 tests, 71.42% coverage |
 | 4 — Cloudflare Deploy | 🔄 PARKED | - | - | No CF account (blocked) |
-| 5 — Registry Foundation | ✅ BUILT | feat/slice-05-registry-foundation | 76ec18f | MODEL_REGISTRY, validation, 29 tests |
-| 6 — Second Model (bge-small) | 📋 PLANNED | - | - | + Tooltips for params |
->>>>>>> main
+| 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
+| 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | 📋 PLANNED | - | - | Stride-based overlap |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
