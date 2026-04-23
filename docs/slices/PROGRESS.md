@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
 **Last Updated**: 2026-04-24  
-**Current**: Slice 7 ✅ BUILT (ready for PR) | Last: Slice 5+6 ✔️ MERGED (PR #10)
+**Current**: Slice 7 🔍 PR REVIEW (PR #11) | Last: Slice 5+6 ✔️ MERGED (PR #10)
 
 ---
 
@@ -15,7 +15,7 @@
 | 4 — Cloudflare Deploy | 🔄 PARKED | - | - | No CF account (blocked) |
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
-| 7 — Sliding Window Chunking | ✅ BUILT | feat/slice-07-sliding-window | 5b12f1c | 9 tests, stride validation, 75 total tests |
+| 7 — Sliding Window Chunking | 🔍 PR REVIEW | feat/slice-07-sliding-window | 5b12f1c | PR #11: stride-based params, 9 tests, 75 total |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -280,7 +280,8 @@ Registry and first additional model are tightly coupled — building together va
 - [x] **COVERAGE_MAINTAINED** — 72.3% lines (above 71% baseline)
 - [ ] **MANUAL_VERIFIED** — Browser test pending (requires dev server)
 - [x] **COMMITTED** — Commit 5b12f1c created
-- [ ] **MERGED** — Ready for PR
+- [x] **PR_CREATED** — PR #11 opened
+- [ ] **MERGED** — Pending review
 
 ### Scope
 Added SLIDING_WINDOW chunking method with stride-based parameterization:
@@ -349,9 +350,15 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 - [x] All quality gates pass
 - [x] README.md updated
 - [x] PROGRESS.md updated
-- [ ] Manual browser test (requires `npm run dev`)
-- [x] Git commit (5b12f1c)
-- [ ] PR creation (ready)
+- [ ] Manual browser test (can be done post-PR)
+- [x] Git commit (5b12f1c + 35701a3)
+- [x] PR created (PR #11)
+
+### PR Information
+- **URL**: https://github.com/neomatrix369/pre-rag-explorer-dashboard/pull/11
+- **Title**: feat(slice-07): add sliding window chunking with stride-based overlap
+- **Status**: Open, pending review
+- **Manual Test**: Browser verification recommended before merge
 
 ---
 
