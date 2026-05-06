@@ -38,6 +38,7 @@ export enum ChunkingMethod {
   TOKEN = 'token',
   SENTENCE = 'sentence',
   SEMANTIC = 'semantic',
+  SLIDING_WINDOW = 'sliding_window',
 }
 
 export interface ChunkParams {
@@ -46,6 +47,8 @@ export interface ChunkParams {
   tokenCount?: number;
   sentenceCount?: number;
   similarityThreshold?: number;
+  windowSize?: number;
+  stride?: number;
 }
 
 export interface Chunk {

@@ -47,6 +47,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
           [ChunkingMethod.TOKEN]: { tokenCount: 256, overlap: 50 },
           [ChunkingMethod.SENTENCE]: { sentenceCount: 5, overlap: 1 },
           [ChunkingMethod.SEMANTIC]: { similarityThreshold: 0.5 },
+          [ChunkingMethod.SLIDING_WINDOW]: { windowSize: 1000, stride: 500 },
         };
   });
 
@@ -358,6 +359,8 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                         {method === 'token' && 'Approximates token boundaries (LLM-friendly).'}
                         {method === 'sentence' && 'Splits by semantic sentences.'}
                         {method === 'semantic' && 'Group paragraphs by logical structure.'}
+                        {method === 'sliding_window' &&
+                          'Stride-based chunking with configurable overlap.'}
                       </p>
                     </div>
                   </label>
@@ -445,51 +448,116 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
                           />
                         </div>
                       )}
-                      <div>
-                        <div className="flex justify-between text-xs text-slate-600 mb-1">
-                          <span
-                            className="font-medium"
-                            title="Overlap between consecutive chunks (preserves context across boundaries)"
-                          >
-                            Overlap
-                            <span className="ml-1 text-slate-400 font-normal">
-                              {method === ChunkingMethod.SENTENCE
-                                ? '(sentences)'
-                                : method === ChunkingMethod.TOKEN
-                                  ? '(tokens)'
-                                  : '(chars)'}
+                      {method === ChunkingMethod.SLIDING_WINDOW && (
+                        <>
+                          <div>
+                            <div className="flex justify-between text-xs text-slate-600 mb-1">
+                              <span className="font-medium" title="Size of each sliding window">
+                                Window Size
+                              </span>
+                              <span className="font-bold text-indigo-600">
+                                {params[method].windowSize} chars
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min={100}
+                              max={4000}
+                              step={100}
+                              value={params[method].windowSize ?? 1000}
+                              onChange={(e) =>
+                                updateParam(method, 'windowSize', Number(e.target.value))
+                              }
+                              className="w-full h-1.5 accent-indigo-500"
+                              title="Size of each sliding window"
+                            />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-xs text-slate-600 mb-1">
+                              <span
+                                className="font-medium"
+                                title="How far to move the window each step (lower = more overlap)"
+                              >
+                                Stride
+                              </span>
+                              <span className="font-bold text-indigo-600">
+                                {params[method].stride} chars
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min={1}
+                              max={Math.max(1, (params[method].windowSize ?? 1000) - 50)}
+                              step={50}
+                              value={params[method].stride ?? 500}
+                              onChange={(e) =>
+                                updateParam(method, 'stride', Number(e.target.value))
+                              }
+                              className="w-full h-1.5 accent-indigo-500"
+                              title="How far to move the window each step (lower = more overlap)"
+                            />
+                            <p className="text-[10px] text-slate-400 mt-1 italic">
+                              Overlap ={' '}
+                              {(params[method].windowSize ?? 1000) - (params[method].stride ?? 500)}{' '}
+                              chars (
+                              {Math.round(
+                                (((params[method].windowSize ?? 1000) -
+                                  (params[method].stride ?? 500)) /
+                                  (params[method].windowSize ?? 1000)) *
+                                  100
+                              )}
+                              %)
+                            </p>
+                          </div>
+                        </>
+                      )}
+                      {method !== ChunkingMethod.SLIDING_WINDOW && (
+                        <div>
+                          <div className="flex justify-between text-xs text-slate-600 mb-1">
+                            <span
+                              className="font-medium"
+                              title="Overlap between consecutive chunks (preserves context across boundaries)"
+                            >
+                              Overlap
+                              <span className="ml-1 text-slate-400 font-normal">
+                                {method === ChunkingMethod.SENTENCE
+                                  ? '(sentences)'
+                                  : method === ChunkingMethod.TOKEN
+                                    ? '(tokens)'
+                                    : '(chars)'}
+                              </span>
                             </span>
-                          </span>
-                          <span className="font-bold text-indigo-600">
-                            {params[method].overlap}
-                          </span>
+                            <span className="font-bold text-indigo-600">
+                              {params[method].overlap}
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={
+                              method === ChunkingMethod.SENTENCE
+                                ? Math.max(0, (params[method].sentenceCount ?? 5) - 1)
+                                : method === ChunkingMethod.TOKEN
+                                  ? Math.max(0, (params[method].tokenCount ?? 256) - 1)
+                                  : Math.max(0, (params[method].chunkSize ?? 1000) - 100)
+                            }
+                            step={
+                              method === ChunkingMethod.SENTENCE
+                                ? 1
+                                : method === ChunkingMethod.TOKEN
+                                  ? 8
+                                  : 50
+                            }
+                            value={params[method].overlap ?? 0}
+                            onChange={(e) => updateParam(method, 'overlap', Number(e.target.value))}
+                            className="w-full h-1.5 accent-indigo-500"
+                            title="Overlap between consecutive chunks (preserves context across boundaries)"
+                          />
+                          <p className="text-[10px] text-slate-400 mt-1 italic">
+                            Higher overlap preserves more context across chunk boundaries.
+                          </p>
                         </div>
-                        <input
-                          type="range"
-                          min={0}
-                          max={
-                            method === ChunkingMethod.SENTENCE
-                              ? Math.max(0, (params[method].sentenceCount ?? 5) - 1)
-                              : method === ChunkingMethod.TOKEN
-                                ? Math.max(0, (params[method].tokenCount ?? 256) - 1)
-                                : Math.max(0, (params[method].chunkSize ?? 1000) - 100)
-                          }
-                          step={
-                            method === ChunkingMethod.SENTENCE
-                              ? 1
-                              : method === ChunkingMethod.TOKEN
-                                ? 8
-                                : 50
-                          }
-                          value={params[method].overlap ?? 0}
-                          onChange={(e) => updateParam(method, 'overlap', Number(e.target.value))}
-                          className="w-full h-1.5 accent-indigo-500"
-                          title="Overlap between consecutive chunks (preserves context across boundaries)"
-                        />
-                        <p className="text-[10px] text-slate-400 mt-1 italic">
-                          Higher overlap preserves more context across chunk boundaries.
-                        </p>
-                      </div>
+                      )}
                     </div>
                     /* eslint-enable security/detect-object-injection */
                   )}

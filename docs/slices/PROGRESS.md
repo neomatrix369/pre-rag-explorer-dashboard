@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-**Last Updated**: 2026-04-23 00:00  
-**Current**: Slice 5+6 ✔️ MERGED (PR #10) | Next: Slice 7 📋 PLANNED
+**Last Updated**: 2026-04-24  
+**Current**: Slice 7 🔍 PR REVIEW (PR #11) | Last: Slice 5+6 ✔️ MERGED (PR #10)
 
 ---
 
@@ -15,7 +15,7 @@
 | 4 — Cloudflare Deploy | 🔄 PARKED | - | - | No CF account (blocked) |
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
-| 7 — Sliding Window Chunking | 📋 PLANNED | - | - | Stride-based overlap |
+| 7 — Sliding Window Chunking | 🔍 PR REVIEW | feat/slice-07-sliding-window | 5b12f1c | PR #11: stride-based params, 9 tests, 75 total |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -269,6 +269,99 @@ Registry and first additional model are tightly coupled — building together va
 
 ---
 
+## Slice 7: Sliding Window Chunking ✅
+
+**Branch**: `feat/slice-07-sliding-window` | **Commit**: `5b12f1c` | **Completed**: 2026-04-24
+
+### Checkpoints
+- [x] **PROMPT_READY** — Slice spec created (SLICE-07-SLIDING-WINDOW.md)
+- [x] **CODE_COMPLETE** — Types, service, UI, tests implemented
+- [x] **TESTS_PASSING** — 75 tests passing (66→75, +9 tests)
+- [x] **COVERAGE_MAINTAINED** — 72.3% lines (above 71% baseline)
+- [ ] **MANUAL_VERIFIED** — Browser test pending (requires dev server)
+- [x] **COMMITTED** — Commit 5b12f1c created
+- [x] **PR_CREATED** — PR #11 opened
+- [ ] **MERGED** — Pending review
+
+### Scope
+Added SLIDING_WINDOW chunking method with stride-based parameterization:
+- **Window Size**: Size of each chunk (default 1000 chars)
+- **Stride**: How far to move the window each step (default 500 chars)
+- **Mental Model**: Stride < windowSize creates overlap (different from FIXED which uses overlap param)
+
+### Verification Results
+```bash
+✅ npm run lint (0 warnings, 0 errors)
+✅ npm run typecheck (0 errors)
+✅ npm run test (75/75 tests passing, up from 66)
+✅ npm run test:coverage (72.3% lines, maintained from baseline)
+✅ npm run build (3.04s, clean build)
+```
+
+### Files Created
+- `docs/slices/SLICE-07-SLIDING-WINDOW.md` — Slice specification
+
+### Files Modified
+- `types.ts` — Added SLIDING_WINDOW to ChunkingMethod enum, added windowSize + stride to ChunkParams
+- `constants.tsx` — Added SLIDING_WINDOW label
+- `services/chunkingService.ts` — Added slidingWindowChunk function with validation
+- `services/chunkingService.test.ts` — Added 9 test cases for sliding window
+- `components/chunking/ProcessSection.tsx` — Added UI for windowSize + stride params, added default params
+- `README.md` — Updated to "6 Chunking Strategies"
+- `docs/slices/PROGRESS.md` — This file
+
+### Test Coverage Details
+```
+9 new tests added:
+- Basic sliding window (50% overlap)
+- No overlap (stride = windowSize)
+- High overlap (75% overlap)
+- Maximum overlap (stride = 1)
+- Gaps warning (stride > windowSize)
+- Empty text edge case
+- Text shorter than window
+- Validation: stride <= 0 throws error (2 cases)
+- Default params test
+```
+
+### Key Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Separate method (not modify FIXED) | Different mental model serves different users |
+| windowSize + stride params | Clearer than "overlap" for stride-based thinking |
+| Validate stride > 0 | Prevent infinite loop |
+| Warn on stride > windowSize | Valid but creates gaps; inform user |
+| Use nullish coalescing (??) for params | Preserve explicit 0 values (vs || operator) |
+| Calculate overlap in UI tooltip | Show equivalent overlap % for user reference |
+
+### Implementation Summary
+- **slidingWindowChunk()**: Validates stride > 0, warns on gaps, slices text by stride
+- **UI**: Window size slider (100-4000 chars), stride slider (1-windowSize), live overlap % display
+- **Tests**: Comprehensive edge case coverage (stride=0, stride=1, stride>window, empty, short text)
+- **Params**: Default windowSize=1000, stride=500 (50% overlap)
+
+### Exit Criteria
+- [x] ChunkingMethod.SLIDING_WINDOW enum value added
+- [x] ChunkParams has windowSize, stride fields
+- [x] slidingWindowChunk function with validation
+- [x] 9 tests added (edge cases covered)
+- [x] UI dropdown includes "Sliding Window"
+- [x] Parameter inputs (windowSize, stride) with tooltips
+- [x] All quality gates pass
+- [x] README.md updated
+- [x] PROGRESS.md updated
+- [ ] Manual browser test (can be done post-PR)
+- [x] Git commit (5b12f1c + 35701a3)
+- [x] PR created (PR #11)
+
+### PR Information
+- **URL**: https://github.com/neomatrix369/pre-rag-explorer-dashboard/pull/11
+- **Title**: feat(slice-07): add sliding window chunking with stride-based overlap
+- **Status**: Open, pending review
+- **Manual Test**: Browser verification recommended before merge
+
+---
+
 ## Interrupt Recovery
 
 ### Resume Checklist
@@ -307,6 +400,9 @@ Registry and first additional model are tightly coupled — building together va
 | 2026-04-21 | 5 | Re-export from constants.tsx | Minimize changes to existing imports; backward compatible |
 | 2026-04-21 | 5 | ModelId as string type | Will become union type in Slice 6 ('all-minilm-l6-v2' \| 'bge-small-en-v1.5') |
 | 2026-04-21 | 5 | Object.prototype.hasOwnProperty.call() for isValidModelId | Avoids object injection security warning |
+| 2026-04-23 | 7 | Use ?? (nullish coalescing) not \|\| for stride param | stride=0 is falsy; \|\| would use default, ?? preserves explicit 0 |
+| 2026-04-23 | 7 | SLIDING_WINDOW as separate method | Stride mental model different from overlap; serves different user thinking |
+| 2026-04-23 | 7 | Show overlap % in stride tooltip | Help users understand relationship: overlap = windowSize - stride |
 
 ---
 
