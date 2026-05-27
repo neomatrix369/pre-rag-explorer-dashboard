@@ -1,7 +1,7 @@
 # Slice Infra: Project Hardening & CI Parity
 
-**Status**: 🔨 IN PROGRESS  
-**Branch**: `feat/slice-infra-hardening`  
+**Status**: 🔍 PR REVIEW  
+**Branch**: `feat/slice-infra-hardening` | **Commit**: `ce2d086`  
 **Priority**: Must (cross-cutting reliability)  
 **MoSCoW**: Must — local/CI parity and contributor hygiene before feature slices 8+  
 **Sources**: Patterns inherited from `price-analysis` and `rag-params-finder`

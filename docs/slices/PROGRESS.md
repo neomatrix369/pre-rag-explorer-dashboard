@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
 **Last Updated**: 2026-05-27  
-**Current**: Slice Infra 🔨 IN PROGRESS | Last merged: Slice 7 ✔️ (PR #11)
+**Current**: Slice Infra 🔍 PR REVIEW | Last merged: Slice 7 ✔️ (PR #11)
 
 ---
 
@@ -16,7 +16,7 @@
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | ✔️ MERGED | feat/slice-07-sliding-window | 94ca41b | PR #11: stride-based params, 75 tests |
-| **Infra — Project Hardening** | 🔨 IN PROGRESS | feat/slice-infra-hardening | - | CI parity, gitleaks, Dependabot, docs |
+| **Infra — Project Hardening** | 🔍 PR REVIEW | feat/slice-infra-hardening | ce2d086 | CI parity, gitleaks, Dependabot, docs |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -270,9 +270,9 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 
 ---
 
-## Slice Infra: Project Hardening 🔨
+## Slice Infra: Project Hardening 🔍
 
-**Branch**: `feat/slice-infra-hardening` | **Spec**: `docs/slices/SLICE-INFRA-HARDENING.md`
+**Branch**: `feat/slice-infra-hardening` | **Commit**: `ce2d086` | **Spec**: `docs/slices/SLICE-INFRA-HARDENING.md`
 
 ### Checkpoints
 - [x] **PROMPT_READY** — Analysis of price-analysis + rag-params-finder complete
@@ -280,6 +280,12 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 - [x] **TESTS_PASSING** — `./scripts/quality-gates.sh` green (75 tests)
 - [x] **COMMITTED** — Conventional commit on feature branch
 - [ ] **MERGED** — PR to main
+
+### Verification
+```bash
+✅ ./scripts/quality-gates.sh (75 tests, 0 audit high+, build OK)
+✅ commit ce2d086 on feat/slice-infra-hardening
+```
 
 ### Scope summary
 - `scripts/quality-gates.sh` (CI mirror)
