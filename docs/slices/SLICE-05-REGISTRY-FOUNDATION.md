@@ -2,7 +2,8 @@
 
 **Branch**: `feat/slice-05-registry-foundation`  
 **Started**: 2026-04-21  
-**Status**: IN PROGRESS
+**Completed**: 2026-04-21  
+**Status**: ✔️ MERGED (PR #9, commit `76ec18f`)
 
 ---
 
@@ -225,12 +226,11 @@ npm run dev  # Check UI displays model name correctly
 
 ## Next Slice
 
-**Slice 6: Second Model (bge-small-en-v1.5)**
-- Add second model to MODEL_REGISTRY
-- Update ModelId to union type
-- Add model selection UI (dropdown in ProcessSection)
-- Add tooltips for chunking parameters
-- Test with multiple models simultaneously
+**Slice 5+6: Second Model + UI** ✔️ — Delivered in PR #10 (combined with registry extensibility):
+- Added `bge-small-en-v1.5` to MODEL_REGISTRY
+- Model selection UI in ProcessSection + parameter tooltips
+- Multi-model search in SearchSection
+- See `docs/slices/SLICE-05-06-MODEL-REGISTRY.md`
 
 ---
 

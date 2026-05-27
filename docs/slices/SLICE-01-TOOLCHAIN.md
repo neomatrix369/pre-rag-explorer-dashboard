@@ -163,7 +163,9 @@ coverage/
 
 ## Next Slices
 
-**Slice 2: Code Quality**
+> **Update (2026-05-27)**: Slices 2–6 are complete. Current baselines: 0 ESLint warnings, 66 tests, ~70% coverage, model registry with 2 embedding models. See `docs/slices/PROGRESS.md`.
+
+**Slice 2: Code Quality** ✔️
 - Remove 19 unused imports/variables
 - Re-enable `--max-warnings 0` in lint script
 - Review security warnings, suppress false positives inline
