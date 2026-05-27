@@ -1,7 +1,7 @@
 # Maturity: Serious-lite — optional complement to Husky (lint-staged handles ESLint/Prettier).
 # Mirrors CI hygiene + secrets checks. Full gates: ./scripts/quality-gates.sh --full
 #
-# Install:  pip install pre-commit && pre-commit install && pre-commit install --hook-type commit-msg
+# Install:  pip install pre-commit && pre-commit install
 # Run all:   pre-commit run --all-files
 
 repos:
@@ -37,13 +37,3 @@ repos:
         language: system
         pass_filenames: false
         files: \.(ts|tsx)$
-
-  # ── Commit message hygiene ───────────────────────────────
-  - repo: local
-    hooks:
-      - id: strip-ai-coauthor
-        name: strip AI co-author trailers
-        entry: python3 scripts/strip_ai_coauthor.py
-        language: system
-        stages: [commit-msg]
-        pass_filenames: true

@@ -291,7 +291,6 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 - `scripts/quality-gates.sh` (CI mirror)
 - CI: format:check + gitleaks
 - Dependabot, `.env.example`, `.editorconfig`, CHANGELOG, ADR, contributor guide
-- commit-msg AI trailer stripper
 
 ### Exit criteria
 See `SLICE-INFRA-HARDENING.md` acceptance criteria checklist.
@@ -436,7 +435,7 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 | 2026-04-23 | 5+6 | Reconcile registry after merge | f938a7a — align MODEL_REGISTRY with Slice 5 foundation |
 | 2026-04-23 | 7 | Use ?? (nullish coalescing) not \|\| for stride param | stride=0 is falsy; \|\| would use default, ?? preserves explicit 0 |
 | 2026-04-23 | 7 | SLIDING_WINDOW as separate method | Stride mental model different from overlap; serves different user thinking |
-| 2026-05-27 | infra | Inherit hardening from price-analysis + rag-params-finder | quality-gates.sh CI mirror, gitleaks in CI, Dependabot, CHANGELOG, ADR, contributor guide, commit-msg stripper |
+| 2026-05-27 | infra | Inherit hardening from price-analysis + rag-params-finder | quality-gates.sh CI mirror, gitleaks in CI, Dependabot, CHANGELOG, ADR, contributor guide |
 | 2026-04-23 | 7 | Show overlap % in stride tooltip | Help users understand relationship: overlap = windowSize - stride |
 
 ---

@@ -27,7 +27,6 @@ Close gaps between local development, CI, and sibling-project best practices so 
 | No `.env.example` | Undocumented env contract |
 | No CHANGELOG / ADR / contributor guide | Decisions and release history not traceable |
 | No Dependabot | Stale deps and Actions versions |
-| AI co-author trailers | Policy violation on commits |
 
 ---
 
@@ -54,7 +53,6 @@ Add `--quick` flag (lint + format + typecheck + test only).
 
 ### 4. Git hooks
 
-- `.husky/commit-msg` + `scripts/strip_ai_coauthor.py` (from price-analysis)
 - Optional `.pre-commit-config.yaml` (Serious-lite hygiene + gitleaks, complements Husky)
 
 ### 5. Repository hygiene
@@ -93,8 +91,6 @@ Add `--quick` flag (lint + format + typecheck + test only).
 | Path | Purpose |
 |------|---------|
 | `scripts/quality-gates.sh` | CI mirror orchestrator |
-| `scripts/strip_ai_coauthor.py` | commit-msg hygiene |
-| `.husky/commit-msg` | Husky hook for stripper |
 | `.env.example` | Env var template |
 | `.editorconfig` | Editor consistency |
 | `.github/dependabot.yml` | Dependency automation |
@@ -123,10 +119,9 @@ Add `--quick` flag (lint + format + typecheck + test only).
 - [x] `npm run quality-gates` delegates to script
 - [x] `npm run test:all` includes format:check
 - [x] `.env.example` documents optional Gemini key
-- [x] commit-msg hook strips `Co-authored-by: Cursor` trailers
 - [x] CHANGELOG, ADR-001, contributor guide exist and are linked from README
 - [x] PROGRESS.md lists Infra slice with decision log entry
-- [x] No prior tests regressed (75/75 passing)
+- [x] No prior tests regressed (81/81 passing)
 
 ---
 
@@ -138,11 +133,6 @@ Add `--quick` flag (lint + format + typecheck + test only).
 
 # Quick pre-commit check
 ./scripts/quality-gates.sh --quick
-
-# Commit-msg stripper (manual test)
-echo -e "feat: test\n\nCo-authored-by: Cursor <cursoragent@cursor.com>" > /tmp/msg
-python3 scripts/strip_ai_coauthor.py /tmp/msg
-grep -q Cursor /tmp/msg && echo FAIL || echo PASS
 ```
 
 **Expected baselines (2026-05-27):**
@@ -152,7 +142,7 @@ grep -q Cursor /tmp/msg && echo FAIL || echo PASS
 | lint | 0 errors, 0 warnings |
 | format:check | clean |
 | typecheck | 0 errors |
-| test | 75 passing |
+| test | 81 passing |
 | coverage | ≥40% on `services/**` (~72% actual) |
 | npm audit | 0 high+ |
 | build | success, ~3s |
@@ -167,8 +157,7 @@ grep -q Cursor /tmp/msg && echo FAIL || echo PASS
 3. Extend CI with format:check + gitleaks
 
 ### Phase 2 — Hooks + secrets
-1. Port `strip_ai_coauthor.py` + Husky commit-msg
-2. Add optional `.pre-commit-config.yaml`
+1. Add optional `.pre-commit-config.yaml`
 
 ### Phase 3 — Docs + automation
 1. CHANGELOG, ADR, contributor guide
@@ -195,7 +184,7 @@ grep -q Cursor /tmp/msg && echo FAIL || echo PASS
 
 ## References
 
-- `price-analysis`: `scripts/check_integrity.py`, `scripts/strip_ai_coauthor.py`
+- `price-analysis`: `scripts/check_integrity.py`
 - `rag-params-finder`: `.pre-commit-config.yaml`, `docs/contributor-guide/development.md`, CHANGELOG cadence
 - Slice 1 spec: `docs/slices/SLICE-01-TOOLCHAIN.md`
 

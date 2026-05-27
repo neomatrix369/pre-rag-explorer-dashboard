@@ -31,7 +31,6 @@ npm run dev    # → http://localhost:3000
 | Hook | Runs |
 |------|------|
 | `pre-commit` | gitleaks (if installed) + lint-staged (ESLint fix + Prettier) |
-| `commit-msg` | Strips AI `Co-authored-by` trailers (Cursor/Claude) |
 
 ### Optional: pre-commit framework
 
@@ -40,7 +39,6 @@ For hygiene + gitleaks without Husky duplication:
 ```bash
 pip install pre-commit
 pre-commit install
-pre-commit install --hook-type commit-msg
 pre-commit run --all-files
 ```
 
@@ -150,8 +148,7 @@ pre-rag-explorer-dashboard/
 ├── scripts/
 │   ├── quality-gates.sh         # CI mirror (--quick, --full)
 │   ├── check_integrity.sh       # fast regression + optional full
-│   ├── print_slice_progress.sh  # terminal metrics dashboard
-│   └── strip_ai_coauthor.py     # commit-msg hygiene
+│   └── print_slice_progress.sh  # terminal metrics dashboard
 ├── benchmarks/                  # perf baseline structure (scripts TBD)
 └── .github/workflows/ci.yml
 ```
