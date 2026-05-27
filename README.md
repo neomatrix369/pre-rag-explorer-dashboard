@@ -207,7 +207,7 @@ components/
 ## Development
 
 ```bash
-# Install dependencies
+# Install dependencies (React 19 peer-dep compatibility)
 npm install --legacy-peer-deps
 
 # Start development server (with hot reload)
@@ -217,14 +217,17 @@ npm run dev
 npm run build
 
 # Preview production build
-npm preview
+npm run preview
 
-# Quality gates (run before committing)
-npm run lint           # ESLint strict mode (0 warnings)
-npm run typecheck      # TypeScript
-npm run test           # Vitest (66 tests)
-npm run test:coverage  # Coverage report (40% threshold, ~70% actual)
-npm run test:all       # lint + typecheck + test
+# Quality gates (run before committing — mirrors CI)
+./scripts/quality-gates.sh   # full: lint, format, typecheck, test, coverage, audit, build
+npm run test:all             # quick subset: lint + format + typecheck + test
+npm run verify               # typecheck + build
+npm run lint                 # ESLint strict mode (0 warnings)
+npm run format:check         # Prettier
+npm run typecheck            # TypeScript
+npm run test                 # Vitest (75 tests)
+npm run test:coverage        # Coverage report (40% threshold, ~72% actual)
 npm audit --audit-level=high
 ```
 
@@ -232,7 +235,13 @@ npm audit --audit-level=high
 
 ## Environment Variables
 
-Create a `.env.local` file in the project root:
+Copy the example file and edit as needed:
+
+```bash
+cp .env.example .env.local
+```
+
+Or create `.env.local` manually:
 
 ```bash
 GEMINI_API_KEY=your_api_key_here
@@ -285,7 +294,9 @@ GEMINI_API_KEY=your_api_key_here
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+See [docs/contributor-guide/development.md](docs/contributor-guide/development.md) for setup, quality gates, and slice workflow.
+
+Before opening a PR, run `./scripts/quality-gates.sh` (matches CI exactly).
 
 ---
 

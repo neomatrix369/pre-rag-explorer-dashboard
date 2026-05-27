@@ -1,0 +1,36 @@
+# Maturity: Serious-lite — optional complement to Husky (lint-staged handles ESLint/Prettier).
+# Mirrors CI hygiene + secrets checks. Full gates: ./scripts/quality-gates.sh
+#
+# Install:  pip install pre-commit && pre-commit install && pre-commit install --hook-type commit-msg
+# Run all:   pre-commit run --all-files
+
+repos:
+  # ── Hygiene ──────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: detect-private-key
+      - id: debug-statements
+
+  # ── Secrets ──────────────────────────────────────────────
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.22.1
+    hooks:
+      - id: gitleaks
+
+  # ── Commit message hygiene ───────────────────────────────
+  - repo: local
+    hooks:
+      - id: strip-ai-coauthor
+        name: strip AI co-author trailers
+        entry: python3 scripts/strip_ai_coauthor.py
+        language: system
+        stages: [commit-msg]
+        pass_filenames: true

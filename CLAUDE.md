@@ -12,15 +12,18 @@ npm run dev       # Start dev server at http://localhost:3000
 npm run build     # Production build
 npm run preview   # Preview production build
 
-# Quality Gates (Slices 1–6)
-npm run lint           # ESLint strict mode (--max-warnings 0)
-npm run typecheck      # TypeScript type checking
-npm run test           # Vitest unit tests (66 tests)
-npm run test:coverage  # Coverage report (40% threshold, ~70% actual)
-npm audit --audit-level=high  # Security audit (0 vulnerabilities)
+# Quality Gates (matches CI — prefer single entry point)
+./scripts/quality-gates.sh   # lint, format, typecheck, test, coverage, audit, build
+npm run quality-gates        # same via npm script
+npm run test:all             # lint + format:check + typecheck + test (no coverage/audit/build)
+npm run verify               # typecheck + build
 
-# Quick verification
-npm run test:all       # lint + typecheck + test
+npm run lint                 # ESLint strict mode (--max-warnings 0)
+npm run format:check         # Prettier
+npm run typecheck            # TypeScript type checking
+npm run test                 # Vitest unit tests (75 tests)
+npm run test:coverage        # Coverage report (40% threshold, ~72% actual)
+npm audit --audit-level=high # Security audit (0 vulnerabilities)
 ```
 
 **Note**: Install dependencies with `npm install --legacy-peer-deps` (React 19 compatibility).
@@ -161,13 +164,14 @@ When making pragmatic choices, document in `PROGRESS.md` decision log:
 | YYYY-MM-DD | N | Short decision | Rationale (context, alternatives, tradeoffs) |
 ```
 
-### Quality Gate Baseline (Post-Slice 6, verified 2026-05-27)
+### Quality Gate Baseline (Post-Slice 7, verified 2026-05-27)
 
 ```
+./scripts/quality-gates.sh → all gates pass (CI mirror)
 npm run lint           → 0 warnings, 0 errors (--max-warnings 0)
 npm run typecheck      → 0 errors
-npm run test           → 66/66 passing (6 test files)
-npm run test:coverage  → ~70% lines, 40% threshold enforced
+npm run test           → 75/75 passing
+npm run test:coverage  → ~72% lines, 40% threshold enforced
 npm audit              → 0 vulnerabilities (ALL deps)
 npm run build          → ~3.2s, dist/ created
 ```
@@ -175,8 +179,8 @@ npm run build          → ~3.2s, dist/ created
 **Known State:**
 - React 19 + @testing-library/react@15 requires --legacy-peer-deps
 - Vitest 4.x calculates coverage differently than 1.x
-- Service coverage focuses on `services/**/*.ts`; chunkingService lower (~30%) — target for future slices
-- Slice 7 next: sliding window chunking
+- Service coverage focuses on `services/**/*.ts`; chunkingService lower (~45%) — target for future slices
+- Slice Infra in progress: CI parity, gitleaks, Dependabot, contributor docs
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
