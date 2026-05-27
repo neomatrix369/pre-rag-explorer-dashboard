@@ -163,7 +163,7 @@ coverage/
 
 ## Next Slices
 
-> **Update (2026-05-27)**: Slices 2–6 are complete. Current baselines: 0 ESLint warnings, 66 tests, ~70% coverage, model registry with 2 embedding models. See `docs/slices/PROGRESS.md`.
+> **Update (2026-05-27)**: Slices 2–7 merged; infra hardening in PR review on `feat/slice-infra-hardening`. Current baselines: 0 ESLint warnings, **81** tests (incl. import smoke), ~72% coverage on `services/**`, 6 chunking methods, 2 embedding models. See `docs/slices/PROGRESS.md` and `docs/contributor-guide/development.md`.
 
 **Slice 2: Code Quality** ✔️
 - Remove 19 unused imports/variables

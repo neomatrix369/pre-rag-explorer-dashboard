@@ -1,8 +1,8 @@
 # Slice 7: Sliding Window Chunking
 
 **Branch**: `feat/slice-07-sliding-window`
-**Status**: 🔨 IN PROGRESS
-**Started**: 2026-04-23
+**Status**: ✔️ MERGED (PR #11, merge commit `94ca41b`)
+**Started**: 2026-04-23 | **Completed**: 2026-05-27
 
 ---
 
@@ -223,6 +223,15 @@ Lint warnings:  0
 Type errors:    0
 Vulnerabilities: 0 (high/critical)
 ```
+
+## Post-merge metrics (PR #11)
+
+```
+Tests:          75 passing at merge (+9 sliding-window tests)
+Coverage:       ~72.3% lines on services/**
+```
+
+> **Note (2026-05-27)**: Infra slice added `importSmoke.test.ts` (+6 tests) on `feat/slice-infra-hardening` → **81** total. See `docs/contributor-guide/development.md` for current baselines.
 
 ---
 
