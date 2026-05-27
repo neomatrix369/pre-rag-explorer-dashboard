@@ -36,7 +36,7 @@ jobs:
         run: shellcheck --external-sources scripts/*.sh start-services.sh stop-services.sh
 
       - name: Actionlint
-        uses: rhysd/actionlint@v1.7.7
+        uses: rhysd/actionlint@v1.7.12
 
       - name: Markdownlint
         run: npm run lint:md
