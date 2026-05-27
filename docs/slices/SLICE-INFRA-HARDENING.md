@@ -107,6 +107,13 @@ Add `--quick` flag (lint + lint:meta + format + typecheck + test only).
 | `CHANGELOG.md` | Release history |
 | `docs/adr/ADR-001-browser-only-architecture.md` | Architecture decision |
 | `docs/contributor-guide/development.md` | Contributor onboarding |
+| `Dockerfile` | Multi-stage Vite build + nginx runtime |
+| `docker-compose.yml` | Single `dashboard` service |
+| `nginx/default.conf` | SPA routing + `/health` |
+| `.dockerignore` | Lean build context |
+| `start-services.sh` / `stop-services.sh` | Compose up/down (AIE7 patterns, compact) |
+| `scripts/docker-cleanup.sh` | Shared cleanup helper |
+| `scripts/health-check.sh` | Post-start verification |
 
 ### Modified
 
@@ -190,6 +197,34 @@ Add `--quick` flag (lint + lint:meta + format + typecheck + test only).
 1. Run full quality gates
 2. Conventional commit on `feat/slice-infra-hardening`
 
+### Phase 5 — Docker deploy (browser-only adaptation)
+
+Patterns from [AIE7-Demo-Day-Project](https://github.com/neomatrix369/AIE7-Demo-Day-Project) (`docker-compose.yml`, `start-services.sh`, `stop-services.sh`, `scripts/docker-cleanup.sh`, `scripts/health-check.sh`), adapted for a **single static service** — no Qdrant/FastAPI (would violate ADR-001).
+
+| Aspect | Choice |
+|--------|--------|
+| **Scope** | One Compose service `dashboard`: multi-stage Vite build + nginx |
+| **Dev vs Docker** | Day-to-day dev: `npm run dev`. Docker = production static serve only (no dev-container profile) |
+| **Port** | Host `3000` → container `80` (same URL as Vite dev) |
+| **Env** | Optional `GEMINI_API_KEY` as Docker build `ARG` (same bake-in as `vite.config.ts`); core RAG needs no key |
+| **Slice 4** | Cloudflare Pages remains parked; Docker is Infra-only deploy transport |
+
+**Exit criteria (Docker):**
+
+- [x] `./start-services.sh` → app at `http://localhost:3000` (or `HOST_PORT` if 3000 busy)
+- [x] `./scripts/health-check.sh` passes (`/health` + main page)
+- [x] `./stop-services.sh` → clean `compose down`
+- [x] `docker compose build` succeeds on Linux (CI smoke job)
+- [x] New shell scripts pass shellcheck (CI)
+
+**Files (Docker):** `Dockerfile`, `docker-compose.yml`, `nginx/default.conf`, `.dockerignore`, `start-services.sh`, `stop-services.sh`, `scripts/docker-cleanup.sh`, `scripts/health-check.sh`
+
+---
+
+## Docker deploy (browser-only adaptation)
+
+See Phase 5 above. **Risks:** `GEMINI_API_KEY` in image layers if set at build time (document in contributor guide; never commit `.env`). Port 3000 conflicts with `npm run dev` — `start-services.sh` checks and offers resolution.
+
 ---
 
 ## Decision Log (slice-specific)
@@ -203,6 +238,8 @@ Add `--quick` flag (lint + lint:meta + format + typecheck + test only).
 | gitleaks in CI not just local | price-analysis had bandit local-only; CI gap caused drift |
 | ADR-001 mirrors rag-params-finder ADR-001 | Documents intentional browser-only vs two-process tradeoff |
 | `--quick` on quality-gates | Fast feedback during active coding; full gates before push |
+| Docker as Infra extension (not Slice 4) | User choice: CF Slice 4 stays parked; Docker is static hosting only, ADR-001 unchanged |
+| Compact stop script (no 4-way menu) | AIE7 interactive stop is heavy; `stop-services.sh` = `down` + silent cleanup; power users use `docker compose down -v` |
 
 ---
 
@@ -233,7 +270,7 @@ Add `--quick` flag (lint + lint:meta + format + typecheck + test only).
 | Frontend tests (Vitest) | N/A | ❌ | ✅ **ahead** (81 tests) |
 | ESLint strict CI | N/A | partial | ✅ **ahead** |
 | shellcheck / actionlint / md lint | partial | partial | ✅ CI + hooks |
-| Docker deploy | ✅ Streamlit | deferred | Slice 4 parked |
+| Docker deploy | ✅ 3-tier (Qdrant+API+Next) | deferred | ✅ single-service nginx (Infra Phase 5) |
 
 ### Still Won't (correct for browser-only)
 

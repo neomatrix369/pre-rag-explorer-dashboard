@@ -68,13 +68,42 @@ Some packages ship **platform-specific binaries**. A lockfile produced on macOS 
 | Layer | What | Why |
 |-------|------|-----|
 | **Tests** | Vitest aliases `sharp` → `src/tests/sharp-stub.ts` | Browser-only app; `@xenova/transformers` imports `sharp` at load time in Node, but tests run in jsdom and never use image pipelines. |
-| **Install** | `bash scripts/ensure-native-deps.sh` after `npm ci` / `npm install` | Rebuilds `rollup` for the **current** `platform` + `arch`. Root `optionalDependencies` pin darwin + linux Rollup binaries in the lockfile. CI runs this automatically. |
+| **Install** | `bash scripts/ensure-native-deps.sh` after `npm ci` / `npm install` | Installs the Rollup native package for the current OS/libc (darwin, linux gnu/musl) and rebuilds `rollup`. Required for Docker Alpine builds and npm/cli#4828. CI runs this automatically. |
 
 **CI:** `.github/workflows/ci.yml` runs `npm ci` then `scripts/ensure-native-deps.sh` on `ubuntu-latest` with Node from `.nvmrc`.
 
 **If tests still fail with “Something went wrong installing sharp” locally:** Vitest should use the stub; confirm `vitest.config.ts` aliases `sharp` → `src/tests/sharp-stub.ts`. If a tool outside Vitest needs sharp: `npm rebuild sharp`.
 
 Do not commit `node_modules/`. Do not disable install scripts (`npm ci --ignore-scripts`) unless you know you are skipping native rebuilds on purpose.
+
+---
+
+## Docker (optional production run)
+
+Serve the **production static build** in a container (patterns from [AIE7-Demo-Day-Project](https://github.com/neomatrix369/AIE7-Demo-Day-Project), adapted for browser-only). This does **not** add a backend — ML still runs in the user’s browser after load.
+
+**Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose v2).
+
+| Use case | Command |
+|----------|---------|
+| Active development (hot reload) | `npm run dev` |
+| Production-like static serve | `./start-services.sh` |
+| Stop + light cleanup | `./stop-services.sh` |
+| Health check | `./scripts/health-check.sh` or `npm run docker:health` |
+
+```bash
+cp .env.example .env   # optional: COMPOSE_PROJECT_NAME, GEMINI_API_KEY for build
+./start-services.sh    # → http://localhost:3000
+./stop-services.sh
+```
+
+**Port 3000:** Do not run `npm run dev` and Docker at the same time — `start-services.sh` detects conflicts on port 3000.
+
+**Optional `GEMINI_API_KEY`:** Passed as a Docker build argument and baked into the JS bundle (same as a local `npm run build` with `.env`). Only set when you need Gemini features; never commit `.env`. Core RAG (Transformers.js) works without it.
+
+**Power users:** `docker compose down -v` removes containers and anonymous volumes (no named volumes in this stack). See `docs/slices/SLICE-INFRA-HARDENING.md` Phase 5.
+
+**Alternative deploy:** Slice 4 (Cloudflare Pages) remains parked — see `docs/slices/PROGRESS.md`.
 
 ---
 
@@ -119,6 +148,7 @@ npm run slice-progress                # terminal progress dashboard
 | Coverage | `npm run test:coverage` | ≥40% on `services/**` (~72% actual) |
 | Security | `npm audit --audit-level=high` | 0 high+ vulnerabilities |
 | Build | `npm run build` | ~3s, `dist/` created |
+| Docker build | `docker compose build` or `docker build -t rag-explorer:ci .` | CI smoke job |
 
 ### npm script shortcuts
 

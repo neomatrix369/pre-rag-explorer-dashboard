@@ -67,9 +67,14 @@ Models lazy-load on first use (~23–33 MB) and cache in browser storage.
 
 ---
 
-## Deployment (planned)
+## Deployment
 
-Slice 4 (parked): static Vite build → Cloudflare Pages. No backend added at deploy time.
+| Path | Status | Notes |
+|------|--------|-------|
+| **Docker (Infra)** | Available | Multi-stage build → nginx serves `dist/` on port 3000; `./start-services.sh` |
+| **Cloudflare Pages** | Slice 4 parked | No CF account; static hosting only when resumed |
+
+No backend is added at deploy time — ADR-001 browser-only architecture is unchanged.
 
 ---
 

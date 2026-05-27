@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Project hardening**: `scripts/quality-gates.sh` (CI mirror), `.env.example`, `.editorconfig`, Dependabot, optional `.pre-commit-config.yaml`, contributor development guide, ADR-001
 - **Cross-check phase 2**: `check_integrity.sh`, `print_slice_progress.sh`, import smoke tests (81 total Vitest tests), `.gitattributes`, `--full` quality gates, architecture + release docs, benchmarks scaffold
 - **Meta linters**: shellcheck (`scripts/*.sh`), actionlint (`.github/workflows/`), markdownlint-cli2 (`*.md`, excludes `.tessl/`), Prettier extended to YAML/HTML; Husky + CI + `npm run lint:meta`
+- **Docker deploy (Infra)**: multi-stage `Dockerfile`, `docker-compose.yml`, nginx SPA config, `start-services.sh` / `stop-services.sh`, `scripts/docker-cleanup.sh`, `scripts/health-check.sh`; CI `docker build` smoke
 
 ### Fixed
 

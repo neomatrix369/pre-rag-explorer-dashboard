@@ -32,7 +32,7 @@ run_pre_commit() {
 run_shellcheck() {
   local hint="brew install shellcheck, or: pip install pre-commit && pre-commit install-hooks"
   if command -v shellcheck >/dev/null 2>&1; then
-    shellcheck --external-sources scripts/*.sh
+    shellcheck --external-sources scripts/*.sh start-services.sh stop-services.sh
     return 0
   fi
   if [[ "${STRICT_BINARIES}" == "true" ]]; then

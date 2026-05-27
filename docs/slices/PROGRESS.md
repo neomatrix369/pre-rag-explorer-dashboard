@@ -16,7 +16,7 @@
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | ✔️ MERGED | feat/slice-07-sliding-window | 94ca41b | PR #11: stride-based params, 75 tests |
-| **Infra — Project Hardening** | 🔍 PR REVIEW | feat/slice-infra-hardening | b9be71f | CI parity, gitleaks, meta linters, 81 tests (+ import smoke), docs |
+| **Infra — Project Hardening** | 🔨 IN PROGRESS | feat/slice-infra-hardening | b9be71f | CI parity, gitleaks, meta linters, 81 tests, Docker static deploy |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -168,6 +168,7 @@ Overall:             71.42% lines  (37 total tests)
 
 ### Context
 - Cannot verify deployment workflow without CF account
+- **Alternative:** Infra Docker static deploy — see `SLICE-INFRA-HARDENING.md` Phase 5 and [development.md](../contributor-guide/development.md#docker-optional-production-run)
 - Cannot test wrangler configuration
 - Cannot validate security headers are applied
 - Violates "verify after every change" principle
@@ -295,8 +296,24 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 - Husky: lint-staged + optional `pre-commit` meta hooks (`pip install pre-commit && pre-commit install-hooks`)
 - Dependabot, `.env.example`, `.editorconfig`, CHANGELOG, ADR, contributor guide
 
+### Docker (Infra Phase 5 — complete)
+
+- [x] `Dockerfile` (node:20-alpine build → nginx:alpine serve)
+- [x] `docker-compose.yml`, `nginx/default.conf`, `.dockerignore`
+- [x] `start-services.sh`, `stop-services.sh`, `scripts/docker-cleanup.sh`, `scripts/health-check.sh`
+- [x] CI: `docker build` smoke on `ubuntu-latest`
+- [x] `scripts/ensure-native-deps.sh` installs Rollup musl/gnu binaries for Alpine/Linux Docker builds
+
+```bash
+./start-services.sh
+./scripts/health-check.sh
+curl -sf http://localhost:3000/health
+./stop-services.sh
+docker compose build
+```
+
 ### Exit criteria
-See `SLICE-INFRA-HARDENING.md` acceptance criteria checklist.
+See `SLICE-INFRA-HARDENING.md` acceptance criteria checklist (+ Docker exit criteria in Phase 5).
 
 ---
 
@@ -440,6 +457,7 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 | 2026-04-23 | 7 | SLIDING_WINDOW as separate method | Stride mental model different from overlap; serves different user thinking |
 | 2026-05-27 | infra | Inherit hardening from price-analysis + rag-params-finder | quality-gates.sh CI mirror, gitleaks in CI, Dependabot, CHANGELOG, ADR, contributor guide |
 | 2026-05-27 | infra | Meta linters in CI + hooks | shellcheck (scripts), actionlint (workflows), markdownlint (md); Prettier on YAML/HTML; shellcheck-py avoids Docker |
+| 2026-05-27 | infra | Docker static deploy (Infra) | Single-service nginx; patterns from AIE7; no backend/Qdrant; Slice 4 CF still parked |
 | 2026-04-23 | 7 | Show overlap % in stride tooltip | Help users understand relationship: overlap = windowSize - stride |
 
 ---

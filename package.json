@@ -22,6 +22,9 @@
     "quality-gates": "bash scripts/quality-gates.sh",
     "check-integrity": "bash scripts/check_integrity.sh",
     "slice-progress": "bash scripts/print_slice_progress.sh",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:health": "bash scripts/health-check.sh",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -57,7 +60,10 @@
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "4.60.2",
     "@rollup/rollup-darwin-x64": "4.60.2",
-    "@rollup/rollup-linux-x64-gnu": "4.60.2"
+    "@rollup/rollup-linux-arm64-gnu": "4.60.2",
+    "@rollup/rollup-linux-arm64-musl": "4.60.2",
+    "@rollup/rollup-linux-x64-gnu": "4.60.2",
+    "@rollup/rollup-linux-x64-musl": "4.60.2"
   },
   "overrides": {
     "protobufjs": "^7.5.5"
