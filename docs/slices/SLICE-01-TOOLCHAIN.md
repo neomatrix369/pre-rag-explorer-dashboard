@@ -26,7 +26,7 @@ Establish development quality gates and security baseline before any feature wor
 - **Node 20** via .nvmrc
 
 ### Configuration
-- React 19 support via `--legacy-peer-deps`
+- React 19 support via `--legacy-peer-deps` at Slice 1 time *(superseded: Infra PR #20 — `@testing-library/react@^16.1`, plain `npm install`)*
 - Security exclusions in .gitignore (env files, keys, credentials)
 - ESLint warnings mode (78 warnings to address in Slice 2)
 - Coverage baseline: 12.87% (chunkingService: 42%)
@@ -92,8 +92,9 @@ All commands passing:
 **Rationale**: Only 1 service has tests (chunkingService: 42%). Incremental approach: Slice 3 adds tests and raises to 40%+.
 
 ### 3. React 19 Compatibility
-**Decision**: Used `--legacy-peer-deps` for installation
-**Rationale**: @testing-library/react@15 still lists React 18 as peer dep. Library is forward-compatible; flag avoids install failure.
+**Decision**: Used `--legacy-peer-deps` for installation (Slice 1, April 2026)
+**Rationale**: @testing-library/react@15 still listed React 18 as peer dep.
+**Superseded (2026-05-28, Infra)**: Upgraded to `@testing-library/react@^16.1` — `npm install` without flags in CI and contributor docs.
 
 ### 4. Gitleaks Optional
 **Decision**: Pre-commit hook checks if gitleaks exists, warns if missing
@@ -163,7 +164,7 @@ coverage/
 
 ## Next Slices
 
-> **Update (2026-05-27)**: Slices 2–7 merged; infra hardening in PR review on `feat/slice-infra-hardening`. Current baselines: 0 ESLint warnings, **81** tests (incl. import smoke), ~72% coverage on `services/**`, 6 chunking methods, 2 embedding models. See `docs/slices/PROGRESS.md` and `docs/contributor-guide/development.md`.
+> **Update (2026-05-27)**: Slices 2–7 merged; infra hardening in PR review on `feat/slice-infra-hardening`. Current baselines: 0 ESLint warnings, **81** tests (incl. import smoke), ~72% coverage on `services/**`, 6 chunking methods, 2 embedding models. See `docs/_internal/PROGRESS.md` and `docs/contributor-guide/development.md`.
 
 **Slice 2: Code Quality** ✔️
 - Remove 19 unused imports/variables
@@ -199,7 +200,7 @@ Tooling Added:
 - Node 20 via .nvmrc
 
 Configuration:
-- React 19 support via --legacy-peer-deps
+- React 19 support via --legacy-peer-deps (superseded by RTL ^16.1 in Infra)
 - Security exclusions in .gitignore (env files, keys, credentials)
 - ESLint warnings mode (78 warnings to address in future slices)
 - Coverage baseline: 12.87% (chunkingService: 42%)

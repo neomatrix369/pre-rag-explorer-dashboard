@@ -78,8 +78,60 @@ No backend is added at deploy time — ADR-001 browser-only architecture is unch
 
 ---
 
+## Technical components
+
+### Frontend (React + TypeScript)
+- **UI Framework**: React 19.2.4 with TypeScript 5.8.2
+- **Build Tool**: Vite 6.2.0 for fast development
+- **State Management**: React hooks with local state
+- **Styling**: Tailwind-like utility classes
+
+### ML & Embeddings
+- **Registry**: `constants/modelRegistry.ts` — centralized model metadata and defaults
+- **Validation**: `utils/modelValidation.ts` — type-safe model ID checks
+- **Models**: Xenova/all-MiniLM-L6-v2 (default), Xenova/bge-small-en-v1.5
+- **Library**: @xenova/transformers 2.17.2
+- **Dimensions**: 384 (both current models)
+- **Execution**: Client-side, in-browser processing with model switching
+
+### Services Architecture
+```
+constants/
+└── modelRegistry.ts     # MODEL_REGISTRY, ModelConfig, DEFAULT_MODEL_ID
+
+utils/
+└── modelValidation.ts   # validateModelConfig, getModelById, isValidModelId, etc.
+
+services/
+├── fileParser.ts        # Handles text, CSV, PDF, markdown parsing
+├── chunkingService.ts   # Implements 6 chunking strategies
+├── embeddingService.ts  # Embeddings via Transformers.js (modelId-aware)
+└── vectorStore.ts       # IndexedDB operations for collections
+```
+
+### Component Structure
+```
+components/
+├── layout/
+│   ├── Sidebar.tsx           # Navigation with 4 views
+│   ├── GuidanceBalloon.tsx   # Contextual help
+│   └── ErrorDisplay.tsx      # Error handling UI
+├── upload/
+│   └── FileUpload.tsx        # File upload interface
+├── chunking/
+│   └── ProcessSection.tsx    # Chunking configuration & processing
+├── search/
+│   └── SearchSection.tsx     # Search interface & results
+├── collections/
+│   └── CollectionsManager.tsx # Vector collection management
+└── common/
+    └── CopyButton.tsx        # Reusable copy-to-clipboard
+```
+
+---
+
 ## See also
 
 - [Development Guide](development.md) — setup and quality gates
 - [ADR-001](../adr/ADR-001-browser-only-architecture.md) — why browser-only
-- [PROGRESS.md](../slices/PROGRESS.md) — slice roadmap
+- [PROGRESS.md](../_internal/PROGRESS.md) — slice roadmap

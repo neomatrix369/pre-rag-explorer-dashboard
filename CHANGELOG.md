@@ -16,10 +16,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Cross-check phase 2**: `check_integrity.sh`, `print_slice_progress.sh`, import smoke tests (81 total Vitest tests), `.gitattributes`, `--full` quality gates, architecture + release docs, benchmarks scaffold
 - **Meta linters**: shellcheck (`scripts/*.sh`), actionlint (`.github/workflows/`), markdownlint-cli2 (`*.md`, excludes `.tessl/`), Prettier extended to YAML/HTML; Husky + CI + `npm run lint:meta`
 - **Docker deploy (Infra)**: multi-stage `Dockerfile`, `docker-compose.yml`, nginx SPA config, `start-services.sh` / `stop-services.sh`, `scripts/docker-cleanup.sh`, `scripts/health-check.sh`; CI `docker build` smoke
+- **Husky pre-push**: runs `npm run test:all` (lint, meta, format, typecheck, unit tests) before push
+- **Documentation hub**: [QUICKSTART.md](QUICKSTART.md), [docs/user-guide/](docs/user-guide/), slice progress at [docs/_internal/PROGRESS.md](docs/_internal/PROGRESS.md); redirect stub at `docs/slices/PROGRESS.md`
+
+### Changed
+
+- **@testing-library/react** ^16.1 — React 19 peer resolution; plain `npm install` (no `--legacy-peer-deps`)
+- **@google/genai** 2.6.0 (optional Gemini integration)
+- **GitHub Actions**: `actions/checkout@v6`, `actions/setup-node@v6`
+- Rollup optional platform binaries pinned in lockfile; `scripts/ensure-native-deps.sh` after install/CI
 
 ### Fixed
 
 - **CI gitleaks on PRs**: `fetch-depth: 0` on checkout so `gitleaks-action` can resolve base..head revision range
+- **Vitest + sharp**: alias/mock stub so import smoke passes without native libvips on every machine
 
 ### Removed
 
@@ -27,7 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [0.7.0] - 2026-05-27 (Slice 7 — in PR review)
+## [0.7.0] - 2026-05-27 (Slice 7 — merged, PR #11)
 
 ### Added
 

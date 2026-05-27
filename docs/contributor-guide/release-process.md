@@ -27,7 +27,7 @@ Adapted from rag-params-finder `docs/contributor-guide/release-process.md` for a
 ❌ Single doc typo
 ❌ Mid-slice WIP
 
-Mark slice ✔️ MERGED in `docs/slices/PROGRESS.md` before tagging.
+Mark slice ✔️ MERGED in `docs/_internal/PROGRESS.md` before tagging.
 
 ---
 
@@ -44,7 +44,7 @@ Mark slice ✔️ MERGED in `docs/slices/PROGRESS.md` before tagging.
 
 ## Version sync note
 
-`CHANGELOG.md` already tracks slice versions (0.1.0–0.7.0). `package.json` is still `0.0.0` until first tagged release — align both when cutting v0.7.0 or next slice release.
+`CHANGELOG.md` tracks slice versions (0.1.0–0.7.0 merged; Infra milestone in `[Unreleased]`). `package.json` is still `0.0.0` until first tagged release — align both when cutting **v0.8.0** (Infra + doc hub) or the next feature slice release.
 
 ---
 
