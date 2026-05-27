@@ -9,5 +9,15 @@ else
   echo "   Install: brew install gitleaks (macOS) or see https://github.com/gitleaks/gitleaks"
 fi
 
-# Run lint-staged
+# ESLint/Prettier (TS/JSON/YAML/HTML) + staged shell/workflow/md checks
 npx lint-staged
+
+# Staged shellcheck / actionlint / markdownlint (pre-commit pins versions when installed)
+if command -v pre-commit >/dev/null 2>&1; then
+  pre-commit run shellcheck
+  pre-commit run actionlint
+  pre-commit run markdownlint-cli2
+else
+  npm run lint:md
+  echo "⚠️  For shell + workflow hooks: pip install pre-commit && pre-commit install-hooks"
+fi

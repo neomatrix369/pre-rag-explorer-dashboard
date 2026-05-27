@@ -62,6 +62,7 @@ Models lazy-load on first use (~23–33 MB) and cache in browser storage.
 - Secrets: `.env.local` gitignored; `.env.example` template; gitleaks in Husky/CI
 - No server-side API keys required for core RAG
 - `eslint-plugin-security` on all TS
+- shellcheck on `scripts/*.sh`, actionlint on GitHub workflows, markdownlint on `*.md` (see [development.md](development.md))
 - `protobufjs` override in `package.json` for transitive CVE remediation
 
 ---

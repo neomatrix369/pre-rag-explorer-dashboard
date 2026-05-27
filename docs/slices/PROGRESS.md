@@ -16,7 +16,7 @@
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | ✔️ MERGED | feat/slice-07-sliding-window | 94ca41b | PR #11: stride-based params, 75 tests |
-| **Infra — Project Hardening** | 🔍 PR REVIEW | feat/slice-infra-hardening | b9be71f | CI parity, gitleaks, 81 tests (+ import smoke), docs |
+| **Infra — Project Hardening** | 🔍 PR REVIEW | feat/slice-infra-hardening | b9be71f | CI parity, gitleaks, meta linters, 81 tests (+ import smoke), docs |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -62,8 +62,8 @@
 | Gitleaks conditional check | Skip if not installed, warn user to install |
 
 ### Outputs → Next Slices
-- ✅ Pre-commit hooks active (lint-staged works)
-- ✅ CI workflow template ready
+- ✅ Pre-commit hooks active (lint-staged works; extended in Infra with meta linters)
+- ✅ CI workflow template ready (extended in Infra: shellcheck, actionlint, markdownlint)
 - ✅ Test infrastructure established
 - ✅ Security baseline (.gitignore, ESLint rules)
 
@@ -289,8 +289,10 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 
 ### Scope summary
 - `scripts/quality-gates.sh` (CI mirror; `--quick` / `--full`)
+- `scripts/lint-meta.sh`, lint-staged shell/workflow wrappers, `.markdownlint-cli2.yaml`
 - `scripts/check_integrity.sh`, `print_slice_progress.sh`, import smoke tests
-- CI: format:check + gitleaks (`fetch-depth: 0` on checkout)
+- CI: ESLint → shellcheck → actionlint → markdownlint → Prettier → typecheck → test → coverage → audit → build → gitleaks
+- Husky: lint-staged + optional `pre-commit` meta hooks (`pip install pre-commit && pre-commit install-hooks`)
 - Dependabot, `.env.example`, `.editorconfig`, CHANGELOG, ADR, contributor guide
 
 ### Exit criteria
@@ -386,8 +388,8 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 ### PR Information
 - **URL**: https://github.com/neomatrix369/pre-rag-explorer-dashboard/pull/11
 - **Title**: feat(slice-07): add sliding window chunking with stride-based overlap
-- **Status**: Open, pending review
-- **Manual Test**: Browser verification recommended before merge
+- **Status**: Merged (`94ca41b`)
+- **Manual Test**: Browser verification optional post-merge
 
 ---
 
@@ -437,6 +439,7 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 | 2026-04-23 | 7 | Use ?? (nullish coalescing) not \|\| for stride param | stride=0 is falsy; \|\| would use default, ?? preserves explicit 0 |
 | 2026-04-23 | 7 | SLIDING_WINDOW as separate method | Stride mental model different from overlap; serves different user thinking |
 | 2026-05-27 | infra | Inherit hardening from price-analysis + rag-params-finder | quality-gates.sh CI mirror, gitleaks in CI, Dependabot, CHANGELOG, ADR, contributor guide |
+| 2026-05-27 | infra | Meta linters in CI + hooks | shellcheck (scripts), actionlint (workflows), markdownlint (md); Prettier on YAML/HTML; shellcheck-py avoids Docker |
 | 2026-04-23 | 7 | Show overlap % in stride tooltip | Help users understand relationship: overlap = windowSize - stride |
 
 ---

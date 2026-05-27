@@ -140,10 +140,15 @@ npm run test:coverage  # ~70% lines baseline
 
 # Post-implementation (should still pass)
 npm run lint
+npm run lint:meta      # shellcheck, actionlint, markdownlint (if toolchain installed)
+npm run format:check
 npm run typecheck
 npm run test           # Should increase (new tests for registry + model switching)
 npm run test:coverage  # Should maintain or increase
 npm run build
+
+# Full CI mirror:
+./scripts/quality-gates.sh
 
 # Manual testing
 npm run dev

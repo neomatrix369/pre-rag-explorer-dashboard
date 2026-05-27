@@ -1,4 +1,7 @@
 {
   "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-  "*.{json,md}": ["prettier --write"]
+  "*.{json,yml,yaml,html}": ["prettier --write"],
+  "*.md": ["markdownlint-cli2 --fix"],
+  "scripts/*.sh": ["bash scripts/lint-staged-shellcheck.sh"],
+  ".github/workflows/*.{yml,yaml}": ["bash scripts/lint-staged-actionlint.sh"]
 }

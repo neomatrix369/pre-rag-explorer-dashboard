@@ -13,13 +13,15 @@ npm run build     # Production build
 npm run preview   # Preview production build
 
 # Quality Gates (matches CI — prefer single entry point)
-./scripts/quality-gates.sh   # lint, format, typecheck, test, coverage, audit, build
+./scripts/quality-gates.sh   # ESLint, meta linters, Prettier, typecheck, test, coverage, audit, build
 npm run quality-gates        # same via npm script
-npm run test:all             # lint + format:check + typecheck + test (no coverage/audit/build)
+npm run test:all             # lint + lint:meta + format:check + typecheck + test
 npm run verify               # typecheck + build
 
 npm run lint                 # ESLint strict mode (--max-warnings 0)
-npm run format:check         # Prettier
+npm run lint:meta            # shellcheck, actionlint, markdownlint (pre-commit or PATH)
+npm run lint:md              # markdownlint-cli2 only
+npm run format:check         # Prettier (TS/JSON/YAML/HTML; *.md via markdownlint)
 npm run typecheck            # TypeScript type checking
 npm run test                 # Vitest unit tests (81 tests)
 npm run test:coverage        # Coverage report (40% threshold, ~72% actual)
@@ -119,9 +121,11 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 - Document decisions in PROGRESS.md decision log
 
 **3. Verification Phase**
-- Run ALL quality gates locally before pushing:
+- Run ALL quality gates locally before pushing (prefer `./scripts/quality-gates.sh`):
   ```bash
   npm run lint
+  npm run lint:meta
+  npm run format:check
   npm run typecheck
   npm run test
   npm run test:coverage
@@ -169,6 +173,8 @@ When making pragmatic choices, document in `PROGRESS.md` decision log:
 ```
 ./scripts/quality-gates.sh → all gates pass (CI mirror)
 npm run lint           → 0 warnings, 0 errors (--max-warnings 0)
+npm run lint:meta      → shellcheck, actionlint, markdownlint
+npm run format:check   → Prettier on TS/JSON/YAML/HTML
 npm run typecheck      → 0 errors
 npm run test           → 81/81 passing (incl. import smoke)
 npm run test:coverage  → ~72% lines, 40% threshold enforced
@@ -180,7 +186,8 @@ npm run build          → ~3.2s, dist/ created
 - @testing-library/react ^16.1 required for React 19 peer resolution (no --legacy-peer-deps)
 - Vitest 4.x calculates coverage differently than 1.x
 - Service coverage focuses on `services/**/*.ts`; chunkingService lower (~45%) — target for future slices
-- Infra slice on `feat/slice-infra-hardening`: CI parity, gitleaks, `check_integrity.sh`, contributor docs (see `docs/slices/SLICE-INFRA-HARDENING.md`)
+- Meta linters: `pip install pre-commit && pre-commit install-hooks` (recommended) or `brew install shellcheck actionlint`
+- Infra slice on `feat/slice-infra-hardening`: CI parity, gitleaks, meta linters, `check_integrity.sh`, contributor docs (see `docs/slices/SLICE-INFRA-HARDENING.md`)
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
