@@ -22,8 +22,12 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      # Optional native modules (rollup, sharp) must match the runner OS/arch.
+      # See scripts/ensure-native-deps.sh and docs/contributor-guide/development.md.
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          bash scripts/ensure-native-deps.sh
 
       - name: Run ESLint
         run: npm run lint

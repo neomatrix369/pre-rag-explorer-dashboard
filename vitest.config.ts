@@ -8,6 +8,12 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/tests/setup.ts',
+    server: {
+      deps: {
+        // Apply resolve.alias to CJS requires inside transformers (sharp stub).
+        inline: ['@xenova/transformers', 'sharp'],
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -24,6 +30,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './'),
+      // transformers imports sharp at load time; stub in tests (browser-only runtime).
+      sharp: path.resolve(__dirname, './src/tests/sharp-stub.ts'),
     },
   },
 });
