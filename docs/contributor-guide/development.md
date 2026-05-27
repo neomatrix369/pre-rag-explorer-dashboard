@@ -194,8 +194,9 @@ See `docs/slices/PROGRESS.md` § Interrupt Recovery — resume from last checkpo
 
 GitHub Actions (`.github/workflows/ci.yml`) on push/PR to `main`:
 
-1. Node from `.nvmrc` → ESLint → Prettier → TypeScript → Vitest → Coverage → npm audit → Build
-2. gitleaks secret scan
+1. Checkout with `fetch-depth: 0` (gitleaks needs base..head commits on PRs)
+2. Node from `.nvmrc` → ESLint → Prettier → TypeScript → Vitest → Coverage → npm audit → Build
+3. gitleaks secret scan (`gitleaks/gitleaks-action@v2`)
 
 Dependabot opens weekly PRs for npm and GitHub Actions updates.
 
