@@ -33,8 +33,8 @@ A comprehensive Pre-RAG prototype dashboard for document parsing, multi-method c
 **Prerequisites:** Node.js 20+ (see `.nvmrc`)
 
 ```bash
-# Install dependencies (React 19 peer-dep compatibility)
-npm install --legacy-peer-deps
+# Install dependencies
+npm install
 
 # Run the app
 npm run dev
@@ -208,8 +208,8 @@ components/
 ## Development
 
 ```bash
-# Install dependencies (React 19 peer-dep compatibility)
-npm install --legacy-peer-deps
+# Install dependencies
+npm install
 
 # Start development server (with hot reload)
 npm run dev

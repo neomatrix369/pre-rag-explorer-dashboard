@@ -15,8 +15,9 @@ Dev environment setup, quality gates, testing strategy, and slice workflow for c
 # Node 20+ (see .nvmrc)
 nvm use
 
-# Install (React 19 peer-dep compatibility)
-npm install --legacy-peer-deps
+# Install (then rebuild native optional deps for your OS/arch)
+npm install
+bash scripts/ensure-native-deps.sh
 
 # Optional: Gemini integration
 cp .env.example .env.local
@@ -31,6 +32,15 @@ npm run dev    # → http://localhost:3000
 | Hook | Runs |
 |------|------|
 | `pre-commit` | gitleaks (if installed) + lint-staged (ESLint fix + Prettier) |
+| `pre-push` | `npm run test:all` — lint, format check, typecheck, unit tests (CI fast gates) |
+
+Skip hooks when needed: `git commit --no-verify`, `git push --no-verify`, or `HUSKY=0` for one command.
+
+Full CI parity (coverage, audit, build, gitleaks on full tree) before opening a PR:
+
+```bash
+./scripts/quality-gates.sh
+```
 
 ### Optional: pre-commit framework
 
@@ -43,6 +53,21 @@ pre-commit run --all-files
 ```
 
 ESLint/Prettier on staged files remain Husky + lint-staged; pre-commit adds YAML/JSON checks and standardized gitleaks.
+
+### Native optional dependencies (rollup, sharp)
+
+Some packages ship **platform-specific binaries**. A lockfile produced on macOS may not install the Linux binary CI needs (and vice versa). This repo uses two defenses:
+
+| Layer | What | Why |
+|-------|------|-----|
+| **Tests** | Vitest aliases `sharp` → `src/tests/sharp-stub.ts` | Browser-only app; `@xenova/transformers` imports `sharp` at load time in Node, but tests run in jsdom and never use image pipelines. |
+| **Install** | `bash scripts/ensure-native-deps.sh` after `npm ci` / `npm install` | Rebuilds `rollup` for the **current** `platform` + `arch`. Root `optionalDependencies` pin darwin + linux Rollup binaries in the lockfile. CI runs this automatically. |
+
+**CI:** `.github/workflows/ci.yml` runs `npm ci` then `scripts/ensure-native-deps.sh` on `ubuntu-latest` with Node from `.nvmrc`.
+
+**If tests still fail with “Something went wrong installing sharp” locally:** Vitest should use the stub; confirm `vitest.config.ts` aliases `sharp` → `src/tests/sharp-stub.ts`. If a tool outside Vitest needs sharp: `npm rebuild sharp`.
+
+Do not commit `node_modules/`. Do not disable install scripts (`npm ci --ignore-scripts`) unless you know you are skipping native rebuilds on purpose.
 
 ---
 
@@ -125,7 +150,7 @@ Or: `./scripts/check_integrity.sh` (A+B) and `./scripts/check_integrity.sh --ful
 
 **Patterns inherited from sibling projects:**
 
-- Mock Transformers.js and IndexedDB at boundaries (`fake-indexeddb`)
+- Mock Transformers.js and IndexedDB at boundaries (`fake-indexeddb`); Vitest stubs `sharp` (see native deps above)
 - Parametrize edge cases (empty input, invalid params)
 - Characterization-style tests before refactoring chunking logic
 

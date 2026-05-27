@@ -26,7 +26,7 @@ npm run test:coverage        # Coverage report (40% threshold, ~72% actual)
 npm audit --audit-level=high # Security audit (0 vulnerabilities)
 ```
 
-**Note**: Install dependencies with `npm install --legacy-peer-deps` (React 19 compatibility).
+**Note**: Install dependencies with `npm install` (`@testing-library/react` ^16.1 supports React 19 peers).
 
 ## Architecture
 
@@ -107,7 +107,7 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 ### Execution Steps
 
 **1. Research Phase (15 min)**
-- Check dependency compatibility (React 19 requires --legacy-peer-deps)
+- Check dependency compatibility (React 19 peer deps on test libraries)
 - Review migration guides if upgrading major versions
 - Verify baseline metrics before setting thresholds
 - List known issues and mitigation strategies
@@ -177,7 +177,7 @@ npm run build          → ~3.2s, dist/ created
 ```
 
 **Known State:**
-- React 19 + @testing-library/react@15 requires --legacy-peer-deps
+- @testing-library/react ^16.1 required for React 19 peer resolution (no --legacy-peer-deps)
 - Vitest 4.x calculates coverage differently than 1.x
 - Service coverage focuses on `services/**/*.ts`; chunkingService lower (~45%) — target for future slices
 - Infra slice on `feat/slice-infra-hardening`: CI parity, gitleaks, `check_integrity.sh`, contributor docs (see `docs/slices/SLICE-INFRA-HARDENING.md`)

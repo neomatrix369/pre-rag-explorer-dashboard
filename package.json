@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
-    "@testing-library/react": "^15.0.0",
+    "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.1",
     "@types/node": "^22.14.0",
     "@typescript-eslint/eslint-plugin": "^8.58.2",
@@ -50,6 +50,11 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "vitest": "^4.1.4"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-darwin-arm64": "4.60.2",
+    "@rollup/rollup-darwin-x64": "4.60.2",
+    "@rollup/rollup-linux-x64-gnu": "4.60.2"
   },
   "overrides": {
     "protobufjs": "^7.5.5"
