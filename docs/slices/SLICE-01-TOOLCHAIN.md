@@ -1,6 +1,6 @@
 # Slice 1: Toolchain Foundation ✅ COMPLETE
 
-**Status**: ✔️ MERGED | **Branch**: `toolchain-setup` | **Commit**: `39ed5b9`  
+**Status**: ✔️ MERGED | **Branch**: `toolchain-setup` | **Commit**: `39ed5b9`
 **Completed**: 2026-04-19
 
 ---
@@ -9,8 +9,8 @@
 
 Establish development quality gates and security baseline before any feature work.
 
-**Maturity Profile**: Serious (8-10 tools)  
-**20-Factor Compliance**: Factor 2 (Dependencies), Factor 3 (Config)  
+**Maturity Profile**: Serious (8-10 tools)
+**20-Factor Compliance**: Factor 2 (Dependencies), Factor 3 (Config)
 **Security**: Development pipeline security — pre-commit secrets scanning + CI vulnerability gates
 
 ---
@@ -84,23 +84,23 @@ All commands passing:
 ## Pragmatic Decisions
 
 ### 1. ESLint Warnings Mode
-**Decision**: Changed `no-unused-vars` from 'error' to 'warn', removed `--max-warnings 0`  
+**Decision**: Changed `no-unused-vars` from 'error' to 'warn', removed `--max-warnings 0`
 **Rationale**: 19 unused variable warnings across existing code. Fixing in toolchain slice would be scope creep. Deferred to Slice 2 (code quality).
 
 ### 2. Coverage Baseline: 12%
-**Decision**: Set thresholds to lines 12%, functions 20%, branches 55%, statements 12%  
+**Decision**: Set thresholds to lines 12%, functions 20%, branches 55%, statements 12%
 **Rationale**: Only 1 service has tests (chunkingService: 42%). Incremental approach: Slice 3 adds tests and raises to 40%+.
 
 ### 3. React 19 Compatibility
-**Decision**: Used `--legacy-peer-deps` for installation  
+**Decision**: Used `--legacy-peer-deps` for installation
 **Rationale**: @testing-library/react@15 still lists React 18 as peer dep. Library is forward-compatible; flag avoids install failure.
 
 ### 4. Gitleaks Optional
-**Decision**: Pre-commit hook checks if gitleaks exists, warns if missing  
+**Decision**: Pre-commit hook checks if gitleaks exists, warns if missing
 **Rationale**: Gitleaks not available via npm. Hook functional once installed via `brew install gitleaks`.
 
 ### 5. Test Adjustment
-**Decision**: Modified "should respect custom chunk size" test to check range instead of exact count  
+**Decision**: Modified "should respect custom chunk size" test to check range instead of exact count
 **Rationale**: Characterization test for existing code; behavior may vary with params.
 
 ---
@@ -154,9 +154,9 @@ coverage/
 
 ## Outputs → Next Slices
 
-✅ **Pre-commit hooks active** — lint-staged verified working  
-✅ **CI workflow template** — ready for Cloudflare deploy integration (Slice 4)  
-✅ **Test infrastructure** — Vitest + coverage ready for expansion (Slice 3)  
+✅ **Pre-commit hooks active** — lint-staged verified working
+✅ **CI workflow template** — ready for Cloudflare deploy integration (Slice 4)
+✅ **Test infrastructure** — Vitest + coverage ready for expansion (Slice 3)
 ✅ **Security baseline** — .gitignore, ESLint, gitleaks hook configured
 
 ---

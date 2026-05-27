@@ -15,7 +15,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:all": "npm run lint && npm run typecheck && npm run test",
+    "test:all": "npm run lint && npm run format:check && npm run typecheck && npm run test",
+    "verify": "npm run typecheck && npm run build",
+    "quality-gates": "bash scripts/quality-gates.sh",
+    "check-integrity": "bash scripts/check_integrity.sh",
+    "slice-progress": "bash scripts/print_slice_progress.sh",
     "prepare": "husky install"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 # Slice 5+6: Model Registry + Second Model ✔️
 
-**Status**: ✔️ MERGED (PR #10) | **Branch**: `feat/slice-05-06-model-registry`  
+**Status**: ✔️ MERGED (PR #10) | **Branch**: `feat/slice-05-06-model-registry`
 **Started**: 2026-04-21 | **Completed**: 2026-04-23 | **Commits**: `6ceeb1a`, `f938a7a`
 
 ---
@@ -113,9 +113,9 @@ Use simple title attribute or create `<InfoIcon>` component.
 
 ### Compatibility Check
 
-✅ Both models use 384 dimensions (no breaking changes to similarity functions)  
-✅ Both are Xenova ONNX models (same API via Transformers.js)  
-✅ No new dependencies required  
+✅ Both models use 384 dimensions (no breaking changes to similarity functions)
+✅ Both are Xenova ONNX models (same API via Transformers.js)
+✅ No new dependencies required
 ✅ Existing VectorCollection has `embeddingModel?: string` field
 
 ### Known Risks
@@ -207,8 +207,8 @@ npm run dev
 
 ## Next Slice Dependencies
 
-**Slice 7** (Sliding Window Chunking): Needs registry for model tagging  
-**Slice 10** (Third Model - GTE-small): Validates registry extensibility  
+**Slice 7** (Sliding Window Chunking): Needs registry for model tagging
+**Slice 10** (Third Model - GTE-small): Validates registry extensibility
 **Slice 11** (Fourth Model - E5 Multilingual): Tests multilingual flag in registry
 
 ---

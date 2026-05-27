@@ -83,7 +83,7 @@ const GuidanceBalloon: React.FC<GuidanceBalloonProps> = ({
     <div className="fixed bottom-8 right-8 z-50 animate-in slide-in-from-right-12 fade-in duration-500 max-w-[320px] w-full">
       <div
         className={`
-        bg-slate-900/90 backdrop-blur-xl text-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] 
+        bg-slate-900/90 backdrop-blur-xl text-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]
         border border-slate-700 p-5 pr-10 relative overflow-hidden transition-all duration-500
         ${stage.color === 'blue' ? 'ring-2 ring-blue-500/20' : ''}
         ${stage.color === 'indigo' ? 'ring-2 ring-indigo-500/20' : ''}

@@ -1,8 +1,8 @@
 # Slice 5: Registry Foundation
 
-**Branch**: `feat/slice-05-registry-foundation`  
-**Started**: 2026-04-21  
-**Completed**: 2026-04-21  
+**Branch**: `feat/slice-05-registry-foundation`
+**Started**: 2026-04-21
+**Completed**: 2026-04-21
 **Status**: ✔️ MERGED (PR #9, commit `76ec18f`)
 
 ---

@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-**Last Updated**: 2026-05-27  
-**Current**: Slice 7 🔍 PR REVIEW (PR #11) | Last: Slice 5+6 ✔️ MERGED (PR #10)
+**Last Updated**: 2026-05-27
+**Current**: Slice Infra 🔍 PR REVIEW | Last merged: Slice 7 ✔️ (PR #11)
 
 ---
 
@@ -15,7 +15,8 @@
 | 4 — Cloudflare Deploy | 🔄 PARKED | - | - | No CF account (blocked) |
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
-| 7 — Sliding Window Chunking | 🔍 PR REVIEW | feat/slice-07-sliding-window | 5b12f1c | PR #11: stride-based params, 9 tests, 75 total |
+| 7 — Sliding Window Chunking | ✔️ MERGED | feat/slice-07-sliding-window | 94ca41b | PR #11: stride-based params, 75 tests |
+| **Infra — Project Hardening** | 🔍 PR REVIEW | feat/slice-infra-hardening | ce2d086 | CI parity, gitleaks, Dependabot, docs |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -269,6 +270,33 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 
 ---
 
+## Slice Infra: Project Hardening 🔍
+
+**Branch**: `feat/slice-infra-hardening` | **Commit**: `ce2d086` | **Spec**: `docs/slices/SLICE-INFRA-HARDENING.md`
+
+### Checkpoints
+- [x] **PROMPT_READY** — Analysis of price-analysis + rag-params-finder complete
+- [x] **CODE_COMPLETE** — scripts, CI, hooks, docs created
+- [x] **TESTS_PASSING** — `./scripts/quality-gates.sh` green (75 tests)
+- [x] **COMMITTED** — Conventional commit on feature branch
+- [ ] **MERGED** — PR to main
+
+### Verification
+```bash
+✅ ./scripts/quality-gates.sh (75 tests, 0 audit high+, build OK)
+✅ commit ce2d086 on feat/slice-infra-hardening
+```
+
+### Scope summary
+- `scripts/quality-gates.sh` (CI mirror)
+- CI: format:check + gitleaks
+- Dependabot, `.env.example`, `.editorconfig`, CHANGELOG, ADR, contributor guide
+
+### Exit criteria
+See `SLICE-INFRA-HARDENING.md` acceptance criteria checklist.
+
+---
+
 ## Slice 7: Sliding Window Chunking ✅
 
 **Branch**: `feat/slice-07-sliding-window` | **Commit**: `5b12f1c` | **Completed**: 2026-04-24
@@ -407,6 +435,7 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 | 2026-04-23 | 5+6 | Reconcile registry after merge | f938a7a — align MODEL_REGISTRY with Slice 5 foundation |
 | 2026-04-23 | 7 | Use ?? (nullish coalescing) not \|\| for stride param | stride=0 is falsy; \|\| would use default, ?? preserves explicit 0 |
 | 2026-04-23 | 7 | SLIDING_WINDOW as separate method | Stride mental model different from overlap; serves different user thinking |
+| 2026-05-27 | infra | Inherit hardening from price-analysis + rag-params-finder | quality-gates.sh CI mirror, gitleaks in CI, Dependabot, CHANGELOG, ADR, contributor guide |
 | 2026-04-23 | 7 | Show overlap % in stride tooltip | Help users understand relationship: overlap = windowSize - stride |
 
 ---
@@ -424,10 +453,9 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 ## Next Actions
 
 **Immediate**:
-1. Define Slice 7 spec (sliding window chunking)
-2. Execute Slice 7 on new branch
+1. Commit and open PR for Slice Infra (`feat/slice-infra-hardening`)
+2. Define Slice 8 spec (markdown-aware chunking)
 
 **Pipeline**:
-- Slice 7: Sliding window chunking (stride-based overlap)
 - Slice 8: Markdown-aware chunking
 - Slice 4: Cloudflare deploy (resume when CF account available)

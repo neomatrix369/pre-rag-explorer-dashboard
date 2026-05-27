@@ -11,12 +11,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Full history required: gitleaks-action scans PRs with git log base^..head
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
@@ -24,6 +27,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+
+      - name: Check Prettier formatting
+        run: npm run format:check
 
       - name: Run TypeScript type check
         run: npm run typecheck
@@ -39,3 +45,8 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
