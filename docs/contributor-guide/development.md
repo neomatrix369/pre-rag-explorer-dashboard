@@ -31,8 +31,8 @@ npm run dev    # → http://localhost:3000
 
 | Hook | Runs |
 |------|------|
-| `pre-commit` | gitleaks (if installed) + lint-staged (ESLint fix + Prettier) |
-| `pre-push` | `npm run test:all` — lint, format check, typecheck, unit tests (CI fast gates) |
+| `pre-commit` | gitleaks (if installed) + lint-staged (ESLint, Prettier, markdownlint on staged files) + pre-commit hooks for shell/workflow/md when `pre-commit` is installed |
+| `pre-push` | `npm run test:all` — ESLint, meta linters, format check, typecheck, unit tests (CI fast gates) |
 
 Skip hooks when needed: `git commit --no-verify`, `git push --no-verify`, or `HUSKY=0` for one command.
 
@@ -52,7 +52,14 @@ pre-commit install
 pre-commit run --all-files
 ```
 
-ESLint/Prettier on staged files remain Husky + lint-staged; pre-commit adds YAML/JSON checks and standardized gitleaks.
+ESLint/Prettier on staged files remain Husky + lint-staged. The optional [pre-commit](https://pre-commit.com/) framework adds shellcheck, actionlint, markdownlint, YAML/JSON hygiene, and gitleaks (pinned versions via `pre-commit install-hooks`).
+
+```bash
+pip install pre-commit
+pre-commit install-hooks   # downloads shellcheck, actionlint, markdownlint-cli2
+```
+
+Without `pre-commit`, Husky still runs markdownlint on staged `.md` via lint-staged; shellcheck/actionlint run in CI and when binaries are on your PATH (`brew install shellcheck actionlint`).
 
 ### Native optional dependencies (rollup, sharp)
 
@@ -103,8 +110,10 @@ npm run slice-progress                # terminal progress dashboard
 
 | Gate | Command | Baseline (2026-05-27) |
 |------|---------|------------------------|
-| Lint | `npm run lint` | 0 errors, 0 warnings |
-| Format | `npm run format:check` | Prettier clean |
+| Lint (TS) | `npm run lint` | 0 errors, 0 warnings |
+| Meta linters | `npm run lint:meta` | shellcheck, actionlint, markdownlint (see above) |
+| Markdown | `npm run lint:md` | markdownlint-cli2 on tracked `*.md` (excludes `.tessl/`) |
+| Format | `npm run format:check` | Prettier on TS/JSON/YAML/HTML |
 | Type check | `npm run typecheck` | 0 errors |
 | Tests | `npm run test` | 81 passing (incl. import smoke) |
 | Coverage | `npm run test:coverage` | ≥40% on `services/**` (~72% actual) |
@@ -114,12 +123,26 @@ npm run slice-progress                # terminal progress dashboard
 ### npm script shortcuts
 
 ```bash
-npm run test:all       # lint + format:check + typecheck + test
+npm run test:all       # lint + lint:meta + format:check + typecheck + test
 npm run verify         # typecheck + build
 npm run quality-gates  # full CI mirror via scripts/quality-gates.sh
 npm run check-integrity
 npm run slice-progress
 ```
+
+---
+
+## Linting by file type
+
+| Types | Tool | Local | CI |
+|-------|------|-------|-----|
+| `.ts`, `.tsx` | ESLint + Prettier + `tsc` | lint-staged, `npm run lint` | yes |
+| `.json`, `.yml`, `.yaml`, `.html` | Prettier | lint-staged, `npm run format:check` | yes |
+| `.md` | markdownlint-cli2 | lint-staged, `npm run lint:md` | yes |
+| `scripts/*.sh` | shellcheck | lint-staged (if on PATH), `lint:meta` | yes |
+| `.github/workflows/*` | actionlint | lint-staged (if on PATH), `lint:meta` | yes |
+
+Markdown is intentionally **not** in Prettier (`*.md` in `.prettierignore`) to avoid reformatting large historical slice docs. Use `npm run lint:md -- --fix` for autofixes where supported.
 
 ---
 
@@ -172,6 +195,8 @@ pre-rag-explorer-dashboard/
 │   └── contributor-guide/  # This directory
 ├── scripts/
 │   ├── quality-gates.sh         # CI mirror (--quick, --full)
+│   ├── lint-meta.sh             # shellcheck + actionlint + markdownlint
+│   ├── lint-staged-*.sh         # staged wrappers for shell/workflow
 │   ├── check_integrity.sh       # fast regression + optional full
 │   └── print_slice_progress.sh  # terminal metrics dashboard
 ├── benchmarks/                  # perf baseline structure (scripts TBD)
@@ -206,6 +231,7 @@ pre-rag-explorer-dashboard/
 [ ] ./scripts/quality-gates.sh passes
 [ ] PROGRESS.md status updated (🔨 → 🔍 PR REVIEW → ✔️ MERGED)
 [ ] CHANGELOG.md updated under [Unreleased]
+[ ] If docs/workflows/scripts changed: `npm run lint:md` and `npm run lint:meta` pass
 [ ] Consider release: see [release-process.md](release-process.md)
 ```
 
@@ -220,7 +246,7 @@ See `docs/slices/PROGRESS.md` § Interrupt Recovery — resume from last checkpo
 GitHub Actions (`.github/workflows/ci.yml`) on push/PR to `main`:
 
 1. Checkout with `fetch-depth: 0` (gitleaks needs base..head commits on PRs)
-2. Node from `.nvmrc` → ESLint → Prettier → TypeScript → Vitest → Coverage → npm audit → Build
+2. Node from `.nvmrc` → ESLint → shellcheck → actionlint → markdownlint → Prettier → TypeScript → Vitest → Coverage → npm audit → Build
 3. gitleaks secret scan (`gitleaks/gitleaks-action@v2`)
 
 Dependabot opens weekly PRs for npm and GitHub Actions updates.
@@ -233,6 +259,9 @@ Dependabot opens weekly PRs for npm and GitHub Actions updates.
 |---------|-------|
 | gitleaks | Husky (`.gitleaks.toml`), CI, `--full` quality gates |
 | eslint-plugin-security | ESLint CI + lint-staged |
+| shellcheck | CI, `lint:meta`, lint-staged, pre-commit hook |
+| actionlint | CI, `lint:meta`, lint-staged, pre-commit hook |
+| markdownlint-cli2 | CI (`lint:md`), lint-staged, pre-commit hook |
 | npm audit | CI (`--audit-level=high`) |
 | `.env.example` | Documents optional keys; `.env.local` gitignored |
 | protobufjs override | `package.json` — CVE remediation (Slice 1 security) |

@@ -15,7 +15,7 @@ repos:
       - id: check-json
       - id: check-merge-conflict
       - id: check-added-large-files
-        args: ["--maxkb=500"]
+        args: ['--maxkb=500']
       - id: detect-private-key
       - id: debug-statements
       - id: mixed-line-ending
@@ -27,6 +27,23 @@ repos:
     hooks:
       - id: gitleaks
         args: [--config, .gitleaks.toml]
+
+  # ── Shell, GitHub Actions, Markdown (also in CI + Husky lint:meta) ─
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        files: ^scripts/.*\.sh$
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.19.1
+    hooks:
+      - id: markdownlint-cli2
 
   # ── Typecheck + build (complements Husky lint-staged) ────
   - repo: local

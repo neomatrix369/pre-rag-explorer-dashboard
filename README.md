@@ -221,11 +221,13 @@ npm run build
 npm run preview
 
 # Quality gates (run before committing — mirrors CI)
-./scripts/quality-gates.sh   # full: lint, format, typecheck, test, coverage, audit, build
-npm run test:all             # quick subset: lint + format + typecheck + test
+./scripts/quality-gates.sh   # full: ESLint, meta linters, Prettier, typecheck, test, coverage, audit, build
+npm run test:all             # quick subset: lint + lint:meta + format:check + typecheck + test
 npm run verify               # typecheck + build
 npm run lint                 # ESLint strict mode (0 warnings)
-npm run format:check         # Prettier
+npm run lint:meta            # shellcheck, actionlint, markdownlint
+npm run lint:md              # markdown only
+npm run format:check         # Prettier (TS/JSON/YAML/HTML)
 npm run typecheck            # TypeScript
 npm run test                 # Vitest (81 tests)
 npm run test:coverage        # Coverage report (40% threshold, ~72% actual)

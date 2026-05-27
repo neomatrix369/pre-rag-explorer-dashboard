@@ -32,6 +32,15 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Shellcheck
+        run: shellcheck --external-sources scripts/*.sh
+
+      - name: Actionlint
+        uses: rhysd/actionlint@v1.7.7
+
+      - name: Markdownlint
+        run: npm run lint:md
+
       - name: Check Prettier formatting
         run: npm run format:check
 

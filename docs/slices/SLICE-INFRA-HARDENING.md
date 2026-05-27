@@ -23,6 +23,7 @@ Close gaps between local development, CI, and sibling-project best practices so 
 |-----|------|
 | No unified quality script | Local runs differ from CI (format/audit skipped) |
 | Prettier not in CI | Format drift merges despite lint-staged |
+| No shell/workflow/md linters | `.sh`, workflows, and docs unchecked in CI |
 | gitleaks optional locally only | Secrets can reach remote without CI gate |
 | No `.env.example` | Undocumented env contract |
 | No CHANGELOG / ADR / contributor guide | Decisions and release history not traceable |
@@ -36,24 +37,28 @@ Close gaps between local development, CI, and sibling-project best practices so 
 
 Mirror `.github/workflows/ci.yml` exactly:
 
-1. lint → 2. format:check → 3. typecheck → 4. test → 5. test:coverage → 6. npm audit → 7. build
+1. lint (ESLint) → 2. lint:meta (shellcheck, actionlint, markdownlint) → 3. format:check → 4. typecheck → 5. test → 6. test:coverage → 7. npm audit → 8. build → 9. gitleaks (CI workflow step)
 
-Add `--quick` flag (lint + format + typecheck + test only).
+Add `--quick` flag (lint + lint:meta + format + typecheck + test only).
 
 ### 2. CI enhancements
 
 - Add `npm run format:check` step
+- Add shellcheck, actionlint, `npm run lint:md`
 - Add `gitleaks/gitleaks-action@v2` secret scan
 
 ### 3. npm scripts
 
 - `quality-gates` → `bash scripts/quality-gates.sh`
+- `lint:meta` → `scripts/lint-meta.sh` (pre-commit hooks or PATH fallbacks)
+- `lint:md` → markdownlint-cli2
 - `verify` → typecheck + build
-- Expand `test:all` to include `format:check`
+- Expand `test:all` to include `lint:meta` and `format:check`
 
 ### 4. Git hooks
 
-- Optional `.pre-commit-config.yaml` (Serious-lite hygiene + gitleaks, complements Husky)
+- Husky: lint-staged (ESLint, Prettier, markdownlint on staged files) + optional `pre-commit run` for shellcheck/actionlint/markdownlint
+- `.pre-commit-config.yaml` (Serious-lite hygiene + gitleaks + meta linters; complements Husky)
 
 ### 5. Repository hygiene
 
@@ -91,6 +96,10 @@ Add `--quick` flag (lint + format + typecheck + test only).
 | Path | Purpose |
 |------|---------|
 | `scripts/quality-gates.sh` | CI mirror orchestrator |
+| `scripts/lint-meta.sh` | shellcheck + actionlint + markdownlint runner |
+| `scripts/lint-staged-shellcheck.sh` | lint-staged wrapper for `.sh` |
+| `scripts/lint-staged-actionlint.sh` | lint-staged wrapper for workflows |
+| `.markdownlint-cli2.yaml` | Markdown lint config (brownfield-friendly) |
 | `.env.example` | Env var template |
 | `.editorconfig` | Editor consistency |
 | `.github/dependabot.yml` | Dependency automation |
@@ -103,10 +112,13 @@ Add `--quick` flag (lint + format + typecheck + test only).
 
 | Path | Change |
 |------|--------|
-| `.github/workflows/ci.yml` | format:check + gitleaks |
-| `package.json` | quality-gates, verify, test:all |
+| `.github/workflows/ci.yml` | shellcheck, actionlint, lint:md, format:check, gitleaks |
+| `.husky/pre-commit` | lint-staged + pre-commit meta hooks |
+| `.lintstagedrc.json` | TS/JSON/YAML/HTML + md/sh/workflow patterns |
+| `package.json` | lint:meta, lint:md, quality-gates, test:all |
 | `README.md` | Contributing + gates |
 | `CLAUDE.md` | Gate commands |
+| `docs/contributor-guide/development.md` | Meta linter setup + gate table |
 | `docs/slices/PROGRESS.md` | Slice tracking |
 
 ---
@@ -116,8 +128,10 @@ Add `--quick` flag (lint + format + typecheck + test only).
 - [x] `./scripts/quality-gates.sh` exits 0 locally
 - [x] `./scripts/quality-gates.sh --quick` exits 0 locally
 - [x] CI workflow includes format:check and gitleaks steps
+- [x] CI workflow includes shellcheck, actionlint, markdownlint
 - [x] `npm run quality-gates` delegates to script
-- [x] `npm run test:all` includes format:check
+- [x] `npm run test:all` includes lint:meta and format:check
+- [x] `npm run lint:meta` and `npm run lint:md` documented and wired
 - [x] `.env.example` documents optional Gemini key
 - [x] CHANGELOG, ADR-001, contributor guide exist and are linked from README
 - [x] PROGRESS.md lists Infra slice with decision log entry
@@ -139,8 +153,10 @@ Add `--quick` flag (lint + format + typecheck + test only).
 
 | Gate | Expected |
 |------|----------|
-| lint | 0 errors, 0 warnings |
-| format:check | clean |
+| lint (ESLint) | 0 errors, 0 warnings |
+| lint:meta | shellcheck + actionlint + markdownlint pass |
+| lint:md | 0 markdownlint errors (tracked `*.md`, excludes `.tessl/`) |
+| format:check | Prettier clean on TS/JSON/YAML/HTML |
 | typecheck | 0 errors |
 | test | 81 passing |
 | coverage | ≥40% on `services/**` (~72% actual) |
@@ -158,6 +174,12 @@ Add `--quick` flag (lint + format + typecheck + test only).
 
 ### Phase 2 — Hooks + secrets
 1. Add optional `.pre-commit-config.yaml`
+2. Add shellcheck-py, actionlint, markdownlint-cli2 hooks
+
+### Phase 2b — Meta linters (2026-05-27)
+1. `scripts/lint-meta.sh`, lint-staged wrappers, `.markdownlint-cli2.yaml`
+2. Extend CI + `quality-gates.sh` + Husky pre-commit
+3. Prettier scope: `yml`, `yaml`, `html` (markdown stays on markdownlint)
 
 ### Phase 3 — Docs + automation
 1. CHANGELOG, ADR, contributor guide
@@ -175,7 +197,9 @@ Add `--quick` flag (lint + format + typecheck + test only).
 | Decision | Rationale |
 |----------|-----------|
 | Infra slice unnumbered (not Slice 8) | Avoid renumbering feature roadmap 8–15 |
-| Husky + optional pre-commit | Husky handles lint-staged; pre-commit adds YAML/JSON hygiene without duplicating ESLint |
+| Husky + optional pre-commit | Husky handles lint-staged; pre-commit pins shellcheck/actionlint/markdownlint without Docker |
+| shellcheck-py not koalaman hook | Official shellcheck-precommit requires Docker; shellcheck-py works in CI and pre-commit |
+| markdownlint not Prettier on `*.md` | Avoid mass-reformat of 100+ slice/historical docs; `.prettierignore` keeps `*.md` |
 | gitleaks in CI not just local | price-analysis had bandit local-only; CI gap caused drift |
 | ADR-001 mirrors rag-params-finder ADR-001 | Documents intentional browser-only vs two-process tradeoff |
 | `--quick` on quality-gates | Fast feedback during active coding; full gates before push |
@@ -208,6 +232,7 @@ Add `--quick` flag (lint + format + typecheck + test only).
 | `.gitattributes` | — | ✅ | ✅ |
 | Frontend tests (Vitest) | N/A | ❌ | ✅ **ahead** (81 tests) |
 | ESLint strict CI | N/A | partial | ✅ **ahead** |
+| shellcheck / actionlint / md lint | partial | partial | ✅ CI + hooks |
 | Docker deploy | ✅ Streamlit | deferred | Slice 4 parked |
 
 ### Still Won't (correct for browser-only)

@@ -20,16 +20,19 @@ fi
 
 echo "=== Quality Gates ==="
 
-echo "1/7 Lint..."
+echo "1/9 Lint (ESLint)..."
 npm run lint
 
-echo "2/7 Format check..."
+echo "2/9 Meta linters (shellcheck, actionlint, markdown)..."
+npm run lint:meta
+
+echo "3/9 Format check..."
 npm run format:check
 
-echo "3/7 Type check..."
+echo "4/9 Type check..."
 npm run typecheck
 
-echo "4/7 Unit tests..."
+echo "5/9 Unit tests..."
 npm run test
 
 if [[ "${MODE}" == "quick" ]]; then
@@ -38,13 +41,13 @@ if [[ "${MODE}" == "quick" ]]; then
   exit 0
 fi
 
-echo "5/7 Coverage..."
+echo "6/9 Coverage..."
 npm run test:coverage
 
-echo "6/7 Security audit..."
+echo "7/9 Security audit..."
 npm audit --audit-level=high
 
-echo "7/7 Build..."
+echo "8/9 Build..."
 npm run build
 
 if [[ "${MODE}" == "full" ]]; then

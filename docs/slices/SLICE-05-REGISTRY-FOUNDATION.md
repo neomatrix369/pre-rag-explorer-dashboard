@@ -199,12 +199,15 @@ export interface ModelConfig {
 ## Verification Commands
 
 ```bash
-# Quality gates
+# Quality gates (see docs/contributor-guide/development.md for full lint:meta / format:check)
 npm run lint
 npm run typecheck
 npm run test
 npm run test:coverage
 npm run build
+
+# Or full CI mirror (current toolchain):
+./scripts/quality-gates.sh
 
 # Manual verification
 npm run dev  # Check UI displays model name correctly

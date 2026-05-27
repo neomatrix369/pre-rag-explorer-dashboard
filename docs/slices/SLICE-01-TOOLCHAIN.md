@@ -221,3 +221,21 @@ npm run lint && npm run typecheck && npm run test && npm run build
 
 Complies with: 20-Factor (Factors 2, 3), IPGS T1 pre-commit gates
 ```
+
+---
+
+## Toolchain extensions (post–Slice Infra, 2026-05-27)
+
+Slice 1 established ESLint, Prettier (TS/JSON), Vitest, and Husky. **Slice Infra** extended coverage without changing the Slice 1 commit:
+
+| Addition | Purpose |
+|----------|---------|
+| `npm run lint:meta` | shellcheck, actionlint, markdownlint |
+| `npm run lint:md` | markdownlint-cli2 only |
+| Prettier on `.yml`, `.yaml`, `.html` | workflows + `index.html` |
+| `.markdownlint-cli2.yaml` | lint `*.md` (excludes `.tessl/`; `*.md` stays out of Prettier) |
+| `.pre-commit-config.yaml` hooks | shellcheck-py, actionlint, markdownlint-cli2 |
+
+**Current pre-commit / CI gate order:** see `docs/slices/SLICE-INFRA-HARDENING.md` and `docs/contributor-guide/development.md` (§ Linting by file type).
+
+**Preferred local command:** `./scripts/quality-gates.sh` (full CI mirror).

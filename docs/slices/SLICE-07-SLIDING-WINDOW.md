@@ -163,7 +163,7 @@ npm run dev          # Manual test in browser
 
 **Verification:**
 ```bash
-npm run lint  # Check markdown/docs pass
+npm run lint:md   # markdownlint on docs (if README/guidance edited)
 ```
 
 ---
@@ -180,10 +180,12 @@ All must pass before commit:
 - [ ] Parameter inputs shown conditionally (windowSize, stride)
 - [ ] All quality gates pass:
   - [ ] `npm run lint` (0 warnings)
+  - [ ] `npm run lint:meta` and `npm run format:check` (current toolchain; see SLICE-INFRA-HARDENING.md)
   - [ ] `npm run typecheck` (0 errors)
   - [ ] `npm run test` (74+ tests passing)
   - [ ] `npm run test:coverage` (71%+ maintained)
   - [ ] `npm run build` (clean build)
+  - [ ] Or `./scripts/quality-gates.sh` (full CI mirror)
 - [ ] Manual browser test: Create collection with SLIDING_WINDOW
 - [ ] README.md updated with new method
 - [ ] PROGRESS.md updated with completion status
@@ -197,10 +199,15 @@ Run before commit:
 ```bash
 # Quality gates
 npm run lint
+npm run lint:meta
+npm run format:check
 npm run typecheck
 npm run test
 npm run test:coverage
 npm run build
+
+# Full CI mirror
+./scripts/quality-gates.sh
 
 # Manual verification
 npm run dev

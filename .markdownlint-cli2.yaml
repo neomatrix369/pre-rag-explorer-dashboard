@@ -1,0 +1,25 @@
+# Markdownlint-cli2 — lint docs without Prettier mass-reformat of *.md (see .prettierignore).
+# Brownfield-friendly: structural issues only; style rules off until docs are normalized.
+config:
+  default: true
+  MD013: false # line length
+  MD022: false # blanks around headings
+  MD024: false # duplicate heading text in long slice docs
+  MD031: false # blanks around fences
+  MD032: false # blanks around lists
+  MD033: false # inline HTML (badges)
+  MD036: false # emphasis as heading
+  MD040: false # fenced code language on ascii diagrams
+  MD041: false # first line heading (README badges)
+  MD060: false # table column spacing
+  MD058: false # blanks around tables
+  MD056: false # table column count (slice decision tables)
+  MD034: false # bare URLs in historical docs
+  MD050: false # strong style variant in legacy docs
+globs:
+  - '**/*.md'
+ignores:
+  - node_modules/**
+  - coverage/**
+  - dist/**
+  - .tessl/**
