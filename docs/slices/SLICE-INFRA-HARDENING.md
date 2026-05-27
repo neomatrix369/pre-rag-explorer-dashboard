@@ -73,7 +73,7 @@ Add `--quick` flag (lint + lint:meta + format + typecheck + test only).
 
 - `README.md` — contributor link, quality-gates command, test count
 - `CLAUDE.md` — quality gate entry points
-- `docs/slices/PROGRESS.md` — slice row + decision log entry
+- `docs/_internal/PROGRESS.md` — slice row + decision log entry
 
 ---
 
@@ -126,7 +126,7 @@ Add `--quick` flag (lint + lint:meta + format + typecheck + test only).
 | `README.md` | Contributing + gates |
 | `CLAUDE.md` | Gate commands |
 | `docs/contributor-guide/development.md` | Meta linter setup + gate table |
-| `docs/slices/PROGRESS.md` | Slice tracking |
+| `docs/_internal/PROGRESS.md` | Slice tracking |
 
 ---
 

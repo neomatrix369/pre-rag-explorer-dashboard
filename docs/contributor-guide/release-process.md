@@ -27,7 +27,7 @@ Adapted from rag-params-finder `docs/contributor-guide/release-process.md` for a
 ❌ Single doc typo
 ❌ Mid-slice WIP
 
-Mark slice ✔️ MERGED in `docs/slices/PROGRESS.md` before tagging.
+Mark slice ✔️ MERGED in `docs/_internal/PROGRESS.md` before tagging.
 
 ---
 

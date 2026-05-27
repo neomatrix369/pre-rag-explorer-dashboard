@@ -103,7 +103,7 @@ cp .env.example .env   # optional: COMPOSE_PROJECT_NAME, GEMINI_API_KEY for buil
 
 **Power users:** `docker compose down -v` removes containers and anonymous volumes (no named volumes in this stack). See `docs/slices/SLICE-INFRA-HARDENING.md` Phase 5.
 
-**Alternative deploy:** Slice 4 (Cloudflare Pages) remains parked — see `docs/slices/PROGRESS.md`.
+**Alternative deploy:** Slice 4 (Cloudflare Pages) remains parked — see `docs/_internal/PROGRESS.md`.
 
 ---
 
@@ -220,8 +220,10 @@ pre-rag-explorer-dashboard/
 ├── utils/              # similarity, modelValidation
 ├── src/tests/          # Vitest setup (fake-indexeddb, jest-dom)
 ├── docs/
-│   ├── slices/         # Slice specs + PROGRESS.md (source of truth)
-│   ├── adr/            # Architecture Decision Records
+│   ├── user-guide/         # End-user guides (getting started, config, troubleshooting)
+│   ├── slices/             # Slice specifications
+│   ├── _internal/          # PROGRESS.md (source of truth) + internal tracking
+│   ├── adr/                # Architecture Decision Records
 │   └── contributor-guide/  # This directory
 ├── scripts/
 │   ├── quality-gates.sh         # CI mirror (--quick, --full)
@@ -242,7 +244,7 @@ pre-rag-explorer-dashboard/
 ### Pre-slice checklist
 
 ```
-[ ] Read docs/slices/PROGRESS.md — confirm current state and next slice
+[ ] Read docs/_internal/PROGRESS.md — confirm current state and next slice
 [ ] Read or create docs/slices/SLICE-XX-*.md
 [ ] Run ./scripts/quality-gates.sh — zero regressions before starting
 [ ] Note acceptance criteria — these are exit conditions
@@ -267,7 +269,7 @@ pre-rag-explorer-dashboard/
 
 ### Interrupt recovery
 
-See `docs/slices/PROGRESS.md` § Interrupt Recovery — resume from last checkpoint without re-reading entire history.
+See `docs/_internal/PROGRESS.md` § Interrupt Recovery — resume from last checkpoint without re-reading entire history.
 
 ---
 
@@ -309,6 +311,6 @@ Some contributors use **code-review-graph** MCP for impact analysis. See `AGENTS
 - [Architecture](architecture.md) — module map and data flow
 - [Release Process](release-process.md) — semver and tagging
 - [ADR-001: Browser-Only Architecture](../adr/ADR-001-browser-only-architecture.md)
-- [PROGRESS.md](../slices/PROGRESS.md) — slice status and decision log
+- [PROGRESS.md](../_internal/PROGRESS.md) — slice status and decision log
 - [CHANGELOG.md](../../CHANGELOG.md) — release history
 - [README.md](../../README.md) — user-facing quick start

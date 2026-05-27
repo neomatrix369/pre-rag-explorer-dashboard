@@ -2,7 +2,7 @@
 # Script-backed slice progress dashboard (price-analysis print_migration_progress pattern).
 # Update METRICS when slices complete — run: ./scripts/print_slice_progress.sh
 #
-# Terminal snapshot complements docs/slices/PROGRESS.md (human narrative).
+# Terminal snapshot complements docs/_internal/PROGRESS.md (human narrative).
 
 set -euo pipefail
 
@@ -34,7 +34,7 @@ echo "Quality metrics"
 echo "  Tests:    ${TEST_COUNT} passing"
 echo "  Coverage: ${COVERAGE_ACTUAL}% actual / ${COVERAGE_THRESHOLD}% threshold  [$(bar "${COVERAGE_ACTUAL}" 100)]"
 echo ""
-echo "Slice roadmap (feature slices 8–15 planned — see PROGRESS.md)"
+echo "Slice roadmap (feature slices 8–15 planned — see docs/_internal/PROGRESS.md)"
 echo "  [$(bar 7 15)] 7 merged + Infra in flight / 15 total planned"
 echo ""
 echo "Quick verify: ./scripts/check_integrity.sh"

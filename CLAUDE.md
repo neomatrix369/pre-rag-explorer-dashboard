@@ -100,7 +100,7 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 ### Pre-Slice Checklist (MUST DO BEFORE CODING)
 
 ```markdown
-- [ ] Read docs/slices/PROGRESS.md (understand current state)
+- [ ] Read docs/_internal/PROGRESS.md (understand current state)
 - [ ] Create docs/slices/SLICE-XX-NAME.md (slice specification)
 - [ ] Research compatibility (if upgrading dependencies)
 - [ ] Establish baseline metrics (run commands to get actual numbers)
