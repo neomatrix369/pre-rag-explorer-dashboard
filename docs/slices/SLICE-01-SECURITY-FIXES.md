@@ -1,6 +1,6 @@
 # Security Audit Fixes - Added to Slice 1
 
-**Date**: 2026-04-19  
+**Date**: 2026-04-19
 **Status**: ✅ Complete
 
 ## Problem
@@ -25,7 +25,7 @@ CI security audit failing with 18 vulnerabilities (5 moderate, 9 high, 4 critica
 ```bash
 npm install @xenova/transformers@^2.17.2 --legacy-peer-deps
 ```
-**Before**: 2.16.0  
+**Before**: 2.16.0
 **After**: 2.17.2
 
 ### 2. Upgraded Dev Dependencies (Major Versions)
@@ -36,7 +36,7 @@ npm install --save-dev \
   @typescript-eslint/eslint-plugin@^8.58.2 \
   @typescript-eslint/parser@^8.58.2
 ```
-**vitest**: 1.6.1 → 4.1.4 (3 major versions)  
+**vitest**: 1.6.1 → 4.1.4 (3 major versions)
 **@typescript-eslint**: 6.21.0 → 8.58.2 (2 major versions)
 
 Fixed vulnerabilities:

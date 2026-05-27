@@ -20,12 +20,12 @@ Adapted from rag-params-finder `docs/contributor-guide/release-process.md` for a
 
 ## When to release
 
-✅ Slice merged (e.g. Slice 7 → 0.7.0)  
-✅ Infra/toolchain milestone with contributor-visible impact  
-✅ Bug fix users would notice  
+✅ Slice merged (e.g. Slice 7 → 0.7.0)
+✅ Infra/toolchain milestone with contributor-visible impact
+✅ Bug fix users would notice
 
-❌ Single doc typo  
-❌ Mid-slice WIP  
+❌ Single doc typo
+❌ Mid-slice WIP
 
 Mark slice ✔️ MERGED in `docs/slices/PROGRESS.md` before tagging.
 

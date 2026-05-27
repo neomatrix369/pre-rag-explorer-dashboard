@@ -1,8 +1,8 @@
 # Performance Baseline Template
 
-**Date**: YYYY-MM-DD  
-**Commit**: `<sha>`  
-**Node**: `<version from .nvmrc>`  
+**Date**: YYYY-MM-DD
+**Commit**: `<sha>`
+**Node**: `<version from .nvmrc>`
 **Machine**: `<optional — e.g. M-series Mac, CI runner>`
 
 ## Chunking (fixed 50KB text fixture)

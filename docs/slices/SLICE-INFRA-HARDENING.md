@@ -1,9 +1,9 @@
 # Slice Infra: Project Hardening & CI Parity
 
-**Status**: 🔍 PR REVIEW  
-**Branch**: `feat/slice-infra-hardening` | **Commit**: `ce2d086`  
-**Priority**: Must (cross-cutting reliability)  
-**MoSCoW**: Must — local/CI parity and contributor hygiene before feature slices 8+  
+**Status**: 🔍 PR REVIEW
+**Branch**: `feat/slice-infra-hardening` | **Commit**: `ce2d086`
+**Priority**: Must (cross-cutting reliability)
+**MoSCoW**: Must — local/CI parity and contributor hygiene before feature slices 8+
 **Sources**: Patterns inherited from `price-analysis` and `rag-params-finder`
 
 ---
@@ -12,7 +12,7 @@
 
 Close gaps between local development, CI, and sibling-project best practices so every contributor runs the same gates and secrets/docs hygiene is enforced consistently.
 
-**Maturity Profile**: Serious (extends Slice 1 toolchain)  
+**Maturity Profile**: Serious (extends Slice 1 toolchain)
 **20-Factor Compliance**: Factor 2 (Dependencies — Dependabot), Factor 3 (Config — `.env.example`), Factor 14 (Telemetry/docs baselines)
 
 ---

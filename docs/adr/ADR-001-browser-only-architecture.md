@@ -1,7 +1,7 @@
 # ADR-001: Browser-Only Architecture (No Backend)
 
-**Status**: Accepted  
-**Date**: 2026-04-19  
+**Status**: Accepted
+**Date**: 2026-04-19
 **Slice**: 1 — Toolchain / foundational design
 
 ---

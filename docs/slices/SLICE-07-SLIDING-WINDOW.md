@@ -1,7 +1,7 @@
 # Slice 7: Sliding Window Chunking
 
-**Branch**: `feat/slice-07-sliding-window`  
-**Status**: 🔨 IN PROGRESS  
+**Branch**: `feat/slice-07-sliding-window`
+**Status**: 🔨 IN PROGRESS
 **Started**: 2026-04-23
 
 ---
@@ -92,7 +92,7 @@ function slidingWindowChunk(text: string, windowSize: number, stride: number): s
   if (stride > windowSize) {
     console.warn('Stride > windowSize creates gaps between chunks');
   }
-  
+
   const chunks: string[] = [];
   let i = 0;
   while (i < text.length) {
