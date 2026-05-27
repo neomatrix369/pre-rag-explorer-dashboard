@@ -45,3 +45,7 @@ test-results
 .cursor/
 .gemini/
 .mcp.json
+.playwright-mcp/
+
+# Added by code-review-graph
+.code-review-graph/
