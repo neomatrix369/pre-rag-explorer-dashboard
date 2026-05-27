@@ -12,7 +12,7 @@ jobs:
 
     steps:
       # Full history required: gitleaks-action scans PRs with git log base^..head
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
