@@ -189,7 +189,7 @@ npm run build          → ~3.2s, dist/ created
 - Vitest 4.x calculates coverage differently than 1.x
 - Service coverage focuses on `services/**/*.ts`; chunkingService lower (~45%) — target for future slices
 - Meta linters: `pip install pre-commit && pre-commit install-hooks` (recommended) or `brew install shellcheck actionlint`
-- Infra slice on `feat/slice-infra-hardening`: CI parity, gitleaks, meta linters, `check_integrity.sh`, contributor docs (see `docs/slices/SLICE-INFRA-HARDENING.md`)
+- Infra slice merged (PR #20): CI parity, gitleaks, meta linters, pre-push, Docker static deploy, doc hub — see `docs/slices/SLICE-INFRA-HARDENING.md` and `docs/_internal/PROGRESS.md`
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph

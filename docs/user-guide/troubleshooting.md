@@ -32,3 +32,12 @@
 # Process fewer methods simultaneously
 # Close other browser tabs to free memory
 ```
+
+### Local setup (contributors)
+
+| Symptom | Fix |
+|---------|-----|
+| `npm install` peer dependency errors on React 19 | Use current `package-lock.json`; `@testing-library/react@^16.1` — do not use `--legacy-peer-deps` |
+| Vitest fails on `sharp` | Should use Vitest stub — run `npm run test`; see [development.md](../contributor-guide/development.md#native-optional-dependencies-rollup-sharp) |
+| Port 3000 already in use | Stop `npm run dev` before `./start-services.sh`, or vice versa |
+| `git push` fails on tests | Husky runs `npm run test:all`; fix locally or use `git push --no-verify` only when intentional |

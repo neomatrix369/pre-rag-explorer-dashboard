@@ -64,6 +64,7 @@ Full setup (including Docker): [QUICKSTART.md](QUICKSTART.md)
 | Understand the system design | [Architecture](docs/contributor-guide/architecture.md) |
 | Set up a development environment | [Development Guide](docs/contributor-guide/development.md) |
 | Why browser-only? | [ADR-001](docs/adr/ADR-001-browser-only-architecture.md) |
+| Browse all documentation | [docs/README.md](docs/README.md) |
 | Track slice progress | [PROGRESS.md](docs/_internal/PROGRESS.md) |
 
 ---

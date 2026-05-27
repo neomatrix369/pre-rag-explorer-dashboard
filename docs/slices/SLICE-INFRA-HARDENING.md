@@ -1,7 +1,7 @@
 # Slice Infra: Project Hardening & CI Parity
 
-**Status**: 🔍 PR REVIEW
-**Branch**: `feat/slice-infra-hardening` | **Commit**: `b9be71f`
+**Status**: ✔️ MERGED
+**Branch**: `feat/slice-infra-hardening` | **Merge commit**: `6199313` | **PR**: #20
 **Priority**: Must (cross-cutting reliability)
 **MoSCoW**: Must — local/CI parity and contributor hygiene before feature slices 8+
 **Sources**: Patterns inherited from `price-analysis` and `rag-params-finder`
@@ -253,7 +253,7 @@ See Phase 5 above. **Risks:** `GEMINI_API_KEY` in image layers if set at build t
 
 ## Cross-check matrix (3 projects — 2026-05-27)
 
-| Pattern | price-analysis | rag-params-finder | pre-rag (after slice) |
+| Pattern | price-analysis | rag-params-finder | pre-rag (Infra merged) |
 |---------|----------------|-------------------|------------------------|
 | Unified quality script | `check_integrity.py` | `quality-gates.sh` | ✅ both patterns merged |
 | CI/local parity | ❌ CI thin | ✅ split jobs | ✅ full mirror + gitleaks |

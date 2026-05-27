@@ -1,7 +1,7 @@
 # Pre-RAG Explorer Dashboard — Build Progress
 
-**Last Updated**: 2026-05-27
-**Current**: Slice Infra 🔍 PR REVIEW | Last merged: Slice 7 ✔️ (PR #11)
+**Last Updated**: 2026-05-28
+**Current**: Slice 8 📋 PLANNED | Last merged: Infra ✔️ (PR #20) · Slice 7 ✔️ (PR #11)
 
 ---
 
@@ -16,7 +16,7 @@
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | ✔️ MERGED | feat/slice-07-sliding-window | 94ca41b | PR #11: stride-based params, 75 tests |
-| **Infra — Project Hardening** | 🔨 IN PROGRESS | feat/slice-infra-hardening | b9be71f | CI parity, gitleaks, meta linters, 81 tests, Docker static deploy |
+| **Infra — Project Hardening** | ✔️ MERGED | feat/slice-infra-hardening | 6199313 | PR #20: CI parity, gitleaks, meta linters, pre-push, 81 tests, Docker static deploy, doc hub |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -271,21 +271,23 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 
 ---
 
-## Slice Infra: Project Hardening 🔍
+## Slice Infra: Project Hardening ✔️
 
-**Branch**: `feat/slice-infra-hardening` | **Commit**: `b9be71f` | **Spec**: `docs/slices/SLICE-INFRA-HARDENING.md`
+**Branch**: `feat/slice-infra-hardening` | **Merge commit**: `6199313` | **PR**: #20 | **Spec**: `docs/slices/SLICE-INFRA-HARDENING.md` | **Completed**: 2026-05-28
 
 ### Checkpoints
 - [x] **PROMPT_READY** — Analysis of price-analysis + rag-params-finder complete
 - [x] **CODE_COMPLETE** — scripts, CI, hooks, docs created
 - [x] **TESTS_PASSING** — `./scripts/quality-gates.sh` green (81 tests)
 - [x] **COMMITTED** — Conventional commits on feature branch
-- [ ] **MERGED** — PR to main
+- [x] **MERGED** — PR #20 merged to main (`6199313`)
 
 ### Verification
 ```bash
 ✅ ./scripts/quality-gates.sh (81 tests, 0 audit high+, build OK)
-✅ HEAD b9be71f on feat/slice-infra-hardening
+✅ npm run test (81/81, incl. import smoke)
+✅ Docker: ./start-services.sh, health-check, CI docker build smoke
+✅ Meta linters: shellcheck, actionlint, markdownlint in CI + hooks
 ```
 
 ### Scope summary
@@ -458,6 +460,12 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 | 2026-05-27 | infra | Inherit hardening from price-analysis + rag-params-finder | quality-gates.sh CI mirror, gitleaks in CI, Dependabot, CHANGELOG, ADR, contributor guide |
 | 2026-05-27 | infra | Meta linters in CI + hooks | shellcheck (scripts), actionlint (workflows), markdownlint (md); Prettier on YAML/HTML; shellcheck-py avoids Docker |
 | 2026-05-27 | infra | Docker static deploy (Infra) | Single-service nginx; patterns from AIE7; no backend/Qdrant; Slice 4 CF still parked |
+| 2026-05-28 | infra | @testing-library/react ^16.1 | React 19 peer deps; drop `--legacy-peer-deps` from install/CI |
+| 2026-05-28 | infra | Husky pre-push → `test:all` | Local push matches CI fast gates before remote |
+| 2026-05-28 | infra | Vitest sharp stub + rollup lockfile pins | import smoke passes without libvips; CI/Docker get correct Rollup native binary |
+| 2026-05-28 | infra | Doc hub layout (`f59a28d`) | QUICKSTART + README hub; `docs/user-guide/`; PROGRESS → `docs/_internal/`; redirect at `docs/slices/PROGRESS.md` |
+| 2026-05-28 | deps | @google/genai 2.6.0 (PR #18) | Optional Gemini client; core RAG unchanged |
+| 2026-05-28 | deps | actions/checkout + setup-node v6 | Dependabot CI hygiene |
 | 2026-04-23 | 7 | Show overlap % in stride tooltip | Help users understand relationship: overlap = windowSize - stride |
 
 ---
@@ -475,8 +483,8 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 ## Next Actions
 
 **Immediate**:
-1. Commit and open PR for Slice Infra (`feat/slice-infra-hardening`)
-2. Define Slice 8 spec (markdown-aware chunking)
+1. Define Slice 8 spec (`docs/slices/SLICE-08-*.md` — markdown-aware chunking)
+2. Optional: tag `v0.8.0` after Infra + doc hub land on `main` (see [release-process.md](../contributor-guide/release-process.md))
 
 **Pipeline**:
 - Slice 8: Markdown-aware chunking
