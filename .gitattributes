@@ -1,0 +1,13 @@
+# Normalize line endings and diff behavior (rag-params-finder pattern).
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.bat text eol=crlf
+
+package-lock.json -diff
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.pdf binary

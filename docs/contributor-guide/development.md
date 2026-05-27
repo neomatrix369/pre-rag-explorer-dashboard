@@ -62,6 +62,20 @@ Quick mode (lint + format + typecheck + test — skips coverage, audit, build):
 ./scripts/quality-gates.sh --quick
 ```
 
+Full mode (CI mirror + gitleaks config + pre-commit all-files):
+
+```bash
+./scripts/quality-gates.sh --full
+```
+
+Fast integrity check between slices (tests + import smoke):
+
+```bash
+./scripts/check_integrity.sh
+./scripts/check_integrity.sh --full   # + quality-gates + gitleaks + pre-commit
+npm run slice-progress                # terminal progress dashboard
+```
+
 ### Individual gates
 
 | Gate | Command | Baseline (2026-05-27) |
@@ -69,7 +83,7 @@ Quick mode (lint + format + typecheck + test — skips coverage, audit, build):
 | Lint | `npm run lint` | 0 errors, 0 warnings |
 | Format | `npm run format:check` | Prettier clean |
 | Type check | `npm run typecheck` | 0 errors |
-| Tests | `npm run test` | 75 passing |
+| Tests | `npm run test` | 81 passing (incl. import smoke) |
 | Coverage | `npm run test:coverage` | ≥40% on `services/**` (~72% actual) |
 | Security | `npm audit --audit-level=high` | 0 high+ vulnerabilities |
 | Build | `npm run build` | ~3s, `dist/` created |
@@ -80,7 +94,26 @@ Quick mode (lint + format + typecheck + test — skips coverage, audit, build):
 npm run test:all       # lint + format:check + typecheck + test
 npm run verify         # typecheck + build
 npm run quality-gates  # full CI mirror via scripts/quality-gates.sh
+npm run check-integrity
+npm run slice-progress
 ```
+
+---
+
+## Migration integrity gates (A–F)
+
+Lettered gates adapted from price-analysis; run before merging infra/feature slices:
+
+| Gate | Check | Command |
+|------|-------|---------|
+| A | Unit tests | `npm run test` |
+| B | Import smoke | `npm run test -- services/__tests__/importSmoke.test.ts` |
+| C | Typecheck + build | `npm run verify` |
+| D | Full CI mirror | `./scripts/quality-gates.sh` |
+| E | Secrets | `gitleaks detect --config .gitleaks.toml --source . --no-git` |
+| F | Pre-commit hygiene | `pre-commit run --all-files` (optional) |
+
+Or: `./scripts/check_integrity.sh` (A+B) and `./scripts/check_integrity.sh --full` (A–F).
 
 ---
 
@@ -89,6 +122,7 @@ npm run quality-gates  # full CI mirror via scripts/quality-gates.sh
 | Tier | Location | Purpose |
 |------|----------|---------|
 | Fast unit | `services/**/*.test.ts`, `utils/**`, `constants/**` | Service logic with mocked I/O |
+| Import smoke | `services/__tests__/importSmoke.test.ts` | Gate B — module load safety |
 | Coverage scope | `services/**/*.ts` only (vitest.config.ts) | Enforced 40% threshold in CI |
 
 **Patterns inherited from sibling projects:**
@@ -114,8 +148,11 @@ pre-rag-explorer-dashboard/
 │   ├── adr/            # Architecture Decision Records
 │   └── contributor-guide/  # This directory
 ├── scripts/
-│   ├── quality-gates.sh      # CI mirror
-│   └── strip_ai_coauthor.py  # commit-msg hygiene
+│   ├── quality-gates.sh         # CI mirror (--quick, --full)
+│   ├── check_integrity.sh       # fast regression + optional full
+│   ├── print_slice_progress.sh  # terminal metrics dashboard
+│   └── strip_ai_coauthor.py     # commit-msg hygiene
+├── benchmarks/                  # perf baseline structure (scripts TBD)
 └── .github/workflows/ci.yml
 ```
 
@@ -147,7 +184,7 @@ pre-rag-explorer-dashboard/
 [ ] ./scripts/quality-gates.sh passes
 [ ] PROGRESS.md status updated (🔨 → 🔍 PR REVIEW → ✔️ MERGED)
 [ ] CHANGELOG.md updated under [Unreleased]
-[ ] Conventional Commits with WHY not WHAT
+[ ] Consider release: see [release-process.md](release-process.md)
 ```
 
 ### Interrupt recovery
@@ -160,7 +197,7 @@ See `docs/slices/PROGRESS.md` § Interrupt Recovery — resume from last checkpo
 
 GitHub Actions (`.github/workflows/ci.yml`) on push/PR to `main`:
 
-1. ESLint → Prettier check → TypeScript → Vitest → Coverage → npm audit → Build
+1. Node from `.nvmrc` → ESLint → Prettier → TypeScript → Vitest → Coverage → npm audit → Build
 2. gitleaks secret scan
 
 Dependabot opens weekly PRs for npm and GitHub Actions updates.
@@ -171,7 +208,7 @@ Dependabot opens weekly PRs for npm and GitHub Actions updates.
 
 | Control | Where |
 |---------|-------|
-| gitleaks | pre-commit (Husky), CI, optional pre-commit framework |
+| gitleaks | Husky (`.gitleaks.toml`), CI, `--full` quality gates |
 | eslint-plugin-security | ESLint CI + lint-staged |
 | npm audit | CI (`--audit-level=high`) |
 | `.env.example` | Documents optional keys; `.env.local` gitignored |
@@ -187,6 +224,8 @@ Some contributors use **code-review-graph** MCP for impact analysis. See `AGENTS
 
 ## See Also
 
+- [Architecture](architecture.md) — module map and data flow
+- [Release Process](release-process.md) — semver and tagging
 - [ADR-001: Browser-Only Architecture](../adr/ADR-001-browser-only-architecture.md)
 - [PROGRESS.md](../slices/PROGRESS.md) — slice status and decision log
 - [CHANGELOG.md](../../CHANGELOG.md) — release history

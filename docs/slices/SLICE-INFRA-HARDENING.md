@@ -198,3 +198,33 @@ grep -q Cursor /tmp/msg && echo FAIL || echo PASS
 - `price-analysis`: `scripts/check_integrity.py`, `scripts/strip_ai_coauthor.py`
 - `rag-params-finder`: `.pre-commit-config.yaml`, `docs/contributor-guide/development.md`, CHANGELOG cadence
 - Slice 1 spec: `docs/slices/SLICE-01-TOOLCHAIN.md`
+
+---
+
+## Cross-check matrix (3 projects — 2026-05-27)
+
+| Pattern | price-analysis | rag-params-finder | pre-rag (after slice) |
+|---------|----------------|-------------------|------------------------|
+| Unified quality script | `check_integrity.py` | `quality-gates.sh` | ✅ both patterns merged |
+| CI/local parity | ❌ CI thin | ✅ split jobs | ✅ full mirror + gitleaks |
+| Pre-commit hygiene | ✅ rich Python | ✅ Serious-lite | ✅ Husky + optional pre-commit |
+| Gitleaks + config | local only | pre-commit | ✅ Husky + CI + `.gitleaks.toml` |
+| Import smoke gate | ✅ test_import_smoke | ✅ check_integrity | ✅ importSmoke.test.ts |
+| Progress dashboard | ✅ print_migration_progress | PROGRESS.md | ✅ print_slice_progress.sh |
+| Lettered gates A–G | ✅ IN_PROGRESS | — | ✅ A–F in development.md |
+| Benchmarks + baselines | ✅ benchmarks/ | — | ✅ scaffold (scripts TBD) |
+| ADR + CHANGELOG | partial | ✅ | ✅ |
+| Release automation | — | ✅ release.sh | ✅ release-process.md (script TBD) |
+| Dependabot | — | ✅ | ✅ |
+| `.gitattributes` | — | ✅ | ✅ |
+| Frontend tests (Vitest) | N/A | ❌ | ✅ **ahead** (81 tests) |
+| ESLint strict CI | N/A | partial | ✅ **ahead** |
+| Docker deploy | ✅ Streamlit | deferred | Slice 4 parked |
+
+### Still Won't (correct for browser-only)
+
+- Python ruff/mypy/pytest toolchain
+- Two-process FastAPI + CLI architecture
+- price-analysis thin CI (would regress)
+- Xenon/ESLint complexity on legacy chunkingService (until refactor slice)
+- `release.sh` automation (Could — when tagging starts)

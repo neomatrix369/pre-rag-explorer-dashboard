@@ -1,5 +1,5 @@
 # Maturity: Serious-lite — optional complement to Husky (lint-staged handles ESLint/Prettier).
-# Mirrors CI hygiene + secrets checks. Full gates: ./scripts/quality-gates.sh
+# Mirrors CI hygiene + secrets checks. Full gates: ./scripts/quality-gates.sh --full
 #
 # Install:  pip install pre-commit && pre-commit install && pre-commit install --hook-type commit-msg
 # Run all:   pre-commit run --all-files
@@ -18,12 +18,25 @@ repos:
         args: ["--maxkb=500"]
       - id: detect-private-key
       - id: debug-statements
+      - id: mixed-line-ending
+        args: [--fix=lf]
 
   # ── Secrets ──────────────────────────────────────────────
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.22.1
     hooks:
       - id: gitleaks
+        args: [--config, .gitleaks.toml]
+
+  # ── Typecheck + build (complements Husky lint-staged) ────
+  - repo: local
+    hooks:
+      - id: verify
+        name: npm verify (tsc + build)
+        entry: npm run verify
+        language: system
+        pass_filenames: false
+        files: \.(ts|tsx)$
 
   # ── Commit message hygiene ───────────────────────────────
   - repo: local
