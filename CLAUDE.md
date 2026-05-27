@@ -12,11 +12,11 @@ npm run dev       # Start dev server at http://localhost:3000
 npm run build     # Production build
 npm run preview   # Preview production build
 
-# Quality Gates (Slice 1+)
-npm run lint           # ESLint (79 warnings acceptable)
+# Quality Gates (Slices 1–6)
+npm run lint           # ESLint strict mode (--max-warnings 0)
 npm run typecheck      # TypeScript type checking
-npm run test           # Vitest unit tests (3 tests)
-npm run test:coverage  # Coverage report (8% baseline)
+npm run test           # Vitest unit tests (66 tests)
+npm run test:coverage  # Coverage report (40% threshold, ~70% actual)
 npm audit --audit-level=high  # Security audit (0 vulnerabilities)
 
 # Quick verification
@@ -35,15 +35,25 @@ This is a **100% browser-based RAG exploration dashboard** — no backend. All p
 Upload Files → Parse (fileParser.ts) → Chunk (chunkingService.ts) → Embed (embeddingService.ts) → Store (vectorStore.ts) → Search (similarity.ts)
 ```
 
-Processing is per `file × chunkingMethod` combination. Each combination produces a `VectorCollection` saved to IndexedDB.
+Processing is per `file × chunkingMethod × embeddingModel` combination. Each combination produces a `VectorCollection` saved to IndexedDB.
 
-### Services (`src/services/`)
+### Model Registry (`constants/modelRegistry.ts`)
+
+| Module | Responsibility |
+|---|---|
+| `constants/modelRegistry.ts` | `MODEL_REGISTRY` with metadata (dimensions, size, HuggingFace ID, defaults) |
+| `utils/modelValidation.ts` | `getModelById`, `isValidModelId`, `validateModelConfig`, etc. |
+| `constants.tsx` | Re-exports registry for backward-compatible imports |
+
+**Current models**: `all-minilm-l6-v2` (default, ~23MB), `bge-small-en-v1.5` (~33MB). Both 384-dim.
+
+### Services (`services/`)
 
 | Service | Responsibility |
 |---|---|
 | `fileParser.ts` | Parse `.txt`, `.csv`, `.pdf`, `.md` into plain text |
 | `chunkingService.ts` | 5 strategies: Fixed, Recursive, Token, Sentence, Semantic |
-| `embeddingService.ts` | Singleton wrapping Transformers.js (Xenova/all-MiniLM-L6-v2, 384-dim). Lazy-loads ~23MB model on first use. |
+| `embeddingService.ts` | Singleton wrapping Transformers.js; accepts `modelId` from registry. Lazy-loads models on first use. |
 | `vectorStore.ts` | IndexedDB CRUD for `collections` and `files` stores (DB: `RAGExplorerDB` v2) |
 
 ### Retrieval (`src/utils/similarity.ts`)
@@ -60,10 +70,11 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 
 ### Key Types (`src/types.ts`)
 
-- `VectorCollection` — chunks + embedding vectors + metadata (method, params, source file)
+- `VectorCollection` — chunks + embedding vectors + metadata (method, params, source file, embeddingModel)
 - `SearchResult` — chunk, score, retrievalMethod, collectionName
 - `Experiment` — run metadata stored to localStorage
 - `ChunkingMethod` — enum: FIXED, RECURSIVE, TOKEN, SENTENCE, SEMANTIC
+- `ModelConfig` / `ModelId` — embedding model registry types (see `constants/modelRegistry.ts`)
 
 ### Path Alias
 
@@ -150,22 +161,22 @@ When making pragmatic choices, document in `PROGRESS.md` decision log:
 | YYYY-MM-DD | N | Short decision | Rationale (context, alternatives, tradeoffs) |
 ```
 
-### Quality Gate Baseline (Post-Slice 1)
+### Quality Gate Baseline (Post-Slice 6, verified 2026-05-27)
 
 ```
-npm run lint           → 79 warnings, 0 errors (19 unused, 60 false positives)
+npm run lint           → 0 warnings, 0 errors (--max-warnings 0)
 npm run typecheck      → 0 errors
-npm run test           → 3/3 passing
-npm run test:coverage  → 8.04% (vitest 4.x baseline)
+npm run test           → 66/66 passing (6 test files)
+npm run test:coverage  → ~70% lines, 40% threshold enforced
 npm audit              → 0 vulnerabilities (ALL deps)
-npm run build          → 2.73s, dist/ created
+npm run build          → ~3.2s, dist/ created
 ```
 
 **Known State:**
 - React 19 + @testing-library/react@15 requires --legacy-peer-deps
-- Vitest 4.x calculates coverage differently than 1.x (expect lower %)
-- ESLint warnings to be addressed in Slice 2
-- Coverage to be increased in Slice 3 (target 40%+)
+- Vitest 4.x calculates coverage differently than 1.x
+- Service coverage focuses on `services/**/*.ts`; chunkingService lower (~30%) — target for future slices
+- Slice 7 next: sliding window chunking
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph

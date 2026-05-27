@@ -3,7 +3,7 @@
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF?logo=vite&logoColor=white)
-![Transformers.js](https://img.shields.io/badge/Transformers.js-2.16.0-FF6F00?logo=huggingface&logoColor=white)
+![Transformers.js](https://img.shields.io/badge/Transformers.js-2.17.2-FF6F00?logo=huggingface&logoColor=white)
 
 A comprehensive Pre-RAG prototype dashboard for document parsing, multi-method chunking, vector embedding generation, and hybrid search exploration. Built with React and powered by in-browser ML models.
 
@@ -30,17 +30,17 @@ A comprehensive Pre-RAG prototype dashboard for document parsing, multi-method c
 
 ## Quick Start
 
-**Prerequisites:** Node.js (v18+)
+**Prerequisites:** Node.js 20+ (see `.nvmrc`)
 
 ```bash
-# Install dependencies
-npm install
+# Install dependencies (React 19 peer-dep compatibility)
+npm install --legacy-peer-deps
 
 # Run the app
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+The app will be available at `http://localhost:3000`
 
 ---
 
@@ -59,10 +59,16 @@ The app will be available at `http://localhost:5173`
   - Sparse retrieval (BM25)
   - Hybrid search (combined scoring)
 
+- **Multi-Model Embedding Registry**
+  - Select from registered models in Process view (dropdown + metadata tooltips)
+  - **all-MiniLM-L6-v2** (~23MB) — fast general-purpose embeddings
+  - **BGE Small EN v1.5** (~33MB) — optimized for retrieval tasks
+  - Both produce 384-dimensional vectors; collections are tagged by model
+
 - **In-Browser ML Processing**
-  - Runs Xenova/all-MiniLM-L6-v2 model entirely in browser
-  - No server-side processing required
-  - 384-dimensional embeddings
+  - Transformers.js runs entirely in the browser (no server-side processing)
+  - Models lazy-load on first use and cache in browser storage
+  - No data leaves your machine
 
 - **Multiple File Formats**
   - Plain text (.txt)
@@ -92,17 +98,25 @@ The app will be available at `http://localhost:5173`
 - **Styling**: Tailwind-like utility classes
 
 ### ML & Embeddings
-- **Model**: Xenova/all-MiniLM-L6-v2 (BERT-based, quantized)
-- **Library**: @xenova/transformers 2.16.0
-- **Dimensions**: 384
-- **Execution**: Client-side, in-browser processing
+- **Registry**: `constants/modelRegistry.ts` — centralized model metadata and defaults
+- **Validation**: `utils/modelValidation.ts` — type-safe model ID checks
+- **Models**: Xenova/all-MiniLM-L6-v2 (default), Xenova/bge-small-en-v1.5
+- **Library**: @xenova/transformers 2.17.2
+- **Dimensions**: 384 (both current models)
+- **Execution**: Client-side, in-browser processing with model switching
 
 ### Services Architecture
 ```
+constants/
+└── modelRegistry.ts     # MODEL_REGISTRY, ModelConfig, DEFAULT_MODEL_ID
+
+utils/
+└── modelValidation.ts   # validateModelConfig, getModelById, isValidModelId, etc.
+
 services/
 ├── fileParser.ts        # Handles text, CSV, PDF, markdown parsing
 ├── chunkingService.ts   # Implements 5 chunking strategies
-├── embeddingService.ts  # Generates embeddings using Transformers.js
+├── embeddingService.ts  # Embeddings via Transformers.js (modelId-aware)
 └── vectorStore.ts       # IndexedDB operations for collections
 ```
 
@@ -136,16 +150,18 @@ components/
    - Files are parsed and stored in browser
 
 2. **Process & Chunk**
-   - Select one or more chunking methods
+   - Select an embedding model from the registry dropdown
+   - Select one or more chunking methods (parameter tooltips explain each field)
    - Configure parameters (chunk size, overlap, etc.)
-   - Generate embeddings using in-browser ML model
+   - Generate embeddings using the selected in-browser model
    - Track processing status in real-time
 
 3. **Search & Explore**
    - Enter natural language queries
    - Choose retrieval method (dense, sparse, hybrid)
+   - Search across collections grouped by embedding model
    - View ranked results with similarity scores
-   - Compare results across different chunking strategies
+   - Compare results across chunking strategies and models
 
 4. **Manage Collections**
    - View all vector collections
@@ -184,7 +200,7 @@ components/
 - **Safari**: Full support (v15+)
 - **Mobile**: Limited (large model downloads)
 
-**Note**: First load downloads the ~23MB ML model. Subsequent loads use browser cache.
+**Note**: First use of each model downloads it (~23MB for MiniLM, ~33MB for BGE). Subsequent loads use browser cache.
 
 ---
 
@@ -192,7 +208,7 @@ components/
 
 ```bash
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
 
 # Start development server (with hot reload)
 npm run dev
@@ -202,6 +218,14 @@ npm run build
 
 # Preview production build
 npm preview
+
+# Quality gates (run before committing)
+npm run lint           # ESLint strict mode (0 warnings)
+npm run typecheck      # TypeScript
+npm run test           # Vitest (66 tests)
+npm run test:coverage  # Coverage report (40% threshold, ~70% actual)
+npm run test:all       # lint + typecheck + test
+npm audit --audit-level=high
 ```
 
 ---
@@ -214,15 +238,15 @@ Create a `.env.local` file in the project root:
 GEMINI_API_KEY=your_api_key_here
 ```
 
-> **Note**: The app primarily uses in-browser embeddings (Xenova/all-MiniLM-L6-v2) and does not require an API key for core functionality.
+> **Note**: Core functionality uses in-browser embeddings from the model registry and does not require an API key. `GEMINI_API_KEY` is optional for future Gemini integration.
 
 ---
 
 ## Built With
 
 **AI/ML Stack**
-- ![Transformers.js](https://img.shields.io/badge/Transformers.js-2.16.0-FF6F00?logo=huggingface)
-- ![Xenova](https://img.shields.io/badge/Model-all--MiniLM--L6--v2-yellow)
+- ![Transformers.js](https://img.shields.io/badge/Transformers.js-2.17.2-FF6F00?logo=huggingface)
+- ![Xenova](https://img.shields.io/badge/Models-MiniLM%20%7C%20BGE-yellow)
 
 **Frontend Stack**
 - ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react)
