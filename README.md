@@ -42,6 +42,17 @@ npm run dev
 
 The app will be available at `http://localhost:3000`
 
+### Run with Docker (production static build)
+
+Requires [Docker](https://www.docker.com/products/docker-desktop/). Serves the built app via nginx (no hot reload — use `npm run dev` for development).
+
+```bash
+./start-services.sh    # build image, start on http://localhost:3000
+./stop-services.sh     # stop containers
+```
+
+Details: [Contributor development guide](docs/contributor-guide/development.md#docker-optional-production-run).
+
 ---
 
 ## Key Features

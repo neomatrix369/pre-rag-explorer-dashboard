@@ -59,5 +59,6 @@ Upload → Parse → Chunk → Embed → IndexedDB → Search
 
 ## Related
 
-- Slice 4 (Cloudflare Pages deploy) — static hosting only, no backend added
+- Infra Docker deploy — static Vite build + nginx; operational transport only, no backend added
+- Slice 4 (Cloudflare Pages deploy) — static hosting only, parked; alternative to Docker
 - Slice 15 (Export/Import) — mitigates per-browser isolation

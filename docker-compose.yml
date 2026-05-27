@@ -1,0 +1,23 @@
+# Pre-RAG Explorer — single-service static deploy (browser-only).
+# Patterns from AIE7-Demo-Day-Project; no backend or vector DB.
+
+name: ${COMPOSE_PROJECT_NAME:-rag-explorer}
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    image: ${DASHBOARD_IMAGE_NAME:-rag-explorer-dashboard}
+    container_name: ${DASHBOARD_CONTAINER_NAME:-rag-explorer-dashboard}
+    ports:
+      - '${HOST_PORT:-3000}:80'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s

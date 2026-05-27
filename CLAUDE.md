@@ -11,6 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev       # Start dev server at http://localhost:3000
 npm run build     # Production build
 npm run preview   # Preview production build
+./start-services.sh   # Docker: production static build on http://localhost:3000
+./stop-services.sh    # Stop Docker stack
 
 # Quality Gates (matches CI — prefer single entry point)
 ./scripts/quality-gates.sh   # ESLint, meta linters, Prettier, typecheck, test, coverage, audit, build
