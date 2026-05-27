@@ -16,7 +16,7 @@
 | 5 — Registry Foundation | ✔️ MERGED | feat/slice-05-registry-foundation | 76ec18f | PR #9: MODEL_REGISTRY, validation, 29 tests |
 | 5+6 — Model Registry + bge-small | ✔️ MERGED | feat/slice-05-06-model-registry | 6ceeb1a | PR #10: Registry + 2nd model + tooltips |
 | 7 — Sliding Window Chunking | ✔️ MERGED | feat/slice-07-sliding-window | 94ca41b | PR #11: stride-based params, 75 tests |
-| **Infra — Project Hardening** | 🔍 PR REVIEW | feat/slice-infra-hardening | ce2d086 | CI parity, gitleaks, Dependabot, docs |
+| **Infra — Project Hardening** | 🔍 PR REVIEW | feat/slice-infra-hardening | b9be71f | CI parity, gitleaks, 81 tests (+ import smoke), docs |
 | 8 — Markdown-Aware Chunking | 📋 PLANNED | - | - | Split on headers, preserve structure |
 | 9 — MMR Retrieval | 📋 PLANNED | - | - | Diversity weighting |
 | 10 — Third Model (GTE-small) | 📋 PLANNED | - | - | Registry extensibility test |
@@ -272,24 +272,25 @@ Combined Slices 5+6 validated registry creation AND extensibility:
 
 ## Slice Infra: Project Hardening 🔍
 
-**Branch**: `feat/slice-infra-hardening` | **Commit**: `ce2d086` | **Spec**: `docs/slices/SLICE-INFRA-HARDENING.md`
+**Branch**: `feat/slice-infra-hardening` | **Commit**: `b9be71f` | **Spec**: `docs/slices/SLICE-INFRA-HARDENING.md`
 
 ### Checkpoints
 - [x] **PROMPT_READY** — Analysis of price-analysis + rag-params-finder complete
 - [x] **CODE_COMPLETE** — scripts, CI, hooks, docs created
-- [x] **TESTS_PASSING** — `./scripts/quality-gates.sh` green (75 tests)
-- [x] **COMMITTED** — Conventional commit on feature branch
+- [x] **TESTS_PASSING** — `./scripts/quality-gates.sh` green (81 tests)
+- [x] **COMMITTED** — Conventional commits on feature branch
 - [ ] **MERGED** — PR to main
 
 ### Verification
 ```bash
-✅ ./scripts/quality-gates.sh (75 tests, 0 audit high+, build OK)
-✅ commit ce2d086 on feat/slice-infra-hardening
+✅ ./scripts/quality-gates.sh (81 tests, 0 audit high+, build OK)
+✅ HEAD b9be71f on feat/slice-infra-hardening
 ```
 
 ### Scope summary
-- `scripts/quality-gates.sh` (CI mirror)
-- CI: format:check + gitleaks
+- `scripts/quality-gates.sh` (CI mirror; `--quick` / `--full`)
+- `scripts/check_integrity.sh`, `print_slice_progress.sh`, import smoke tests
+- CI: format:check + gitleaks (`fetch-depth: 0` on checkout)
 - Dependabot, `.env.example`, `.editorconfig`, CHANGELOG, ADR, contributor guide
 
 ### Exit criteria
@@ -297,19 +298,19 @@ See `SLICE-INFRA-HARDENING.md` acceptance criteria checklist.
 
 ---
 
-## Slice 7: Sliding Window Chunking ✅
+## Slice 7: Sliding Window Chunking ✔️
 
-**Branch**: `feat/slice-07-sliding-window` | **Commit**: `5b12f1c` | **Completed**: 2026-04-24
+**Branch**: `feat/slice-07-sliding-window` | **Merge commit**: `94ca41b` | **PR**: #11 | **Completed**: 2026-05-27
 
 ### Checkpoints
 - [x] **PROMPT_READY** — Slice spec created (SLICE-07-SLIDING-WINDOW.md)
 - [x] **CODE_COMPLETE** — Types, service, UI, tests implemented
-- [x] **TESTS_PASSING** — 75 tests passing (66→75, +9 tests)
+- [x] **TESTS_PASSING** — 75 tests at merge (66→75, +9 sliding-window tests)
 - [x] **COVERAGE_MAINTAINED** — 72.3% lines (above 71% baseline)
 - [ ] **MANUAL_VERIFIED** — Browser test pending (requires dev server)
-- [x] **COMMITTED** — Commit 5b12f1c created
-- [x] **PR_CREATED** — PR #11 opened
-- [ ] **MERGED** — Pending review
+- [x] **COMMITTED** — Feature commit `5b12f1c`
+- [x] **PR_CREATED** — PR #11
+- [x] **MERGED** — PR #11 merged to main (`94ca41b`)
 
 ### Scope
 Added SLIDING_WINDOW chunking method with stride-based parameterization:

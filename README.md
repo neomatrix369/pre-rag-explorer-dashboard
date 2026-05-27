@@ -14,7 +14,7 @@ A comprehensive Pre-RAG prototype dashboard for document parsing, multi-method c
 | Upload Documents | Process & Chunk |
 |:---:|:---:|
 | ![Upload](docs/images/01-upload.jpg) | ![Process](docs/images/02-process.jpg) |
-| *Drag-and-drop file upload with multi-format support* | *5 chunking strategies with configurable parameters* |
+| *Drag-and-drop file upload with multi-format support* | *6 chunking strategies with configurable parameters* |
 
 | Search Interface | Search Results |
 |:---:|:---:|
@@ -115,7 +115,7 @@ utils/
 
 services/
 ├── fileParser.ts        # Handles text, CSV, PDF, markdown parsing
-├── chunkingService.ts   # Implements 5 chunking strategies
+├── chunkingService.ts   # Implements 6 chunking strategies
 ├── embeddingService.ts  # Embeddings via Transformers.js (modelId-aware)
 └── vectorStore.ts       # IndexedDB operations for collections
 ```
@@ -180,6 +180,7 @@ components/
 | **Token** | Splits based on token count (word boundaries) | Language model compatibility |
 | **Sentence** | Groups by sentence count | Maintaining semantic completeness |
 | **Semantic** | Groups semantically similar sentences together | Preserving topic coherence |
+| **Sliding Window** | Fixed window size with stride (step between windows) | Overlap via stride mental model (e.g. 75% overlap = stride 25% of window) |
 
 ---
 
@@ -226,7 +227,7 @@ npm run verify               # typecheck + build
 npm run lint                 # ESLint strict mode (0 warnings)
 npm run format:check         # Prettier
 npm run typecheck            # TypeScript
-npm run test                 # Vitest (75 tests)
+npm run test                 # Vitest (81 tests)
 npm run test:coverage        # Coverage report (40% threshold, ~72% actual)
 npm audit --audit-level=high
 ```

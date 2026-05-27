@@ -21,7 +21,7 @@ npm run verify               # typecheck + build
 npm run lint                 # ESLint strict mode (--max-warnings 0)
 npm run format:check         # Prettier
 npm run typecheck            # TypeScript type checking
-npm run test                 # Vitest unit tests (75 tests)
+npm run test                 # Vitest unit tests (81 tests)
 npm run test:coverage        # Coverage report (40% threshold, ~72% actual)
 npm audit --audit-level=high # Security audit (0 vulnerabilities)
 ```
@@ -55,11 +55,11 @@ Processing is per `file × chunkingMethod × embeddingModel` combination. Each c
 | Service | Responsibility |
 |---|---|
 | `fileParser.ts` | Parse `.txt`, `.csv`, `.pdf`, `.md` into plain text |
-| `chunkingService.ts` | 5 strategies: Fixed, Recursive, Token, Sentence, Semantic |
+| `chunkingService.ts` | 6 strategies: Fixed, Recursive, Token, Sentence, Semantic, Sliding Window |
 | `embeddingService.ts` | Singleton wrapping Transformers.js; accepts `modelId` from registry. Lazy-loads models on first use. |
 | `vectorStore.ts` | IndexedDB CRUD for `collections` and `files` stores (DB: `RAGExplorerDB` v2) |
 
-### Retrieval (`src/utils/similarity.ts`)
+### Retrieval (`utils/similarity.ts`)
 
 Three retrieval modes: **dense** (cosine similarity), **sparse** (BM25), **hybrid** (weighted combination).
 
@@ -76,7 +76,7 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 - `VectorCollection` — chunks + embedding vectors + metadata (method, params, source file, embeddingModel)
 - `SearchResult` — chunk, score, retrievalMethod, collectionName
 - `Experiment` — run metadata stored to localStorage
-- `ChunkingMethod` — enum: FIXED, RECURSIVE, TOKEN, SENTENCE, SEMANTIC
+- `ChunkingMethod` — enum: FIXED, RECURSIVE, TOKEN, SENTENCE, SEMANTIC, SLIDING_WINDOW
 - `ModelConfig` / `ModelId` — embedding model registry types (see `constants/modelRegistry.ts`)
 
 ### Path Alias
@@ -164,13 +164,13 @@ When making pragmatic choices, document in `PROGRESS.md` decision log:
 | YYYY-MM-DD | N | Short decision | Rationale (context, alternatives, tradeoffs) |
 ```
 
-### Quality Gate Baseline (Post-Slice 7, verified 2026-05-27)
+### Quality Gate Baseline (Post-Slice Infra, verified 2026-05-27)
 
 ```
 ./scripts/quality-gates.sh → all gates pass (CI mirror)
 npm run lint           → 0 warnings, 0 errors (--max-warnings 0)
 npm run typecheck      → 0 errors
-npm run test           → 75/75 passing
+npm run test           → 81/81 passing (incl. import smoke)
 npm run test:coverage  → ~72% lines, 40% threshold enforced
 npm audit              → 0 vulnerabilities (ALL deps)
 npm run build          → ~3.2s, dist/ created
@@ -180,7 +180,7 @@ npm run build          → ~3.2s, dist/ created
 - React 19 + @testing-library/react@15 requires --legacy-peer-deps
 - Vitest 4.x calculates coverage differently than 1.x
 - Service coverage focuses on `services/**/*.ts`; chunkingService lower (~45%) — target for future slices
-- Slice Infra in progress: CI parity, gitleaks, Dependabot, contributor docs
+- Infra slice on `feat/slice-infra-hardening`: CI parity, gitleaks, `check_integrity.sh`, contributor docs (see `docs/slices/SLICE-INFRA-HARDENING.md`)
 
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
