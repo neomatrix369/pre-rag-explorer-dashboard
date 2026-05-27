@@ -15,8 +15,8 @@ Dev environment setup, quality gates, testing strategy, and slice workflow for c
 # Node 20+ (see .nvmrc)
 nvm use
 
-# Install (React 19 peer-dep compatibility)
-npm install --legacy-peer-deps
+# Install
+npm install
 
 # Optional: Gemini integration
 cp .env.example .env.local
