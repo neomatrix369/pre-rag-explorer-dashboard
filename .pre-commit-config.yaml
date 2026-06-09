@@ -54,3 +54,10 @@ repos:
         language: system
         pass_filenames: false
         files: \.(ts|tsx)$
+
+      - id: pre-push-gates
+        name: Full quality gates (pre-push)
+        entry: bash scripts/pre-push-gates.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
