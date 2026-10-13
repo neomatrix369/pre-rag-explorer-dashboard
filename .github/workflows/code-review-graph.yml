@@ -1,0 +1,29 @@
+name: Code Review Graph
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  update-graph:
+    name: Build / update knowledge graph
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install code-review-graph
+        run: pip install code-review-graph
+
+      - name: Build graph
+        run: code-review-graph build
+
+      - name: Detect changes (PR only)
+        if: github.event_name == 'pull_request'
+        run: code-review-graph detect-changes --brief

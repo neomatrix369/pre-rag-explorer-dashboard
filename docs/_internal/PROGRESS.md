@@ -381,7 +381,7 @@ Added SLIDING_WINDOW chunking method with stride-based parameterization:
 | windowSize + stride params | Clearer than "overlap" for stride-based thinking |
 | Validate stride > 0 | Prevent infinite loop |
 | Warn on stride > windowSize | Valid but creates gaps; inform user |
-| Use nullish coalescing (??) for params | Preserve explicit 0 values (vs || operator) |
+| Use nullish coalescing (??) for params | Preserve explicit 0 values (vs `\|\|` operator) |
 | Calculate overlap in UI tooltip | Show equivalent overlap % for user reference |
 
 ### Implementation Summary

@@ -1,9 +1,28 @@
 # Pre-RAG Explorer Dashboard
 
+<!-- badges:start -->
+<!-- Group 1: Tech stack -->
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6.2.0-646CFF?logo=vite&logoColor=white)
 ![Transformers.js](https://img.shields.io/badge/Transformers.js-2.17.2-FF6F00?logo=huggingface&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=nodedotjs&logoColor=white)
+
+<!-- Group 2: CI / Quality -->
+[![CI](https://img.shields.io/github/actions/workflow/status/neomatrix369/pre-rag-explorer-dashboard/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/neomatrix369/pre-rag-explorer-dashboard/actions/workflows/ci.yml)
+[![Nightly](https://img.shields.io/github/actions/workflow/status/neomatrix369/pre-rag-explorer-dashboard/nightly.yml?branch=main&label=Nightly&logo=githubactions&logoColor=white)](https://github.com/neomatrix369/pre-rag-explorer-dashboard/actions/workflows/nightly.yml)
+[![Code Review Graph](https://img.shields.io/github/actions/workflow/status/neomatrix369/pre-rag-explorer-dashboard/code-review-graph.yml?branch=main&label=Code+Review+Graph&logo=githubactions&logoColor=white)](https://github.com/neomatrix369/pre-rag-explorer-dashboard/actions/workflows/code-review-graph.yml)
+<!-- Meterian SCA: uncomment after adding METERIAN_API_TOKEN to GitHub Secrets -->
+<!-- [![Security](https://www.meterian.com/badge/gh/neomatrix369/pre-rag-explorer-dashboard/security)](https://www.meterian.com/report/gh/neomatrix369/pre-rag-explorer-dashboard) -->
+<!-- [![Stability](https://www.meterian.com/badge/gh/neomatrix369/pre-rag-explorer-dashboard/stability)](https://www.meterian.com/report/gh/neomatrix369/pre-rag-explorer-dashboard) -->
+<!-- [![Licensing](https://www.meterian.com/badge/gh/neomatrix369/pre-rag-explorer-dashboard/licensing)](https://www.meterian.com/report/gh/neomatrix369/pre-rag-explorer-dashboard) -->
+<!-- Coverage: uncomment after adding CODECOV_TOKEN to GitHub Secrets -->
+<!-- [![Coverage](https://codecov.io/gh/neomatrix369/pre-rag-explorer-dashboard/branch/main/graph/badge.svg)](https://codecov.io/gh/neomatrix369/pre-rag-explorer-dashboard) -->
+[![Release](https://img.shields.io/github/v/release/neomatrix369/pre-rag-explorer-dashboard?label=Release&logo=github)](https://github.com/neomatrix369/pre-rag-explorer-dashboard/releases)
+[![License](https://img.shields.io/github/license/neomatrix369/pre-rag-explorer-dashboard)](https://github.com/neomatrix369/pre-rag-explorer-dashboard/blob/main/LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/neomatrix369/pre-rag-explorer-dashboard)](https://github.com/neomatrix369/pre-rag-explorer-dashboard/commits/main)
+[![Stars](https://img.shields.io/github/stars/neomatrix369/pre-rag-explorer-dashboard?style=social)](https://github.com/neomatrix369/pre-rag-explorer-dashboard)
+<!-- badges:end -->
 
 A comprehensive Pre-RAG prototype dashboard for document parsing, multi-method chunking, vector embedding generation, and hybrid search exploration. Built with React and powered by in-browser ML models.
 

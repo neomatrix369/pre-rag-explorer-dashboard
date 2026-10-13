@@ -1,5 +1,7 @@
 dist
 node_modules
 coverage
+.reports/
 *.md
 .tessl/
+.omc/

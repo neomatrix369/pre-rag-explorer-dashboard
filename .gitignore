@@ -49,3 +49,7 @@ test-results
 
 # Added by code-review-graph
 .code-review-graph/
+
+# OMC (oh-my-claudecode) operational state — not for version control
+# Exception: .omc/skills/ is intentionally committable for project-scoped skills
+.omc/*.reports/
