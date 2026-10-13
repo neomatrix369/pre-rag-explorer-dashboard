@@ -5,6 +5,8 @@ on:
     branches: [main, dev]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '0 0 * * 0' # Weekly Sunday — re-run T3 checks on main
 
 jobs:
   quality-gates:
@@ -60,6 +62,7 @@ jobs:
         run: npm run build
 
       - name: Secret scan (gitleaks)
+        if: github.event_name != 'schedule'
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -13,7 +13,8 @@ paths = [
   '''node_modules/''',
   '''coverage/''',
   '''package-lock.json''',
-  '''.git/'''
+  '''.git/''',
+  '''.omc/'''
 ]
 
 # Regexes to ignore (false positives in build artifacts)
