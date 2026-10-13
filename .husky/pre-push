@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Mirrors CI fast gates: lint, format, typecheck, unit tests (not coverage/audit/build).
-echo "Running pre-push quality gates (npm run test:all)..."
-npm run test:all
+# Full quality gates on every push: lint, format, typecheck, tests, coverage, audit, build.
+echo "Running pre-push quality gates (full suite)..."
+bash "$(dirname -- "$0")/../scripts/pre-push-gates.sh"
