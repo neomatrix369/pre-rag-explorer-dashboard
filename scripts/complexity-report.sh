@@ -23,17 +23,17 @@ printf '[]\n' >"$cli_report"
 for workspace in $NODE_WORKSPACES; do
   workspace_path="$ROOT/$workspace"
   [[ -f "$workspace_path/package.json" ]] || continue
-  [[ -f "$workspace_path/eslint.complexity.config.js" ]] || {
-    echo "Missing $workspace/eslint.complexity.config.js" >&2
+  [[ -f "$workspace_path/eslint.complexity.config.cjs" ]] || {
+    echo "Missing $workspace/eslint.complexity.config.cjs" >&2
     exit 2
   }
   echo "--- JavaScript/TypeScript complexity ($workspace) ---"
   workspace_report="$REPORT_DIR/node-${workspace//\//_}.json"
   (
     cd "$workspace_path"
-    npx eslint --config eslint.complexity.config.js --format json . \
+    npx eslint --config eslint.complexity.config.cjs --format json . \
       --ignore-pattern node_modules --ignore-pattern dist --ignore-pattern coverage
-  ) >"$workspace_report"
+  ) >"$workspace_report" || true  # non-zero = violations found; still write report for evidence
   python3 - "$cli_report" "$workspace_report" <<'PY'
 import json
 import sys
