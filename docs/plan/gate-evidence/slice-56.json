@@ -1,0 +1,18 @@
+{
+  "slice": "5+6",
+  "name": "Model Registry + bge-small",
+  "gate_status": "PENDING_VERIFICATION",
+  "inferred": true,
+  "note": "Backfilled by plan-health-check (EFP audit/reconcile migration 2026-10-13) — NOT evidence of PASS. Executor must rewrite full schema before any future ON BRANCH→PASSED transition.",
+  "known_outcomes": {
+    "tests": "66/66 passing",
+    "lint": "0 warnings",
+    "typecheck": "0 errors",
+    "build": "~3.2s clean",
+    "coverage": "~70% lines (services/**)",
+    "audit": "0 vulnerabilities"
+  },
+  "pr": "#10",
+  "branch": "feat/slice-05-06-model-registry",
+  "merged": "2026-04-23"
+}

@@ -1,0 +1,18 @@
+{
+  "slice": 1,
+  "name": "Toolchain Foundation",
+  "gate_status": "PENDING_VERIFICATION",
+  "inferred": true,
+  "note": "Backfilled by plan-health-check (EFP audit/reconcile migration 2026-10-13) — NOT evidence of PASS. Executor must rewrite full schema before any future ON BRANCH→PASSED transition.",
+  "known_outcomes": {
+    "tests": "3/3 passing at merge",
+    "lint": "0 errors (78 warnings at time; resolved in Slice 2)",
+    "typecheck": "0 errors",
+    "build": "2.79s clean",
+    "coverage": "12.87% baseline",
+    "audit": "0 vulnerabilities (with protobufjs override)"
+  },
+  "pr": null,
+  "branch": "toolchain-setup",
+  "merged": "2026-04-19"
+}

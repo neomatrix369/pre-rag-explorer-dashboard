@@ -100,12 +100,14 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 ### Pre-Slice Checklist (MUST DO BEFORE CODING)
 
 ```markdown
-- [ ] Read docs/_internal/PROGRESS.md (understand current state)
-- [ ] Create docs/slices/SLICE-XX-NAME.md (slice specification)
+- [ ] Read docs/plan/TRAIL.md (slice states, MoSCoW, depends-on)
+- [ ] Read docs/plan/PROGRESS.md (quick-status table — confirm prior slice PASSED)
+- [ ] Read docs/plan/invariants.md (browser-only, MODEL_REGISTRY, coverage floor)
+- [ ] Create docs/plan/slices/SLICE-XX-NAME.md (slice specification — EFP stub format)
 - [ ] Research compatibility (if upgrading dependencies)
 - [ ] Establish baseline metrics (run commands to get actual numbers)
 - [ ] Set realistic thresholds (baseline ± 5%, not aspirational)
-- [ ] Update PROGRESS.md status to "IN PROGRESS"
+- [ ] Update docs/plan/PROGRESS.md status to "IN PROGRESS"
 ```
 
 ### Execution Steps
@@ -120,7 +122,7 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 - Configure tools BEFORE integrating (test standalone first)
 - Match CI and local environments exactly
 - Update progress docs after each major step (resumable state)
-- Document decisions in PROGRESS.md decision log
+- Document decisions in `docs/plan/DECISIONS.md` decision log
 
 **3. Verification Phase**
 - Run ALL quality gates locally before pushing (prefer `./scripts/quality-gates.sh`):
@@ -158,11 +160,11 @@ The 4 main views (Upload, Process, Search, Collections) are controlled by `activ
 - Use workarounds before trying comprehensive fix
 - Set aspirational thresholds without verifying baseline
 - Adjust tests to pass without understanding failures
-- Create temporary tracking files (use docs/slices/ from start)
+- Create temporary tracking files (use docs/plan/slices/ from start — EFP standard)
 
 ### Decision Documentation Template
 
-When making pragmatic choices, document in `PROGRESS.md` decision log:
+When making pragmatic choices, document in `docs/plan/DECISIONS.md` decision log:
 
 ```markdown
 | Date | Slice | Decision | Why |
