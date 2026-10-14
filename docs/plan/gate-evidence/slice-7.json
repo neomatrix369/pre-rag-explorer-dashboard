@@ -1,0 +1,18 @@
+{
+  "slice": 7,
+  "name": "Sliding Window Chunking",
+  "gate_status": "PENDING_VERIFICATION",
+  "inferred": true,
+  "note": "Backfilled by plan-health-check (EFP audit/reconcile migration 2026-10-13) — NOT evidence of PASS. Executor must rewrite full schema before any future ON BRANCH→PASSED transition.",
+  "known_outcomes": {
+    "tests": "75/75 passing (+9 from this slice)",
+    "lint": "0 warnings, 0 errors",
+    "typecheck": "0 errors",
+    "build": "3.04s clean",
+    "coverage": "72.3% lines (services/**)",
+    "audit": "0 vulnerabilities"
+  },
+  "pr": "#11",
+  "branch": "feat/slice-07-sliding-window",
+  "merged": "2026-05-27"
+}

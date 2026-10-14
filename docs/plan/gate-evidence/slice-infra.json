@@ -1,0 +1,21 @@
+{
+  "slice": "infra",
+  "name": "Project Hardening",
+  "gate_status": "PENDING_VERIFICATION",
+  "inferred": true,
+  "note": "Backfilled by plan-health-check (EFP audit/reconcile migration 2026-10-13) — NOT evidence of PASS. Executor must rewrite full schema before any future ON BRANCH→PASSED transition.",
+  "known_outcomes": {
+    "tests": "81/81 passing (incl. import smoke)",
+    "lint": "0 warnings, 0 errors",
+    "lint_meta": "shellcheck + actionlint + markdownlint pass",
+    "typecheck": "0 errors",
+    "build": "~3.2s clean",
+    "coverage": "~72% lines (services/**); 40% threshold enforced",
+    "audit": "0 high/critical",
+    "docker": "build smoke + health-check pass",
+    "quality_gates_sh": "exits 0"
+  },
+  "pr": "#20",
+  "branch": "feat/slice-infra-hardening",
+  "merged": "2026-05-28"
+}
