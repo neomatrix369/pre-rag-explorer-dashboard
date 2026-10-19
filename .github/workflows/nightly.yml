@@ -124,7 +124,7 @@ jobs:
           retention-days: 90
           if-no-files-found: warn
       - name: License compliance (trivy)
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           exit-code: '1'
@@ -194,7 +194,7 @@ jobs:
       - name: Build image
         run: docker build -t scan-target:${{ github.sha }} .
       - name: Scan image
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: scan-target:${{ github.sha }}
           exit-code: '1'
